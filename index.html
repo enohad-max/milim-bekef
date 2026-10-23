@@ -204,7 +204,7 @@ details>summary{list-style:none}details>summary::-webkit-details-marker{display:
 .atile:disabled{opacity:.5}
 /* מסך הבית: מוצג בדיוק בגובה המסך, בלי גלילה (גדלים ביחידות dvh) */
 #app.fit{position:fixed;inset:0;max-width:520px;margin:0 auto;min-height:0;overflow:hidden;gap:1.3dvh;padding:calc(env(safe-area-inset-top) + 1.2dvh) 16px calc(env(safe-area-inset-bottom) + 1.4dvh);--rs:clamp(84px,29dvh,270px)}
-#app.fit>*{flex:none}#app.fit>.bgfx{position:fixed}#app.fit>.stage,#app.fit>.pcar,#app.fit>.gcols{flex:1;min-height:0}#app.fit>.phero{flex:none}
+#app.fit>*{flex:none}#app.fit>.bgfx{position:fixed}#app.fit>.stage,#app.fit>.pcar,#app.fit>.gcols,#app.fit>.przrow{flex:1;min-height:0}#app.fit>.phero{flex:none}
 #app.fit .top{align-items:stretch;height:clamp(36px,5.8dvh,52px)}
 #app.fit .top .btn.small{padding:0 14px;height:100%;font-size:clamp(.9rem,2.4dvh,1.1rem)}
 #app.fit .pill{padding:0 12px;font-size:clamp(.8rem,2.2dvh,1rem)}
@@ -221,7 +221,7 @@ details>summary{list-style:none}details>summary::-webkit-details-marker{display:
 #app.fit .foot button{padding:.4dvh 6px;font-size:clamp(.75rem,2dvh,.9rem)}
 #app.fit .panel.exam{padding:.9dvh 12px;font-size:clamp(.75rem,1.9dvh,.9rem);border-radius:18px}#app.fit .panel.exam .hint{display:none}
 @media (max-height:720px){#app.fit .tgrid{grid-template-columns:repeat(4,1fr)}#app.fit .atile{border-radius:20px;padding:0 2px}}
-@media (prefers-reduced-motion:reduce){.pav,.pglow,.swipe,.hb,.sg2,.logo{animation:none}.bgfx i,.halo,.spk,.pet,.btn.cta,.ringwrap.done{animation:none}}
+@media (prefers-reduced-motion:reduce){.newban,.wcard.hasnew,.newline,.slot.isnew,.wnew,.newtag{animation:none}.pav,.pglow,.swipe,.hb,.sg2,.logo{animation:none}.bgfx i,.halo,.spk,.pet,.btn.cta,.ringwrap.done{animation:none}}
 .sq.pa{width:100%;height:100%}
 .phero{position:relative;text-align:center;display:flex;flex-direction:column;align-items:center;gap:clamp(4px,1dvh,10px)}
 .logo{font-size:clamp(1.9rem,6dvh,2.8rem);font-weight:900;line-height:1.1;background:linear-gradient(90deg,#ff5d8f,#ff9f43,#e0a920,#33a862,#3a86d6,#7d51d6,#ff5d8f);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 4s linear infinite;filter:drop-shadow(0 3px 0 #fff)}
@@ -282,7 +282,29 @@ details>summary{list-style:none}details>summary::-webkit-details-marker{display:
 .wbadge{position:absolute;top:-9px;inset-inline-start:-3px;z-index:2;white-space:nowrap;background:#fff;color:var(--ink);font-weight:900;font-size:.85rem;border-radius:99px;padding:3px 11px;box-shadow:0 3px 0 #0002,0 0 0 2px var(--w,#ffd35c)}
 .wbadge.full{background:linear-gradient(135deg,#ffe27a,#ffb347);color:#6b4b00}
 .top .wbadge{position:static;box-shadow:0 3px 0 #0001}
-.srow{display:flex;gap:10px;overflow-x:auto;padding:6px 2px 10px;scrollbar-width:none}.srow::-webkit-scrollbar{display:none}.srow .slot{flex:none;width:60px;border-radius:18px}.srow-p{padding:10px 12px}.srow-p h3{font-size:.95rem;margin-bottom:2px}
+.srow{display:flex;gap:10px;overflow-x:auto;padding:16px 8px 10px;scrollbar-width:none}.srow::-webkit-scrollbar{display:none}.srow .slot{flex:none;width:60px;border-radius:18px}.srow-p{padding:10px 12px}.srow-p h3{font-size:.95rem;margin-bottom:2px}
+.przhead{text-align:center;font-weight:900;font-size:clamp(1.1rem,3.2dvh,1.6rem);display:flex;align-items:center;justify-content:center;gap:10px}
+.przst{background:#fff;border-radius:99px;padding:.3dvh 14px;box-shadow:0 3px 0 #0001}
+.przrow{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;scrollbar-width:none;padding:6px 2px 10px}.przrow::-webkit-scrollbar{display:none}
+.przc{flex:0 0 100%;min-width:0;min-height:0;scroll-snap-align:center;display:flex}
+.przc>.panel{flex:1;width:100%;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(4px,1dvh,10px);overflow-y:auto}
+.przc>.panel.rarebox{overflow:hidden}
+.przc .sq.lg{width:clamp(100px,32dvh,260px);height:clamp(100px,32dvh,260px)}
+.przc .big{font-size:clamp(1.2rem,3.4dvh,1.7rem)}.przc .rare-title{font-size:clamp(1.3rem,3.6dvh,1.8rem)}.przc .rare-sub{font-size:clamp(.8rem,2dvh,1rem);margin:0}
+.przc .lore{font-size:clamp(.8rem,2dvh,1.05rem);margin:0;line-height:1.4}.przc .sqhint{margin:0;font-size:clamp(.72rem,1.8dvh,.85rem)}
+.przbtns{display:flex;gap:12px}.przbtns .btn{flex:1;padding:0;height:clamp(48px,7.5dvh,66px);font-size:clamp(1rem,2.7dvh,1.3rem)}.przbtns .btn:first-child{flex:1.6}
+.modal.przfull{padding:0;align-items:stretch}
+.przin{display:flex;flex-direction:column;gap:12px;width:100%;max-width:520px;margin:0 auto;height:100%;padding:calc(env(safe-area-inset-top) + 2dvh) 16px calc(env(safe-area-inset-bottom) + 2dvh)}.przin .przc{flex:1;min-height:0}
+.newban{font:inherit;color:var(--ink);border:0;border-radius:26px;padding:12px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;width:100%;position:relative;background:linear-gradient(120deg,#fff7c9,#ffe0f3,#d8f0ff,#fff7c9);background-size:300% 100%;animation:shine 4s linear infinite,pulse2 2s infinite;box-shadow:0 0 0 4px #ffd35c,0 8px 0 #e0a920,0 0 30px 8px #ffd35c99}
+.nbv{display:flex}.nbv .sq{width:52px;height:52px;margin-inline:-8px}
+.nbt{flex:1;display:flex;flex-direction:column;text-align:start;gap:2px}.nbt b{font-size:1.2rem}.nbt span{font-weight:700;opacity:.75}
+.nbgo{background:linear-gradient(160deg,#ff9f43,#ff5d8f);color:#fff;font-weight:900;border-radius:99px;padding:8px 14px;box-shadow:0 3px 0 #0003;white-space:nowrap}
+.wnew{position:absolute;top:-9px;inset-inline-end:-3px;z-index:2;background:linear-gradient(135deg,#ff5d8f,#ff9f43);color:#fff;font-weight:900;font-size:.8rem;border-radius:99px;padding:3px 10px;box-shadow:0 3px 0 #0003;animation:wob 1.6s infinite ease-in-out}
+.wcard.hasnew{box-shadow:0 6px 0 var(--wd),0 0 0 3px #ff9f43,0 0 22px 5px #ffd35cbb;animation:pulse2 1.8s infinite}
+.newline{text-align:center;font-weight:900;color:#c25a00;background:#fff3d6;border-radius:99px;padding:6px 14px;animation:pulse2 1.8s infinite}
+.slot.isnew{z-index:1;box-shadow:0 0 26px 8px #ffd35cbb}
+.slot.isnew{border:4px solid transparent;background:linear-gradient(#fff,#fff) padding-box,linear-gradient(90deg,#ff5d8f,#ffd35c,#5fd68a,#5aaeff,#a77bff,#ff5d8f) border-box;background-size:auto,300% 100%;animation:shine 2.4s linear infinite,pulse2 1.6s infinite ease-in-out}
+.newtag{position:absolute;top:-11px;inset-inline-end:-6px;z-index:3;background:linear-gradient(135deg,#ff5d8f,#ff9f43);color:#fff;font-weight:900;font-size:.75rem;border-radius:99px;padding:2px 9px;box-shadow:0 2px 0 #0003;animation:wob 1.6s infinite ease-in-out}
 .credit{margin-top:18px;padding:12px 0 24px;text-align:center;font-size:1.2rem;font-weight:900;color:var(--pink-d);line-height:1.5}
 
 </style>
@@ -973,7 +995,7 @@ const pick=a=>a[Math.random()*a.length|0];
 function streakOf(p){return(p.last===today()||p.last===yesterday())?p.streak:0}
 function tick(p){const t=today();if(p.day!==t){p.day=t;p.dayCount=0}p.dayCount++;if(p.last!==t){p.streak=p.last===yesterday()?p.streak+1:1;p.last=t}}
 function pickSq(free){const w=free.map(i=>isRare(i)?.6:1);let r=Math.random()*w.reduce((a,b)=>a+b,0);for(let k=0;k<free.length;k++){r-=w[k];if(r<=0)return free[k]}return free[free.length-1]}
-function addStar(p,run){p.stars=(p.stars||0)+1;p.total=(p.total||0)+1;if(run)run.stars++;if(p.stars>=spp()){p.stars=0;const free=[...Array(N_SQ).keys()].filter(i=>!p.coll.includes(i));if(free.length){const n=pickSq(free);p.coll.push(n);if(run)run.prizes.push(n)}}}
+function addStar(p,run){p.stars=(p.stars||0)+1;p.total=(p.total||0)+1;if(run)run.stars++;if(p.stars>=spp()){p.stars=0;const free=[...Array(N_SQ).keys()].filter(i=>!p.coll.includes(i));if(free.length){const n=pickSq(free);p.coll.push(n);(p.nw=p.nw||[]).push(n);if(run)run.prizes.push(n)}}}
 
 // ---------- בחירת מילים (חזרה מרווחת) ----------
 function pool(){const p=P();return D.words.filter(w=>vis(w,p)&&(!S.lesson||w.lesson===S.lesson))}
@@ -997,6 +1019,11 @@ const mastered=p=>D.words.filter(w=>vis(w,p)&&p.prog[w.id]&&p.prog[w.id].box>=4)
 // ---------- מסכים ----------
 const prizeCard=i=>isRare(i)?`<div class="panel center rarebox pop"><div class="rays"></div><div class="rare-title">💎 סקוויש נדיר! 💎</div><div class="rare-sub">✨ רק ${RARE_N} כאלה בכל העולם! ✨</div><span data-squish>${squish(i,'lg')}</span><div class="sqhint">מתחי אותי באצבע, או בשתיים 🤏</div><div class="big">${sqName(i)}</div>${loreHtml(i)}</div>`
  :`<div class="panel center pop"><div class="big">סקוויש חדש! 🎁</div><span data-squish>${squish(i,'lg')}</span><div class="sqhint">מתחי אותי באצבע, או בשתיים 🤏</div><div class="big">${sqName(i)}</div>${loreHtml(i)}</div>`;
+const prizeScreen=(a,btns)=>`<div class="bgfx" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+ <div class="przhead">בלי אף טעות! 🎉 <span class="przst">⭐ ${a.stars}</span></div>
+ <div class="przrow">${a.prizes.map(i=>`<div class="przc">${prizeCard(i)}</div>`).join('')}</div>
+ ${a.prizes.length>1?'<div class="swipe">◀ עוד סקוויש ▶</div>':''}
+ <div class="przbtns">${btns}</div>`;
 const V={};
 V.profiles=()=>`
  <div class="bgfx" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
@@ -1067,6 +1094,7 @@ V.done=()=>{const r=S.run,p=P();
  <button class="btn" data-act="practice">עוד סיבוב</button><button class="btn ghost" data-act="home">חזרה</button>`};
 
 V.game=()=>{const g=S.game;if(!g)return'';
+ if(g.left===0&&g.prizes.length)return prizeScreen(g,'<button class="btn blue" data-act="game">עוד משחק</button><button class="btn ghost" data-act="home">חזרה</button>');
  if(g.left===0)return`<div class="center" style="margin-top:20px"><div class="bounce" style="display:inline-block">${squish(P().avatar,'lg')}</div>${g.mistakes?`<h1>כמעט! 💪</h1><p class="big">היו ${g.mistakes} טעויות</p><p>משחק בלי אף טעות נותן כוכבים לסקוויש. נסי שוב!</p>`:`<h1>בלי אף טעות! 🎉</h1><div class="starrow">${Array.from({length:g.stars},(_,i)=>`<span style="--i:${i}">⭐</span>`).join('')}</div><p class="big">קיבלת ⭐ ${g.stars}</p>`}</div>
   ${g.prizes.map(i=>prizeCard(i)).join('')}
   <button class="btn blue" data-act="game">${g.mistakes?'נסי שוב':'עוד משחק'}</button><button class="btn ghost" data-act="home">חזרה</button>`;
@@ -1101,19 +1129,22 @@ const wlist=()=>{const used=new Set(WORLDS.flatMap(w=>w.idx)),rest=[...Array(N_S
  return rest.length?[...WORLDS,{id:'more',n:'עוד הפתעות',ic:'✨',c:'#a77bff',d:'#7d51d6',idx:rest}]:WORLDS};
 const worldStat=(w,p)=>{const own=w.idx.filter(i=>p.coll.includes(i));return{own,n:own.length,t:w.idx.length}};
 const wBadge=(n,t)=>`<span class="wbadge ${n===t?'full':''}">${n===t?'✓':'★'} ${n}/${t}</span>`;
-const sqSlot=(i,p,name)=>`<div class="slot ${isRare(i)?'rare':''} ${p.avatar===i?'cur':''}" data-act="avatar" data-i="${i}">${isRare(i)?'<span class="rtag">✨</span>':''}${squish(i)}${name?`<small>${sqName(i)}</small>`:''}</div>`;
+const newList=p=>(p.nw||[]).filter(i=>p.coll.includes(i));
+const sqSlot=(i,p,name)=>{const nw=(p.nw||[]).includes(i);return`<div class="slot ${isRare(i)?'rare':''} ${p.avatar===i?'cur':''} ${nw?'isnew':''}" data-act="avatar" data-i="${i}">${nw?'<span class="newtag">חדש!</span>':''}${isRare(i)?'<span class="rtag">✨</span>':''}${squish(i)}${name?`<small>${sqName(i)}</small>`:''}</div>`};
 V.prizes=()=>{const p=P(),ws=wlist(),w=S.world&&ws.find(x=>x.id===S.world);
  if(w)return V.world(w,p);
- const recent=p.coll.slice(-8).reverse(),fav=(p.fav||[]).filter(i=>p.coll.includes(i));
+ const recent=p.coll.slice(-8).reverse(),fav=(p.fav||[]).filter(i=>p.coll.includes(i)),nl=newList(p);
  const row=(t,a)=>a.length?`<div class="panel srow-p"><h3>${t}</h3><div class="srow">${a.map(i=>sqSlot(i,p)).join('')}</div></div>`:'';
  return`<div class="top"><button class="btn small ghost" data-act="pback">→</button><h2 class="sp">הסקווישים שלי 🏆</h2><div class="pill">${p.coll.length}/${N_SQ}</div></div>
- <div class="hint center">כל ${spp()} ⭐ = סקוויש חדש. בחרי עולם לגלות 👇</div>
+ ${nl.length?`<button class="newban" data-act="shownew"><span class="nbv">${nl.slice(-3).map(i=>squish(i)).join('')}</span><span class="nbt"><b>🎁 ${nl.length>1?nl.length+' סקווישים חדשים!':'סקוויש חדש!'}</b><span>${esc(sqName(nl[nl.length-1]))}</span></span><span class="nbgo">הראי לי ▶</span></button>`:`<div class="hint center">כל ${spp()} ⭐ = סקוויש חדש. בחרי עולם לגלות 👇</div>`}
  ${row('🆕 החדשים',recent)}${row('💖 המועדפים',fav)}
  <div class="wgrid">${ws.map(wl=>{const{own,n,t}=worldStat(wl,p),pv=own.slice(-3);
-  return`<button class="wcard ${n===t?'full':''} ${wl.rare?'rarew':''}" style="--w:${wl.c};--wd:${wl.d}" data-act="world" data-w="${wl.id}">${wBadge(n,t)}<span class="wprev">${pv.length?pv.map(i=>squish(i)).join(''):'<span class="wq">❓</span>'}</span><b class="wname">${wl.ic} ${wl.n}</b><span class="wbar"><i style="width:${Math.round(n/t*100)}%"></i></span></button>`}).join('')}</div>`};
+  const wn=nl.filter(i=>wl.idx.includes(i)).length;
+  return`<button class="wcard ${n===t?'full':''} ${wl.rare?'rarew':''} ${wn?'hasnew':''}" style="--w:${wl.c};--wd:${wl.d}" data-act="world" data-w="${wl.id}">${wBadge(n,t)}${wn?`<span class="wnew">✨ ${wn>1?'+'+wn:'חדש!'}</span>`:''}<span class="wprev">${pv.length?pv.map(i=>squish(i)).join(''):'<span class="wq">❓</span>'}</span><b class="wname">${wl.ic} ${wl.n}</b><span class="wbar"><i style="width:${Math.round(n/t*100)}%"></i></span></button>`}).join('')}</div>`};
 V.world=(w,p)=>{const{own,n,t}=worldStat(w,p),shown=w.idx.filter(i=>!p.coll.includes(i)).slice(0,2);
  return`<div class="top"><button class="btn small ghost" data-act="pback">→</button><h2 class="sp">${w.ic} ${w.n}</h2>${wBadge(n,t)}</div>
  <div class="wbar big" style="--w:${w.c};--wd:${w.d}"><i style="width:${Math.round(n/t*100)}%"></i></div>
+ ${newList(p).some(i=>w.idx.includes(i))?'<div class="newline">👇 הסקוויש החדש שלך זוהר כאן!</div>':''}
  ${n===t?'<div class="panel center rare-sub">🏅 השלמת את כל העולם!</div>':`<div class="hint center">${n?`עוד ${t-n} לגלות`:'עוד לא גילית כאן סקווישים'}</div>`}
  <div class="collgrid">${own.map(i=>sqSlot(i,p,1)).join('')}${shown.map(i=>`<div class="slot lock ${isRare(i)?'rare':''}">${isRare(i)?'✨❓':'❓'}</div>`).join('')}</div>`};
 
@@ -1175,9 +1206,10 @@ V.lessonEdit=()=>{
 
 // ---------- ציור ----------
 const root=document.getElementById('app');
-function render(keep){applyTheme();root.classList.toggle('fit',S.screen==='home'||S.screen==='profiles'||(S.screen==='game'&&!!S.game&&S.game.left>0));const y=window.scrollY;root.innerHTML=(V[S.screen]||V.profiles)();window.scrollTo(0,keep?y:0);
+function render(keep){applyTheme();root.classList.toggle('fit',S.screen==='home'||S.screen==='profiles'||(S.screen==='game'&&!!S.game&&(S.game.left>0||S.game.prizes.length>0))||(S.screen==='act'&&!!S.act&&!!S.act.finished&&S.act.prizes.length>0));const y=window.scrollY;root.innerHTML=(V[S.screen]||V.profiles)();window.scrollTo(0,keep?y:0);
  if(S.screen==='trace')setTimeout(setupTrace,0);
  if(S.screen==='profiles')setTimeout(setupCar,0);
+ if(S.screen==='prizes'&&S.world)setTimeout(()=>{const e=document.querySelector('.slot.isnew');if(e)e.scrollIntoView({block:'center',behavior:'smooth'})},350);
  if(!keep&&S.screen==='act'&&S.act&&!S.act.finished){const it=S.act.items[S.act.i];if(it&&it.say)setTimeout(()=>say(it.say),250)}
  if(S.screen==='practice'&&S.run&&S.run.i<S.run.q.length&&S.mode==='en2he')setTimeout(()=>say(S.run.q[S.run.i].en),250);}
 function setupCar(){const c=document.querySelector('.pcar');if(!c)return;const cards=[...c.querySelectorAll('.pc')],dock=[...document.querySelectorAll('.pd')];
@@ -1247,12 +1279,13 @@ const A={
   }else{g.mistakes++;g.wrong.push(g.sel.id,id);const first=document.querySelector(`.m.sel`);el.classList.add('bad');if(first)first.classList.add('bad');g.sel=null;setTimeout(render,450)}
  },
  world(el){S.world=el.dataset.w;render()},
+ shownew(){const p=P(),nl=newList(p),i=nl[nl.length-1],w=wlist().find(x=>x.idx.includes(i));if(w){S.world=w.id;render()}},
  pback(){if(S.world){S.world=null;render()}else go('home')},
  fav(el){const p=P(),i=+el.dataset.i;p.fav=p.fav||[];const k=p.fav.indexOf(i);if(k<0)p.fav.push(i);else p.fav.splice(k,1);save();el.textContent=k<0?'💖 במועדפים':'🤍 הוספה למועדפים';render(true)},
  look(){go('look')},
  setav(el){const p=P(),i=+el.dataset.i;if(!p.coll.includes(i))return;p.avatar=i;save();render(true)},
  setcolor(el){P().color=+el.dataset.i;save();render(true)},
- avatar(el){const i=+el.dataset.i;
+ avatar(el){const i=+el.dataset.i;{const p=P();if((p.nw||[]).includes(i)){p.nw=p.nw.filter(x=>x!==i);save();render(true)}}
   modal(`${isRare(i)?'<div class="rare-title">💎 נדיר 💎</div>':''}<span data-squish>${squish(i,'lg')}</span><div class="sqhint">מתחי אותי באצבע, או בשתיים 🤏</div><div class="big">${sqName(i)}</div>${loreHtml(i)}<br><button class="btn" data-act="pickav" data-i="${i}">💖 בחרי אותו כדמות שלי</button><br><button class="btn ghost" data-act="fav" data-i="${i}">${(P().fav||[]).includes(i)?'💖 במועדפים':'🤍 הוספה למועדפים'}</button><br><button class="btn ghost" data-close="1">סגירה</button>`)},
  pickav(el){const p=P(),i=+el.dataset.i;if(p.coll.includes(i))p.avatar=i;save();const m=document.querySelector('.modal');if(m)m.remove();render(true)},
  addword(){const en=document.getElementById('ne').value.trim(),he=document.getElementById('nh').value.trim();
@@ -1429,6 +1462,7 @@ V.act=()=>{const a=S.act;if(!a)return'';if(a.finished)return V.actDone();
  return top+`<div class="center hint">לחצי על שני דברים שמתאימים זה לזה</div><div class="row" style="flex:1"><div class="mcol">${a.ord.L.map(id=>btn(id,'L')).join('')}</div><div class="mcol">${a.ord.R.map(id=>btn(id,'R')).join('')}</div></div>`};
 
 V.actDone=()=>{const a=S.act,p=P();
+ if(a.prizes.length)return prizeScreen(a,'<button class="btn blue" data-act="again">עוד סיבוב</button><button class="btn ghost" data-act="hub">חזרה</button>');
  return`<div class="center" style="margin-top:20px"><div class="bounce" style="display:inline-block">${squish(p.avatar,'lg')}</div>
  ${a.mist?`<h1>כמעט! 💪</h1><p class="big">היו ${a.mist} טעויות</p><p>סיבוב בלי אף טעות נותן עד 5 כוכבים. נסי שוב!</p>`:`<h1>בלי אף טעות! 🎉</h1><p class="big">קיבלת ⭐ ${a.stars}</p>`}</div>
  ${a.prizes.map(i=>prizeCard(i)).join('')}
@@ -1544,8 +1578,8 @@ Object.assign(A,{
 
 
 function showPrize(i){confetti();if(isRare(i))setTimeout(fireworks,300);
- const m=document.createElement('div');m.className='modal';m.style.flexDirection='column';
- m.innerHTML=`<div style="max-width:360px;width:100%">${prizeCard(i)}</div><button class="btn" style="max-width:360px;margin-top:14px" data-close="1">יפה! 💖</button>`;
+ const m=document.createElement('div');m.className='modal przfull';
+ m.innerHTML=`<div class="przin"><div class="przc">${prizeCard(i)}</div><div class="przbtns"><button class="btn" data-close="1">יפה! 💖</button></div></div>`;
  m.addEventListener('click',e=>{if(e.target===m||e.target.dataset.close)m.remove()});document.body.appendChild(m)}
 function toast(t){const d=document.createElement('div');d.textContent=t;d.style.cssText='position:fixed;top:18px;left:50%;transform:translateX(-50%);background:#5fd68a;color:#fff;font-weight:900;padding:10px 20px;border-radius:99px;box-shadow:0 5px 0 #33a862;z-index:60';document.body.appendChild(d);setTimeout(()=>d.remove(),1200)}
 
