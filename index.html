@@ -202,9 +202,25 @@ details>summary{list-style:none}details>summary::-webkit-details-marker{display:
 .a-pink{background:linear-gradient(160deg,color-mix(in srgb,var(--pink) 70%,#fff),var(--pink));box-shadow:0 6px 0 var(--pink-d)}.a-pink:active{box-shadow:0 1px 0 var(--pink-d)}
 .a-blue{background:linear-gradient(160deg,#a5d9ff,var(--blue));box-shadow:0 6px 0 var(--blue-d)}.a-blue:active{box-shadow:0 1px 0 var(--blue-d)}
 .atile:disabled{opacity:.5}
-@media (max-height:720px){#app.fit{--rs:clamp(96px,29dvh,270px);gap:8px;padding-top:max(8px,env(safe-area-inset-top));padding-bottom:max(10px,env(safe-area-inset-bottom))}
- #app.fit .tgrid{grid-template-columns:repeat(4,1fr);gap:8px}#app.fit .atile{font-size:.74rem;line-height:1.15;padding:8px 2px;border-radius:20px;text-align:center}#app.fit .atile .ic{font-size:1.6rem}
- #app.fit .btn.cta{font-size:1.2rem;padding:12px}#app.fit .foot button{padding:2px 6px}#app.fit .pill{padding:4px 10px;font-size:.9rem}#app.fit .goalchip{font-size:.8rem;padding:4px 12px}#app.fit .bubble{padding:5px 14px;font-size:.92rem}}
+/* מסך הבית: מוצג בדיוק בגובה המסך, בלי גלילה (גדלים ביחידות dvh) */
+#app.fit{position:fixed;inset:0;max-width:520px;margin:0 auto;min-height:0;overflow:hidden;gap:1.3dvh;padding:calc(env(safe-area-inset-top) + 1.2dvh) 16px calc(env(safe-area-inset-bottom) + 1.4dvh);--rs:clamp(84px,29dvh,270px)}
+#app.fit>*{flex:none}#app.fit>.bgfx{position:fixed}#app.fit>.stage{flex:1;min-height:0}
+#app.fit .top{align-items:stretch;height:clamp(36px,5.8dvh,52px)}
+#app.fit .top .btn.small{padding:0 14px;height:100%;font-size:clamp(.9rem,2.4dvh,1.1rem)}
+#app.fit .pill{padding:0 12px;font-size:clamp(.8rem,2.2dvh,1rem)}
+#app.fit .stage{gap:clamp(4px,.8dvh,10px)}
+#app.fit .bubble{padding:.6dvh 16px;font-size:clamp(.85rem,2.2dvh,1.05rem)}
+#app.fit .goalchip{padding:.5dvh 14px;font-size:clamp(.72rem,1.9dvh,.9rem)}
+#app.fit .opts2{height:clamp(38px,6dvh,54px)}
+#app.fit .opts2 select{height:100%;padding:0 12px;font-size:clamp(.85rem,2.2dvh,1rem)}
+#app.fit .dirb{font-size:clamp(.72rem,1.9dvh,.85rem);padding:0 12px}
+#app.fit .btn.cta{height:clamp(46px,8dvh,72px);padding:0 16px;font-size:clamp(1.05rem,3dvh,1.5rem)}
+#app.fit .tgrid{gap:clamp(8px,1.4dvh,12px)}
+#app.fit .atile{height:clamp(60px,11.5dvh,112px);padding:0 4px;justify-content:center;font-size:clamp(.74rem,2dvh,1rem);line-height:1.15;text-align:center}
+#app.fit .atile .ic{font-size:clamp(1.5rem,4.2dvh,2.6rem)}
+#app.fit .foot button{padding:.4dvh 6px;font-size:clamp(.75rem,2dvh,.9rem)}
+#app.fit .panel.exam{padding:.9dvh 12px;font-size:clamp(.75rem,1.9dvh,.9rem);border-radius:18px}#app.fit .panel.exam .hint{display:none}
+@media (max-height:720px){#app.fit .tgrid{grid-template-columns:repeat(4,1fr)}#app.fit .atile{border-radius:20px;padding:0 2px}}
 @media (prefers-reduced-motion:reduce){.bgfx i,.halo,.spk,.pet,.btn.cta,.ringwrap.done{animation:none}}
 .credit{margin-top:18px;padding:12px 0 24px;text-align:center;font-size:1.2rem;font-weight:900;color:var(--pink-d);line-height:1.5}
 
