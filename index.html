@@ -55,7 +55,7 @@ h1,h2,h3{margin:0}
 .speak{background:var(--blue);border:0;border-radius:50%;width:54px;height:54px;font-size:1.6rem;box-shadow:0 5px 0 var(--blue-d);cursor:pointer}
 .speak:active{transform:translateY(4px);box-shadow:0 1px 0 var(--blue-d)}
 .mcol{display:flex;flex-direction:column;gap:10px;flex:1}
-.m{font:inherit;font-weight:800;font-size:1.2rem;color:var(--ink);background:#fff;border:3px solid transparent;border-radius:20px;padding:14px 8px;box-shadow:0 5px 0 #0000001a;cursor:pointer;min-height:58px}
+.m{font:inherit;font-weight:800;font-size:1.2rem;line-height:1.1;color:var(--ink);background:#fff;border:3px solid transparent;border-radius:20px;padding:0 8px;box-shadow:0 5px 0 #0000001a;cursor:pointer;height:60px;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden}
 .m.en{direction:ltr}.m.sel{border-color:var(--pink);background:#fff0f7}.m.done{background:var(--green);color:#fff;visibility:hidden}.m.bad{animation:shake .4s;border-color:var(--red)}
 @keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
 select,input,textarea{font:inherit;color:var(--ink);border:3px solid #f0d6e6;border-radius:16px;padding:10px 12px;background:#fff;width:100%;user-select:text}
@@ -152,6 +152,21 @@ details>summary{list-style:none}details>summary::-webkit-details-marker{display:
 .btn.tile2{flex-direction:column;gap:2px;font-size:.95rem;padding:12px 6px}.tile2 span{font-size:1.6rem}
 .foot{display:flex;justify-content:center;gap:22px;margin-top:2px}
 .foot button{font:inherit;font-weight:700;font-size:.9rem;color:var(--ink);opacity:.65;background:none;border:0;padding:10px 6px;cursor:pointer}
+.btn.small.green{box-shadow:0 4px 0 var(--green-d)}.btn.small.blue{box-shadow:0 4px 0 var(--blue-d)}.btn.small.yellow{box-shadow:0 4px 0 var(--yellow-d)}.btn.small.ghost{box-shadow:0 4px 0 #0002}
+.setrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 0}.setrow span{font-weight:700;font-size:.95rem}.setrow input{width:120px;text-align:center;flex:none}
+.pro{display:flex;flex-direction:column;gap:12px}
+.pcard{background:#fff;border-radius:20px;padding:16px;box-shadow:0 1px 3px #4a3b5c14,0 0 0 1px #4a3b5c0d}
+.pcard.exam{background:#fff8d6}.pcard h3{font-size:1rem;margin-bottom:12px}
+.pro details>summary h3{margin:0;cursor:pointer}.pro details[open]>summary h3{margin-bottom:6px}
+.pro .seg button{font-size:.9rem;padding:9px 4px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.kpi{background:#f6f3fb;border-radius:14px;padding:12px 2px;text-align:center}.kpi b{display:block;font-size:1.4rem;line-height:1.2}.kpi span{font-size:.72rem;opacity:.65}
+.prow{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid #4a3b5c12}.prow:first-child{border-top:0}
+.prow.lg{align-items:flex-start;font-size:.92rem}.lgres{font-size:.82rem;font-weight:700;white-space:nowrap;opacity:.85}
+.badge{font-size:.78rem;font-weight:800;border-radius:99px;padding:2px 10px;background:#ffe9e9;color:#c0392b}
+.tags{display:flex;flex-wrap:wrap;gap:6px}.tag{background:#f6f3fb;border-radius:99px;padding:4px 12px;font-size:.85rem;font-weight:700}
+[data-squish]{touch-action:none;cursor:grab;display:inline-block}[data-squish] svg{will-change:transform;overflow:visible}
+.sqhint{font-size:.85rem;opacity:.6;margin-top:-4px}
 .credit{margin-top:18px;padding:12px 0 24px;text-align:center;font-size:1.2rem;font-weight:900;color:var(--pink-d);line-height:1.5}
 
 </style>
@@ -864,8 +879,8 @@ function mark(p,w,res){
 const mastered=p=>D.words.filter(w=>vis(w,p)&&p.prog[w.id]&&p.prog[w.id].box>=4).length;
 
 // ---------- מסכים ----------
-const prizeCard=i=>isRare(i)?`<div class="panel center rarebox pop"><div class="rays"></div><div class="rare-title">💎 סקוויש נדיר! 💎</div><div class="rare-sub">✨ רק ${RARE_N} כאלה בכל העולם! ✨</div><span data-squish style="cursor:pointer;display:inline-block">${squish(i,'lg')}</span><div class="big">${sqName(i)}</div>${loreHtml(i)}</div>`
- :`<div class="panel center pop"><div class="big">סקוויש חדש! 🎁</div><span data-squish style="cursor:pointer;display:inline-block">${squish(i,'lg')}</span><div class="big">${sqName(i)}</div>${loreHtml(i)}</div>`;
+const prizeCard=i=>isRare(i)?`<div class="panel center rarebox pop"><div class="rays"></div><div class="rare-title">💎 סקוויש נדיר! 💎</div><div class="rare-sub">✨ רק ${RARE_N} כאלה בכל העולם! ✨</div><span data-squish>${squish(i,'lg')}</span><div class="sqhint">מתחי אותי באצבע, או בשתיים 🤏</div><div class="big">${sqName(i)}</div>${loreHtml(i)}</div>`
+ :`<div class="panel center pop"><div class="big">סקוויש חדש! 🎁</div><span data-squish>${squish(i,'lg')}</span><div class="sqhint">מתחי אותי באצבע, או בשתיים 🤏</div><div class="big">${sqName(i)}</div>${loreHtml(i)}</div>`;
 const V={};
 V.profiles=()=>`
  <div class="top"><h1>מילים בכיף ✨</h1><div class="sp"></div><button class="btn small ghost" data-act="parent">📊</button><button class="btn small ghost" data-act="settings">⚙️</button></div>
@@ -943,53 +958,52 @@ const WORDROW=w=>`<div class="wedit"><input dir="ltr" data-wid="${w.id}" data-f=
 const lessonPanels=()=>{
  const secs=D.profiles.map(p=>({o:p.id,t:'👧 השיעורים של '+esc(p.name)}));
  if(D.words.some(w=>!w.owner))secs.push({o:'',t:'👭 שיעורים משותפים (לכולן)'});
- return`<div class="hint" style="margin:0 4px">כל שיעור שייך לילדה אחת, והיא רואה רק את השיעורים שלה. אפשר גם לשייך שיעור לכולן.</div>`+secs.map(sc=>{
+ return`<div class="hint" style="margin:0 4px">כל שיעור שייך לילדה אחת, או לשתיהן.</div>`+secs.map(sc=>{
   const names=[...new Set(D.words.filter(w=>(w.owner||'')===sc.o).map(w=>w.lesson||''))];
   return`<div class="panel"><h3>${sc.t}</h3>
   ${names.map(l=>`<div class="lrow" data-act="openl" data-l="${esc(l)}" data-o="${sc.o}"><span class="big">📖 ${esc(l||'ללא שיעור')}</span><span class="hint">${D.words.filter(w=>(w.lesson||'')===l&&(w.owner||'')===sc.o).length} מילים</span><span class="sp"></span><button class="x" data-act="dellesson" data-l="${esc(l)}" data-o="${sc.o}" title="מחיקת שיעור">🗑️</button><span class="chev">‹</span></div>`).join('')||'<p class="hint">אין עדיין שיעורים</p>'}
-  <br><button class="btn green" data-act="newl" data-o="${sc.o}">➕ שיעור חדש</button></div>`}).join('')};
+  <button class="btn small green" style="margin-top:6px" data-act="newl" data-o="${sc.o}">➕ שיעור חדש</button></div>`}).join('')};
 
 V.settings=()=>{
  if(!S.gate)return`<div class="top"><button class="btn small ghost" data-act="back">→</button><h2>אזור הורים 🔒</h2></div>
   <div class="panel center"><p class="big">🔑 סיסמת מבוגרים</p><input id="gate" type="password" inputmode="numeric" autocomplete="off" style="text-align:center;font-size:1.6rem"><br><br><button class="btn" data-act="gate">כניסה</button></div>`;
  if(S.sl!=null)return V.lessonEdit();
  return`<div class="top"><button class="btn small ghost" data-act="back">→</button><h2>הגדרות</h2></div>
- <button class="btn blue" data-act="s2p">📊 מידע להורה (יומן ומחוונים)</button>
+ <button class="btn blue" data-act="s2p">📊 מידע להורה</button>
  ${lessonPanels()}
  <div class="panel"><h3>👧 הילדות</h3>
   ${D.profiles.map(p=>`<div class="wedit">${squish(p.avatar,'sm')}<input data-name="${p.id}" value="${esc(p.name)}"><input data-en="${p.id}" dir="ltr" placeholder="English" value="${esc(p.en||'')}" style="text-align:left"><button class="x" data-act="delprof" data-id="${p.id}" title="מחיקה">🗑️</button></div>`).join('')}
-  <br><button class="btn yellow" data-act="addprof">➕ הוספת ילדה</button></div>
- <div class="panel"><h3>📅 הערכה קרובה</h3><div class="hint">מופיעה לילדות עם ספירה לאחור.</div>
+  <button class="btn small yellow" style="margin-top:6px" data-act="addprof">➕ הוספת ילדה</button></div>
+ <div class="panel"><h3>📅 הערכה קרובה</h3><div class="hint">מופיעה לילדות עם ספירה לאחור</div>
   <label>תאריך</label><input type="date" data-exam="date" value="${esc((D.settings.exam||{}).date||'')}">
   <label>הערה (חומר לחזרה)</label><input data-exam="note" value="${esc((D.settings.exam||{}).note||'')}"></div>
- <div class="panel"><h3>🔊 מהירות ההקראה</h3><div class="hint">לחיצה על מילה, אות או תמונה באנגלית מקריאה אותה.</div>
+ <div class="panel"><h3>🔊 מהירות ההקראה</h3><div class="hint">לחיצה על מילה באנגלית מקריאה אותה</div>
   <select data-rate><option value="0.55" ${spRate()===.55?'selected':''}>איטית מאוד</option><option value="0.7" ${spRate()===.7?'selected':''}>איטית (מומלץ ללימוד)</option><option value="0.9" ${spRate()===.9?'selected':''}>רגילה</option></select>
-  <br><br><button class="btn small blue" style="width:auto" data-act="saytest">🔊 נסי</button></div>
- <div class="panel"><h3>🔑 סיסמת מבוגרים</h3><div class="hint">לפחות 4 תווים. נדרשת לכניסה להגדרות ולמידע להורה.</div>
-  <input type="password" inputmode="numeric" autocomplete="off" value="${esc(D.settings.pw||'2101975')}" data-pw></div>
- <div class="panel"><h3>⭐ כוכבים לסקוויש</h3><div class="hint">כמה כוכבים צריך כדי לקבל סקוויש חדש (ואז הספירה חוזרת ל-0).</div>
-  <input type="number" min="1" max="100" value="${spp()}" data-spp></div>
- <div class="panel"><h3>🎯 יעד יומי</h3><div class="hint">כמה כרטיסיות ביום</div><input type="number" min="1" max="100" value="${D.settings.goal}" data-goal></div>
+  <button class="btn small blue" style="margin-top:10px" data-act="saytest">🔊 נסי</button></div>
+ <div class="panel"><h3>⚙️ כללי</h3>
+  <div class="setrow"><span>🔑 סיסמת מבוגרים</span><input type="password" inputmode="numeric" autocomplete="off" value="${esc(D.settings.pw||'2101975')}" data-pw></div>
+  <div class="setrow"><span>⭐ כוכבים לסקוויש</span><input type="number" min="1" max="100" value="${spp()}" data-spp></div>
+  <div class="setrow"><span>🎯 כרטיסיות ביום</span><input type="number" min="1" max="100" value="${D.settings.goal}" data-goal></div></div>
  <div class="panel"><h3>💾 גיבוי</h3><div class="row"><button class="btn small blue" data-act="export">ייצוא</button><button class="btn small blue" data-act="import">ייבוא</button></div>
-  <div class="hint" style="margin-top:8px">גיבוי אחרון: <b>${D.settings.lastBackup?fmtTs(D.settings.lastBackup):'אף פעם'}</b><br>הכוכבים, הסקווישים, השיעורים והיומן נשמרים בטלפון הזה. אפשר לייצא גיבוי ולהעביר או לשחזר.</div></div>`;
+  <div class="hint" style="margin-top:8px">גיבוי אחרון: <b>${D.settings.lastBackup?fmtTs(D.settings.lastBackup):'אף פעם'}</b><br>הנתונים נשמרים בטלפון הזה בלבד</div></div>`;
 };
 
 V.lessonEdit=()=>{
  const l=S.sl,o=S.so||'',ws=D.words.filter(w=>(w.lesson||'')===l&&(w.owner||'')===o);
  return`<div class="top"><button class="btn small ghost" data-act="back">→ לשיעורים</button><h2 class="sp">עריכת שיעור</h2></div>
  <div class="panel"><label style="margin-top:0">✏️ שם השיעור</label>
-  <input data-lname value="${esc(l)}" placeholder="למשל: 12.10.26"><div class="hint" style="margin-top:6px">שינוי השם מעביר איתו את כל המילים.</div></div>
+  <input data-lname value="${esc(l)}" placeholder="למשל: 12.10.26"></div>
  <div class="panel"><label style="margin-top:0">👧 של מי השיעור?</label>
   <select data-lowner>${D.profiles.map(p=>`<option value="${p.id}" ${o===p.id?'selected':''}>${esc(p.name)} בלבד</option>`).join('')}<option value="" ${o===''?'selected':''}>שתיהן (משותף)</option></select></div>
  <div class="panel"><h3>➕ הוספת מילה</h3>
   <label>אנגלית</label><input id="ne" dir="ltr" autocapitalize="off" style="text-align:left">
   <label>עברית</label><input id="nh">
-  <br><button class="btn green" data-act="addword">הוספה</button></div>
+  <br><button class="btn green" data-act="addword">➕ הוספה</button></div>
  <div class="panel"><h3>📝 המילים (${ws.length})</h3>
-  <div class="hint" style="margin-bottom:8px">אפשר לתקן ישירות בתוך השדות. השינוי נשמר מיד.</div>
+  <div class="hint" style="margin-bottom:8px">אפשר לתקן ישירות בשדות</div>
   ${ws.map(WORDROW).join('')||'<p class="hint">אין עדיין מילים בשיעור הזה</p>'}</div>
- <details class="panel"><summary class="big" style="cursor:pointer">📋 הוספה מהירה של הרבה מילים</summary>
-  <div class="hint" style="margin-top:8px">שורה לכל מילה, למשל: <code>apple - תפוח</code></div>
+ <details class="panel"><summary style="cursor:pointer;font-weight:800">📋 הוספה מהירה</summary>
+  <div class="hint" style="margin-top:8px">שורה לכל מילה: <code>apple - תפוח</code></div>
   <textarea id="bulk" placeholder="apple - תפוח&#10;dog - כלב"></textarea>
   <br><button class="btn blue" data-act="bulk">הוספת הכל</button></details>
  <button class="btn red" data-act="dellesson">🗑️ מחיקת השיעור כולו</button>`;
@@ -1062,7 +1076,7 @@ const A={
  setav(el){const p=P(),i=+el.dataset.i;if(!p.coll.includes(i))return;p.avatar=i;save();render(true)},
  setcolor(el){P().color=+el.dataset.i;save();render(true)},
  avatar(el){const i=+el.dataset.i;
-  modal(`${isRare(i)?'<div class="rare-title">💎 נדיר 💎</div>':''}<span data-squish style="cursor:pointer;display:inline-block">${squish(i,'lg')}</span><div class="big">${sqName(i)}</div>${loreHtml(i)}<br><button class="btn" data-act="pickav" data-i="${i}">💖 בחרי אותו כדמות שלי</button><br><button class="btn ghost" data-close="1">סגירה</button>`)},
+  modal(`${isRare(i)?'<div class="rare-title">💎 נדיר 💎</div>':''}<span data-squish>${squish(i,'lg')}</span><div class="sqhint">מתחי אותי באצבע, או בשתיים 🤏</div><div class="big">${sqName(i)}</div>${loreHtml(i)}<br><button class="btn" data-act="pickav" data-i="${i}">💖 בחרי אותו כדמות שלי</button><br><button class="btn ghost" data-close="1">סגירה</button>`)},
  pickav(el){const p=P(),i=+el.dataset.i;if(p.coll.includes(i))p.avatar=i;save();const m=document.querySelector('.modal');if(m)m.remove();render(true)},
  addword(){const en=document.getElementById('ne').value.trim(),he=document.getElementById('nh').value.trim();
   if(!en||!he)return alert('צריך גם אנגלית וגם עברית');
@@ -1296,7 +1310,7 @@ function logItem(){const a=S.act,it=a.items[a.i];if(!it)return;
  else logEv({type:'i',src:a.key,lab:it.lab||a.title,m:a.im||0});
  save()}
 const bakWarn=()=>{const t=(D.settings||{}).lastBackup,d=t?Math.floor((Date.now()-t)/864e5):null;
- return d===null||d>=7?`<div class="panel exam"><b>💾 ${d===null?'עוד לא יצרת גיבוי':'הגיבוי האחרון לפני '+d+' ימים'}</b><div class="hint">מומלץ לייצא גיבוי לפני כל עדכון של האפליקציה.</div><button class="btn small blue" style="width:auto;margin-top:8px" data-act="export">⬇️ ייצוא גיבוי עכשיו</button></div>`:''};
+ return d===null||d>=7?`<div class="pcard exam"><b>💾 ${d===null?'עוד לא יצרת גיבוי':'הגיבוי האחרון לפני '+d+' ימים'}</b><div class="hint">מומלץ לייצא גיבוי לפני כל עדכון.</div><button class="btn small blue" style="width:auto;margin-top:8px" data-act="export">⬇️ ייצוא גיבוי עכשיו</button></div>`:''};
 const ACT_NAME={cards:'כרטיסיות',match:'משחק התאמה',trace:'כותבים שם',letters:'אותיות',first:'אות ראשונה',vowel:'אות חסרה',spell:'בונים מילה',name:'בונים שם',colors:'צבעים',cloze:'משפט חסר',order:'מסדרים משפט',mock:'מבחן דמה'};
 const srcName=k=>{const[b,c]=String(k).split(':');return b==='vocab'?'אוצר מילים: '+(CAT_NAME[c]||c):(ACT_NAME[b]||b)};
 const fmtTs=ts=>new Date(ts).toLocaleString('he-IL',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'});
@@ -1318,25 +1332,25 @@ V.parent=()=>{
  const skills=Object.entries(sk).map(([n,v])=>({n,rate:1-v.f/v.n,cnt:v.n,f:v.f})).sort((a,b)=>a.rate-b.rate);
  const lim=S.pl||40,rows=[...L].reverse().slice(0,lim);
  const resTxt=e=>e.type==='s'?`סיבוב: ${e.m?e.m+' טעויות':'בלי טעויות 🎉'} (${e.n} פריטים)${e.st?' · ⭐'+e.st:''}`:(e.src==='cards'&&e.type==='w'?RES[e.res]||e.res:(e.m?`❌ ${e.m} טעויות`:'✅ נכון'));
- const chip=(on,act,attr,t)=>`<button class="btn small ${on?'':'ghost'}" style="width:auto" data-act="${act}" ${attr}>${t}</button>`;
- return`<div class="top"><button class="btn small ghost" data-act="back">→</button><h2 class="sp">מידע להורה 📊</h2><button class="btn small ghost" data-act="p2s">⚙️ הגדרות</button></div>
- <div class="chips">${D.profiles.map(p=>chip(p.id===pid,'ppick',`data-id="${p.id}"`,esc(p.name))).join('')}</div>
- <div class="chips">${[[7,'7 ימים'],[30,'30 ימים'],[0,'הכול']].map(([d,t])=>chip(range===d,'prange',`data-d="${d}"`,t)).join('')}</div>
- <div class="panel"><h3>📈 סיכום</h3>
-  <div class="statgrid"><div><b>${tot}</b><span>תשובות</span></div><div><b>${rate===null?'—':Math.round(rate*100)+'%'}</b><span>הצלחה</span></div><div><b>${ses.length}</b><span>סיבובים</span></div><div><b>${perfect}</b><span>בלי טעויות</span></div></div>
-  <div class="hint" style="margin-top:8px">פעילות אחרונה: ${last}</div></div>
+ const seg=items=>`<div class="seg">${items.map(([on,act,attr,t])=>`<button class="${on?'on':''}" data-act="${act}" ${attr}>${t}</button>`).join('')}</div>`;
+ const rc=rate===null?'#4a3b5c':rateCol(rate)[1];
+ return`<div class="pro"><div class="top"><button class="btn small ghost" data-act="back">→</button><h2 class="sp">מידע להורה</h2><button class="btn small ghost" data-act="p2s">⚙️</button></div>
+ ${seg(D.profiles.map(p=>[p.id===pid,'ppick',`data-id="${p.id}"`,esc(p.name)]))}
+ ${seg([[7,'7 ימים'],[30,'30 ימים'],[0,'הכול']].map(([d,t])=>[range===d,'prange',`data-d="${d}"`,t]))}
+ <div class="pcard"><h3>סיכום</h3>
+  <div class="kpis"><div class="kpi"><b>${tot}</b><span>תשובות</span></div><div class="kpi"><b style="color:${rc}">${rate===null?'—':Math.round(rate*100)+'%'}</b><span>הצלחה</span></div><div class="kpi"><b>${ses.length}</b><span>סיבובים</span></div><div class="kpi"><b>${perfect}</b><span>בלי טעויות</span></div></div>
+  <div class="hint" style="margin-top:10px">פעילות אחרונה: ${last}</div></div>
  ${bakWarn()}
- ${tot?'':'<div class="panel center hint">עדיין אין נתונים לתקופה הזאת. התרגילים נרשמים כאן אוטומטית.</div>'}
- <div class="panel"><h3>🎯 באילו נושאים מתקשה</h3>
-  ${skills.map(s=>{const[ic,col]=rateCol(s.rate);return`<div class="skrow"><div class="sktop"><span>${ic} ${esc(s.n)}</span><span class="hint">${Math.round(s.rate*100)}% · ${s.f} טעויות מתוך ${s.cnt}</span></div><div class="meter"><i style="width:${Math.max(4,s.rate*100)}%;background:${col}"></i></div></div>`}).join('')||'<p class="hint">—</p>'}</div>
- <div class="panel"><h3>🔴 מילים וטעויות חוזרות (יותר מפעם אחת)</h3>
-  ${hard.map(g=>`<div class="wrow"><span class="wl2" dir="auto">${esc(g.lab)}</span><span class="hint">טעתה ב-${g.f} מתוך ${g.n}</span></div>`).join('')||'<p class="hint">אין כרגע. מצוין! 🎉</p>'}</div>
- <div class="panel"><h3>🟡 טעתה פעם אחת</h3>
-  ${once.slice(0,30).map(g=>`<div class="wrow"><span class="wl2" dir="auto">${esc(g.lab)}</span><span class="hint">${fmtTs(g.ts)}</span></div>`).join('')||'<p class="hint">—</p>'}</div>
- <div class="panel"><h3>🕒 יומן (תאריך ושעה)</h3>
-  ${rows.map(e=>`<div class="logrow"><div class="hint">${fmtTs(e.ts)} · ${esc(srcName(e.src))}</div><div><b dir="auto">${esc(e.lab||e.title||'')}</b> <span>${resTxt(e)}</span></div></div>`).join('')||'<p class="hint">היומן ריק.</p>'}
-  ${L.length>lim?'<br><button class="btn small ghost" style="width:auto" data-act="pmore">הצג עוד</button>':''}</div>
- <div class="row"><button class="btn small blue" data-act="exportlog">⬇️ ייצוא יומן</button><button class="btn small red" data-act="clearlog">🗑️ מחיקת היומן של ${esc((D.profiles.find(p=>p.id===pid)||{}).name||'')}</button></div>`};
+ ${tot?'':'<div class="pcard center hint">עדיין אין נתונים לתקופה הזאת. התרגילים נרשמים כאן אוטומטית.</div>'}
+ <div class="pcard"><h3>נושאים</h3>
+  ${skills.map(s=>{const col=rateCol(s.rate)[1];return`<div class="skrow"><div class="sktop"><span>${esc(s.n)}</span><span class="hint">${Math.round(s.rate*100)}% · ${s.f}/${s.cnt}</span></div><div class="meter"><i style="width:${Math.round(s.rate*100)}%;background:${col}"></i></div></div>`}).join('')||'<p class="hint">—</p>'}</div>
+ <div class="pcard"><h3>טעויות חוזרות</h3>
+  ${hard.map(g=>`<div class="prow"><span class="sp" dir="auto"><b>${esc(g.lab)}</b></span><span class="badge">${g.f}/${g.n}</span></div>`).join('')||'<p class="hint">אין כרגע. מצוין! 🎉</p>'}</div>
+ ${once.length?`<div class="pcard"><h3>טעתה פעם אחת</h3><div class="tags">${once.slice(0,30).map(g=>`<span class="tag" dir="auto">${esc(g.lab)}</span>`).join('')}</div></div>`:''}
+ <details class="pcard"><summary><h3>יומן (${L.length})</h3></summary>
+  ${rows.map(e=>`<div class="prow lg"><div class="sp"><b dir="auto">${esc(e.lab||e.title||'')}</b><div class="hint">${esc(srcName(e.src))} · ${fmtTs(e.ts)}</div></div><span class="lgres">${resTxt(e)}</span></div>`).join('')||'<p class="hint">היומן ריק.</p>'}
+  ${L.length>lim?'<br><button class="btn small ghost" data-act="pmore">הצג עוד</button>':''}</details>
+ <div class="row"><button class="btn small blue" data-act="exportlog">⬇️ ייצוא יומן</button><button class="btn small ghost" data-act="clearlog">🗑️ מחיקת יומן</button></div></div>`}
 
 Object.assign(A,{
  parent(){S.back=S.screen;S.gate=false;S.q=[(Math.random()*6+4|0),(Math.random()*6+4|0)];S.pl=40;go('parent')},
@@ -1357,6 +1371,34 @@ function showPrize(i){confetti();if(isRare(i))setTimeout(fireworks,300);
  m.innerHTML=`<div style="max-width:360px;width:100%">${prizeCard(i)}</div><button class="btn" style="max-width:360px;margin-top:14px" data-close="1">יפה! 💖</button>`;
  m.addEventListener('click',e=>{if(e.target===m||e.target.dataset.close)m.remove()});document.body.appendChild(m)}
 function toast(t){const d=document.createElement('div');d.textContent=t;d.style.cssText='position:fixed;top:18px;left:50%;transform:translateX(-50%);background:#5fd68a;color:#fff;font-weight:900;padding:10px 20px;border-radius:99px;box-shadow:0 5px 0 #33a862;z-index:60';document.body.appendChild(d);setTimeout(()=>d.remove(),1200)}
+
+// ---------- סקווישים אינטראקטיביים: אצבע אחת מותחת, שתיים מותחות ומכווצות, ואחרי כל פעולה הם חוזרים לצורה הטבעית ----------
+(()=>{const ptr=new Map();let el=null,svg=null,ret=null,s0=null,g0=null,moved=false,cur='';
+ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+ const pts=()=>[...ptr.values()];
+ const basis=()=>{const p=pts();if(p.length===1)s0={x:p[0].x,y:p[0].y};
+  else if(p.length>1){const[a,b]=p,dx=b.x-a.x,dy=b.y-a.y;g0={d:Math.hypot(dx,dy)||1,a:Math.atan2(dy,dx),mx:(a.x+b.x)/2,my:(a.y+b.y)/2}}};
+ const draw=()=>{const p=pts();if(!p.length)return;
+  if(p.length===1){const dx=p[0].x-s0.x,dy=p[0].y-s0.y,L=Math.hypot(dx,dy),t=Math.atan2(dy,dx),k=1+clamp(L/120,0,1);
+   cur=`translate(${dx*.4}px,${dy*.4}px) rotate(${t}rad) scale(${k},${1/Math.sqrt(k)}) rotate(${-t}rad)`}
+  else{const[a,b]=p,dx=b.x-a.x,dy=b.y-a.y,r=clamp((Math.hypot(dx,dy)||1)/g0.d,.55,2.2);
+   let w=Math.atan2(dy,dx)-g0.a;w=Math.atan2(Math.sin(w),Math.cos(w));w=clamp(w,-1.1,1.1);
+   cur=`translate(${((a.x+b.x)/2-g0.mx)*.5}px,${((a.y+b.y)/2-g0.my)*.5}px) rotate(${g0.a}rad) scale(${r},${1/Math.sqrt(r)}) skewY(${w*.7}rad) rotate(${-g0.a+w*.4}rad)`}
+  svg.style.transform=cur};
+ const back=()=>{if(!svg)return;const f=cur,v=svg;v.style.transform='';
+  ret=v.animate([{transform:f},{transform:'none'}],{duration:900,easing:'cubic-bezier(.2,2.1,.4,1)'});
+  ret.onfinish=()=>{ret=null};el=null;svg=null;cur=''};
+ document.addEventListener('pointerdown',e=>{const t=e.target.closest('[data-squish]');if(!t)return;
+  if(el&&el!==t)return;
+  if(!el){el=t;svg=t.querySelector('svg');if(ret){ret.cancel();ret=null}svg.classList.remove('squish');moved=false}
+  if(ptr.size>=2)return;
+  try{t.setPointerCapture(e.pointerId)}catch(_){}
+  ptr.set(e.pointerId,{x:e.clientX,y:e.clientY});basis();e.preventDefault()});
+ document.addEventListener('pointermove',e=>{if(!ptr.has(e.pointerId))return;
+  const p=ptr.get(e.pointerId);p.x=e.clientX;p.y=e.clientY;moved=true;draw()});
+ const up=e=>{if(!ptr.has(e.pointerId))return;ptr.delete(e.pointerId);
+  if(ptr.size)basis();else{if(moved){const k=ev=>{ev.stopImmediatePropagation();ev.preventDefault()};document.addEventListener('click',k,true);setTimeout(()=>document.removeEventListener('click',k,true),0)}back()}};
+ document.addEventListener('pointerup',up);document.addEventListener('pointercancel',up)})();
 
 document.addEventListener('click',e=>{
  const sy=e.target.closest('[data-say]');if(sy&&!e.target.closest('[data-act="say"]')){say(sy.dataset.say);return}
