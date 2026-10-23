@@ -204,7 +204,7 @@ details>summary{list-style:none}details>summary::-webkit-details-marker{display:
 .atile:disabled{opacity:.5}
 /* מסך הבית: מוצג בדיוק בגובה המסך, בלי גלילה (גדלים ביחידות dvh) */
 #app.fit{position:fixed;inset:0;max-width:520px;margin:0 auto;min-height:0;overflow:hidden;gap:1.3dvh;padding:calc(env(safe-area-inset-top) + 1.2dvh) 16px calc(env(safe-area-inset-bottom) + 1.4dvh);--rs:clamp(84px,29dvh,270px)}
-#app.fit>*{flex:none}#app.fit>.bgfx{position:fixed}#app.fit>.stage,#app.fit>.pcards{flex:1;min-height:0}#app.fit>.phero{flex:none}
+#app.fit>*{flex:none}#app.fit>.bgfx{position:fixed}#app.fit>.stage,#app.fit>.pcards,#app.fit>.gcols{flex:1;min-height:0}#app.fit>.phero{flex:none}
 #app.fit .top{align-items:stretch;height:clamp(36px,5.8dvh,52px)}
 #app.fit .top .btn.small{padding:0 14px;height:100%;font-size:clamp(.9rem,2.4dvh,1.1rem)}
 #app.fit .pill{padding:0 12px;font-size:clamp(.8rem,2.2dvh,1rem)}
@@ -252,6 +252,24 @@ details>summary{list-style:none}details>summary::-webkit-details-marker{display:
 .pcards.many .pgo{display:none}.pcards.many .pav{width:clamp(60px,12dvh,100px);height:clamp(60px,12dvh,100px)}
 @media (max-height:700px){.pcards.few .pname{font-size:1.3rem}.pcards.few .pgo{padding:.3dvh 16px}}
 #app.fit .credit{margin:0;padding:0;font-size:clamp(.72rem,1.9dvh,.9rem)}
+.pips{display:flex;gap:6px;justify-content:center;font-size:clamp(1.3rem,3.6dvh,1.8rem);line-height:1}
+.pip{color:#0000002e;transition:color .3s}.pip.on{color:#ffc400;text-shadow:0 0 10px #ffd35c;animation:pop .5s}
+.ghint{align-self:center;background:#fff;border-radius:999px;padding:.6dvh 16px;font-weight:800;font-size:clamp(.78rem,1.9dvh,.95rem);box-shadow:0 3px 0 #0001;text-align:center}
+.gcols{display:flex;gap:clamp(10px,3vw,16px)}.gcol{flex:1;min-width:0;display:flex;flex-direction:column;gap:clamp(4px,1dvh,10px)}
+.gh{text-align:center;font-weight:900;font-size:clamp(.78rem,1.9dvh,.95rem);opacity:.55;letter-spacing:.04em}
+.gl{flex:1;min-height:0;display:grid;grid-auto-rows:minmax(0,clamp(56px,13dvh,112px));gap:clamp(7px,1.5dvh,14px);align-content:center}
+.m.gm{height:auto;min-height:0;gap:8px;font-size:clamp(1rem,2.8dvh,1.4rem);border-radius:22px;padding:0 10px;transition:transform .12s,box-shadow .12s,background .2s}
+.m.gm.en{background:linear-gradient(160deg,#fff,#e6f3ff);border-color:#cfe8ff;color:#27598a}
+.m.gm.he{background:linear-gradient(160deg,#fff,#fff4cf);border-color:#ffe6a0}
+.gs{font-style:normal;font-size:.75em;opacity:.5}
+.m.gm.sel{border-color:var(--pink);transform:translateY(-3px) scale(1.04);box-shadow:0 7px 0 var(--pink-d),0 0 20px 3px color-mix(in srgb,var(--pink) 55%,transparent);animation:selpulse 1s infinite}
+@keyframes selpulse{50%{transform:translateY(-3px) scale(1.07)}}
+.m.gm.bad{border-color:var(--red);background:#ffecec;color:var(--ink);animation:shake .4s;transform:none;box-shadow:0 5px 0 #0000001a}
+.m.gm.good{background:var(--green)!important;color:#fff!important;border-color:var(--green-d)!important;animation:goodpop .38s}
+@keyframes goodpop{40%{transform:scale(1.16)}}
+.m.gm.done{visibility:visible;background:#dff7e6;color:#2f9f5a;border-color:transparent;box-shadow:none;opacity:.7;pointer-events:none}
+.m.gm.done::after{content:'✓';font-weight:900;margin-inline-start:6px}
+.starrow{font-size:2.4rem;display:flex;gap:6px;justify-content:center}.starrow span{display:inline-block;animation:pop .55s backwards;animation-delay:calc(var(--i)*140ms)}
 .credit{margin-top:18px;padding:12px 0 24px;text-align:center;font-size:1.2rem;font-weight:900;color:var(--pink-d);line-height:1.5}
 
 </style>
@@ -1035,13 +1053,15 @@ V.done=()=>{const r=S.run,p=P();
  <button class="btn" data-act="practice">עוד סיבוב</button><button class="btn ghost" data-act="home">חזרה</button>`};
 
 V.game=()=>{const g=S.game;if(!g)return'';
- if(g.left===0)return`<div class="center" style="margin-top:20px"><div class="bounce" style="display:inline-block">${squish(P().avatar,'lg')}</div>${g.mistakes?`<h1>כמעט! 💪</h1><p class="big">היו ${g.mistakes} טעויות</p><p>משחק בלי אף טעות נותן כוכבים לסקוויש. נסי שוב!</p>`:`<h1>בלי אף טעות! 🎉</h1><p class="big">קיבלת ⭐ ${g.stars}</p>`}</div>
+ if(g.left===0)return`<div class="center" style="margin-top:20px"><div class="bounce" style="display:inline-block">${squish(P().avatar,'lg')}</div>${g.mistakes?`<h1>כמעט! 💪</h1><p class="big">היו ${g.mistakes} טעויות</p><p>משחק בלי אף טעות נותן כוכבים לסקוויש. נסי שוב!</p>`:`<h1>בלי אף טעות! 🎉</h1><div class="starrow">${Array.from({length:g.stars},(_,i)=>`<span style="--i:${i}">⭐</span>`).join('')}</div><p class="big">קיבלת ⭐ ${g.stars}</p>`}</div>
   ${g.prizes.map(i=>prizeCard(i)).join('')}
   <button class="btn blue" data-act="game">${g.mistakes?'נסי שוב':'עוד משחק'}</button><button class="btn ghost" data-act="home">חזרה</button>`;
- const btn=(w,side)=>`<button class="m ${side} ${g.done.includes(w.id)?'done':''} ${g.sel&&g.sel.id===w.id&&g.sel.side===side?'sel':''}" data-act="m" data-id="${w.id}" data-side="${side}">${esc(side==='en'?w.en:w.he)}</button>`;
- return`<div class="top"><button class="btn small ghost" data-act="home">✕</button><h2 class="sp">משחק התאמה</h2><div class="pill">❌ ${g.mistakes}</div></div>
- <div class="center hint">לחצי על מילה באנגלית ואז על התרגום שלה.<br><b>בלי אף טעות = כוכבים לסקוויש! ⭐</b></div>
- <div class="row" style="flex:1"><div class="mcol">${g.en.map(w=>btn(w,'en')).join('')}</div><div class="mcol">${g.he.map(w=>btn(w,'he')).join('')}</div></div>`};
+ const total=g.en.length,nd=g.done.length;
+ const card=(w,side)=>`<button class="m gm ${side} ${g.done.includes(w.id)?'done':''} ${g.sel&&g.sel.id===w.id&&g.sel.side===side?'sel':''}" data-act="m" data-id="${w.id}" data-side="${side}"><span>${esc(side==='en'?w.en:w.he)}</span>${side==='en'?'<i class="gs">🔊</i>':''}</button>`;
+ return`<div class="bgfx" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+ <div class="top"><button class="btn small ghost" data-act="home">✕</button><div class="pips sp">${Array.from({length:total},(_,i)=>`<span class="pip ${i<nd?'on':''}">★</span>`).join('')}</div><div class="pill">❌ ${g.mistakes}</div></div>
+ <div class="ghint">חברי כל מילה לתרגום שלה · בלי טעויות = ⭐</div>
+ <div class="gcols"><div class="gcol"><div class="gh">English</div><div class="gl">${g.en.map(w=>card(w,'en')).join('')}</div></div><div class="gcol"><div class="gh">עברית</div><div class="gl">${g.he.map(w=>card(w,'he')).join('')}</div></div></div>`};
 
 V.look=()=>{const p=P(),cur=p.color||0;
  return`<div class="top"><button class="btn small ghost" data-act="home">→</button><h2 class="sp">האייקון והצבע שלי 🎨</h2></div>
@@ -1114,7 +1134,7 @@ V.lessonEdit=()=>{
 
 // ---------- ציור ----------
 const root=document.getElementById('app');
-function render(keep){applyTheme();root.classList.toggle('fit',S.screen==='home'||S.screen==='profiles');const y=window.scrollY;root.innerHTML=(V[S.screen]||V.profiles)();window.scrollTo(0,keep?y:0);
+function render(keep){applyTheme();root.classList.toggle('fit',S.screen==='home'||S.screen==='profiles'||(S.screen==='game'&&!!S.game&&S.game.left>0));const y=window.scrollY;root.innerHTML=(V[S.screen]||V.profiles)();window.scrollTo(0,keep?y:0);
  if(S.screen==='trace')setTimeout(setupTrace,0);
  if(!keep&&S.screen==='act'&&S.act&&!S.act.finished){const it=S.act.items[S.act.i];if(it&&it.say)setTimeout(()=>say(it.say),250)}
  if(S.screen==='practice'&&S.run&&S.run.i<S.run.q.length&&S.mode==='en2he')setTimeout(()=>say(S.run.q[S.run.i].en),250);}
@@ -1172,7 +1192,7 @@ const A={
   if(!g.sel||g.sel.side===side){g.sel={id,side};render();return}
   if(g.sel.id===id){g.done.push(id);g.left--;g.sel=null;
    if(g.left===0){const p=P();const cnt={};g.wrong.forEach(id=>cnt[id]=(cnt[id]||0)+1);g.en.forEach(w=>logEv({type:'w',src:'match',lab:w.en+' · '+w.he,m:cnt[w.id]||0}));logEv({type:'s',src:'match',title:'משחק התאמה',m:g.mistakes,n:g.en.length});g.wrong.forEach(wid=>{const w=D.words.find(x=>x.id===wid);if(w)mark(p,w,'no')});if(!g.mistakes){for(let i=0;i<STARS_PERFECT;i++)addStar(p,g);g.stars=STARS_PERFECT;confetti();if(g.prizes.some(isRare))setTimeout(fireworks,300)}tick(p);save()}
-   render();
+   document.querySelectorAll(`[data-act="m"][data-id="${id}"]`).forEach(e=>e.classList.add('good'));setTimeout(render,380);
   }else{g.mistakes++;g.wrong.push(g.sel.id,id);const first=document.querySelector(`.m.sel`);el.classList.add('bad');if(first)first.classList.add('bad');g.sel=null;setTimeout(render,450)}
  },
  look(){go('look')},
