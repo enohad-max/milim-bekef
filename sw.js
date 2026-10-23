@@ -1,5 +1,5 @@
 // להעלות את הגרסה בכל שינוי בנכסים, אחרת משתמשים יראו גרסה ישנה
-const CACHE = 'milim-v29';
+const CACHE = 'milim-v30';
 const FILES = ['./', './index.html', './manifest.json', './icon.svg'];
 
 self.addEventListener('install', e => {
