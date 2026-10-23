@@ -271,6 +271,18 @@ details>summary{list-style:none}details>summary::-webkit-details-marker{display:
 .sg2{font-weight:900;font-size:clamp(1.05rem,3dvh,1.4rem);background:linear-gradient(90deg,#ff5d8f,#ff9f43,#7d51d6,#3a86d6,#ff5d8f);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 4s linear infinite}
 .sg2row{display:flex;align-items:center;gap:6px}.hb{font-style:normal;display:inline-block;font-size:clamp(1.1rem,3.1dvh,1.5rem);animation:beat 1.3s infinite}
 @keyframes beat{0%,100%{transform:scale(1)}15%{transform:scale(1.35)}30%{transform:scale(1)}45%{transform:scale(1.25)}}
+.wgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px 12px;padding-top:6px}
+.wcard{font:inherit;color:var(--ink);border:0;border-radius:26px;padding:16px 8px 12px;display:flex;flex-direction:column;align-items:center;gap:8px;position:relative;cursor:pointer;background:linear-gradient(160deg,color-mix(in srgb,var(--w) 32%,#fff),#fff 75%);box-shadow:0 6px 0 var(--wd);transition:transform .08s,box-shadow .08s}
+.wcard:active{transform:translateY(5px);box-shadow:0 1px 0 var(--wd)}
+.wcard.full{box-shadow:0 6px 0 var(--wd),0 0 0 3px #ffd35c}
+.wcard.rarew{background:linear-gradient(135deg,#fff7c9,#ffe0f3,#d8f0ff)}
+.wprev{display:flex;justify-content:center;align-items:center;height:58px}.wprev .sq{width:58px;height:58px;margin-inline:-8px}.wq{font-size:2.4rem;opacity:.45}
+.wname{font-size:1rem;text-align:center;line-height:1.2}
+.wbar{width:80%;height:9px;border-radius:99px;background:#0000001a;overflow:hidden}.wbar i{display:block;height:100%;background:var(--w);border-radius:99px}.wbar.big{width:100%;height:14px}
+.wbadge{position:absolute;top:-9px;inset-inline-start:-3px;z-index:2;white-space:nowrap;background:#fff;color:var(--ink);font-weight:900;font-size:.85rem;border-radius:99px;padding:3px 11px;box-shadow:0 3px 0 #0002,0 0 0 2px var(--w,#ffd35c)}
+.wbadge.full{background:linear-gradient(135deg,#ffe27a,#ffb347);color:#6b4b00}
+.top .wbadge{position:static;box-shadow:0 3px 0 #0001}
+.srow{display:flex;gap:10px;overflow-x:auto;padding:6px 2px 10px;scrollbar-width:none}.srow::-webkit-scrollbar{display:none}.srow .slot{flex:none;width:60px;border-radius:18px}.srow-p{padding:10px 12px}.srow-p h3{font-size:.95rem;margin-bottom:2px}
 .credit{margin-top:18px;padding:12px 0 24px;text-align:center;font-size:1.2rem;font-weight:900;color:var(--pink-d);line-height:1.5}
 
 </style>
@@ -1072,11 +1084,38 @@ V.look=()=>{const p=P(),cur=p.color||0;
  <div class="panel"><h3>האייקון שלי <span class="hint">(${p.coll.length}/${N_SQ} סקווישים)</span></h3><div class="hint">אפשר לבחור רק סקוויש שהרווחת! שחקי משחקים בלי טעויות כדי לקבל עוד.</div>
   <div class="collgrid avg">${p.coll.map(i=>`<div class="slot ${isRare(i)?'rare':''} ${p.avatar===i?'cur':''}" data-act="setav" data-i="${i}">${isRare(i)?'<span class="rtag">✨</span>':''}${squish(i)}</div>`).join('')}</div></div>`};
 
-V.prizes=()=>{const p=P();
- return`<div class="top"><button class="btn small ghost" data-act="home">→</button><h2 class="sp">הסקווישים שלי 🏆</h2><div class="pill">${p.coll.length}/${N_SQ}</div></div>
- <div class="center hint">כל ${spp()} כוכבים = סקוויש חדש, ואז הספירה חוזרת ל-0. הכוכבים מגיעים ממשחק התאמה ותרגילים בלי אף טעות (עד 5), ומכתיבת השם (1). לחצי על סקוויש כדי לשמוע עליו ולבחור אותו כדמות שלך. הסקווישים עם ✨ נדירים במיוחד!</div>
- <div class="collgrid">${[...Array(N_SQ).keys()].map(i=>p.coll.includes(i)?`<div class="slot ${isRare(i)?'rare':''} ${p.avatar===i?'cur':''}" data-act="avatar" data-i="${i}">${isRare(i)?'<span class="rtag">✨</span>':''}${squish(i)}<small>${sqName(i)}</small></div>`:`<div class="slot lock ${isRare(i)?'rare':''}">${isRare(i)?'✨❓':'❓'}</div>`).join('')}</div>`;
-};
+// ---------- עולמות: חלוקת האוסף לקבוצות נושאיות. סקווישים חדשים מוסיפים בסוף הרשימה ומשייכים לעולם כאן (בלי מיגרציה) ----------
+const WORLDS=[
+ {id:'blob',n:'הבלובים',ic:'🫧',c:'#ff7eb6',d:'#e0558f',l:[[0,23]]},
+ {id:'pets',n:'חיות בית וחווה',ic:'🐶',c:'#ffb347',d:'#d97a1f',l:[24,29,32,33,40,41,44,[55,57],72,74,75,[100,102],116,118,119,125,126,128,129]},
+ {id:'forest',n:'חיות היער',ic:'🌲',c:'#5fd68a',d:'#33a862',l:[25,26,28,30,31,42,[45,49],[64,70],117,120,124,127]},
+ {id:'safari',n:'ספארי וג׳ונגל',ic:'🦁',c:'#ffd35c',d:'#e0a920',l:[43,[58,63],71,73,[103,107],109,110]},
+ {id:'sea',n:'ים וקרח',ic:'🌊',c:'#5aaeff',d:'#3a86d6',l:[27,[50,54],88,108,[111,115],[121,123],153]},
+ {id:'food',n:'ממתקים ואוכל',ic:'🍕',c:'#ff8a8a',d:'#e05a5a',l:[[76,80],89,[130,151]]},
+ {id:'nature',n:'טבע ומזג אוויר',ic:'🌸',c:'#b88cff',d:'#8f63e0',l:[[81,87],152,[154,163]]},
+ {id:'things',n:'חפצים ודמויות',ic:'🎈',c:'#35cfc0',d:'#1f9f93',l:[[164,183]]},
+ {id:'rare',n:'הנדירים',ic:'💎',c:'#ffc400',d:'#d99a00',rare:1}];
+const wExpand=a=>a.flatMap(x=>Array.isArray(x)?Array.from({length:x[1]-x[0]+1},(_,k)=>x[0]+k):[x]);
+WORLDS.forEach(w=>{w.idx=w.rare?[...Array(N_SQ).keys()].filter(isRare):wExpand(w.l)});
+const wlist=()=>{const used=new Set(WORLDS.flatMap(w=>w.idx)),rest=[...Array(N_SQ).keys()].filter(i=>!used.has(i));
+ return rest.length?[...WORLDS,{id:'more',n:'עוד הפתעות',ic:'✨',c:'#a77bff',d:'#7d51d6',idx:rest}]:WORLDS};
+const worldStat=(w,p)=>{const own=w.idx.filter(i=>p.coll.includes(i));return{own,n:own.length,t:w.idx.length}};
+const wBadge=(n,t)=>`<span class="wbadge ${n===t?'full':''}">${n===t?'✓':'★'} ${n}/${t}</span>`;
+const sqSlot=(i,p,name)=>`<div class="slot ${isRare(i)?'rare':''} ${p.avatar===i?'cur':''}" data-act="avatar" data-i="${i}">${isRare(i)?'<span class="rtag">✨</span>':''}${squish(i)}${name?`<small>${sqName(i)}</small>`:''}</div>`;
+V.prizes=()=>{const p=P(),ws=wlist(),w=S.world&&ws.find(x=>x.id===S.world);
+ if(w)return V.world(w,p);
+ const recent=p.coll.slice(-8).reverse(),fav=(p.fav||[]).filter(i=>p.coll.includes(i));
+ const row=(t,a)=>a.length?`<div class="panel srow-p"><h3>${t}</h3><div class="srow">${a.map(i=>sqSlot(i,p)).join('')}</div></div>`:'';
+ return`<div class="top"><button class="btn small ghost" data-act="pback">→</button><h2 class="sp">הסקווישים שלי 🏆</h2><div class="pill">${p.coll.length}/${N_SQ}</div></div>
+ <div class="hint center">כל ${spp()} ⭐ = סקוויש חדש. בחרי עולם לגלות 👇</div>
+ ${row('🆕 החדשים',recent)}${row('💖 המועדפים',fav)}
+ <div class="wgrid">${ws.map(wl=>{const{own,n,t}=worldStat(wl,p),pv=own.slice(-3);
+  return`<button class="wcard ${n===t?'full':''} ${wl.rare?'rarew':''}" style="--w:${wl.c};--wd:${wl.d}" data-act="world" data-w="${wl.id}">${wBadge(n,t)}<span class="wprev">${pv.length?pv.map(i=>squish(i)).join(''):'<span class="wq">❓</span>'}</span><b class="wname">${wl.ic} ${wl.n}</b><span class="wbar"><i style="width:${Math.round(n/t*100)}%"></i></span></button>`}).join('')}</div>`};
+V.world=(w,p)=>{const{own,n,t}=worldStat(w,p),shown=w.idx.filter(i=>!p.coll.includes(i)).slice(0,2);
+ return`<div class="top"><button class="btn small ghost" data-act="pback">→</button><h2 class="sp">${w.ic} ${w.n}</h2>${wBadge(n,t)}</div>
+ <div class="wbar big" style="--w:${w.c};--wd:${w.d}"><i style="width:${Math.round(n/t*100)}%"></i></div>
+ ${n===t?'<div class="panel center rare-sub">🏅 השלמת את כל העולם!</div>':`<div class="hint center">${n?`עוד ${t-n} לגלות`:'עוד לא גילית כאן סקווישים'}</div>`}
+ <div class="collgrid">${own.map(i=>sqSlot(i,p,1)).join('')}${shown.map(i=>`<div class="slot lock ${isRare(i)?'rare':''}">${isRare(i)?'✨❓':'❓'}</div>`).join('')}</div>`};
 
 const WORDROW=w=>`<div class="wedit"><input dir="ltr" data-wid="${w.id}" data-f="en" value="${esc(w.en)}" autocapitalize="off" style="text-align:left"><input data-wid="${w.id}" data-f="he" value="${esc(w.he)}"><button class="x" data-act="delword" data-id="${w.id}" title="מחיקה">🗑️</button></div>`;
 
@@ -1180,7 +1219,7 @@ const A={
  home(){S.run=null;S.game=null;go('home')},
  pet(el){const s=el.querySelector('svg');s.classList.remove('squish');void s.getBoundingClientRect();s.classList.add('squish')},
  mode(el){S.mode=el.dataset.v;render()},
- practice:startPractice,game:startGame,prizes(){go('prizes')},
+ practice:startPractice,game:startGame,prizes(){S.world=null;go('prizes')},
  say(el,e){e.stopPropagation();say(el.dataset.t)},
  flip(){const c=document.getElementById('card');if(c.classList.contains('on'))return;c.classList.add('on');document.getElementById('ans').style.visibility='visible';
    if(S.mode==='he2en')say(S.run.q[S.run.i].en)},
@@ -1207,11 +1246,14 @@ const A={
    document.querySelectorAll(`[data-act="m"][data-id="${id}"]`).forEach(e=>e.classList.add('good'));setTimeout(render,380);
   }else{g.mistakes++;g.wrong.push(g.sel.id,id);const first=document.querySelector(`.m.sel`);el.classList.add('bad');if(first)first.classList.add('bad');g.sel=null;setTimeout(render,450)}
  },
+ world(el){S.world=el.dataset.w;render()},
+ pback(){if(S.world){S.world=null;render()}else go('home')},
+ fav(el){const p=P(),i=+el.dataset.i;p.fav=p.fav||[];const k=p.fav.indexOf(i);if(k<0)p.fav.push(i);else p.fav.splice(k,1);save();el.textContent=k<0?'💖 במועדפים':'🤍 הוספה למועדפים';render(true)},
  look(){go('look')},
  setav(el){const p=P(),i=+el.dataset.i;if(!p.coll.includes(i))return;p.avatar=i;save();render(true)},
  setcolor(el){P().color=+el.dataset.i;save();render(true)},
  avatar(el){const i=+el.dataset.i;
-  modal(`${isRare(i)?'<div class="rare-title">💎 נדיר 💎</div>':''}<span data-squish>${squish(i,'lg')}</span><div class="sqhint">מתחי אותי באצבע, או בשתיים 🤏</div><div class="big">${sqName(i)}</div>${loreHtml(i)}<br><button class="btn" data-act="pickav" data-i="${i}">💖 בחרי אותו כדמות שלי</button><br><button class="btn ghost" data-close="1">סגירה</button>`)},
+  modal(`${isRare(i)?'<div class="rare-title">💎 נדיר 💎</div>':''}<span data-squish>${squish(i,'lg')}</span><div class="sqhint">מתחי אותי באצבע, או בשתיים 🤏</div><div class="big">${sqName(i)}</div>${loreHtml(i)}<br><button class="btn" data-act="pickav" data-i="${i}">💖 בחרי אותו כדמות שלי</button><br><button class="btn ghost" data-act="fav" data-i="${i}">${(P().fav||[]).includes(i)?'💖 במועדפים':'🤍 הוספה למועדפים'}</button><br><button class="btn ghost" data-close="1">סגירה</button>`)},
  pickav(el){const p=P(),i=+el.dataset.i;if(p.coll.includes(i))p.avatar=i;save();const m=document.querySelector('.modal');if(m)m.remove();render(true)},
  addword(){const en=document.getElementById('ne').value.trim(),he=document.getElementById('nh').value.trim();
   if(!en||!he)return alert('צריך גם אנגלית וגם עברית');
