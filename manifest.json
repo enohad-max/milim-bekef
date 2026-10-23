@@ -1,0 +1,14 @@
+{
+  "name": "מילים בכיף",
+  "short_name": "מילים",
+  "lang": "he",
+  "dir": "rtl",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffe4f1",
+  "theme_color": "#ffd6ea",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

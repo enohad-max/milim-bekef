@@ -1,0 +1,1386 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#ffd6ea">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="מילים">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.svg">
+<title>מילים בכיף</title>
+<style>
+:root{--bg:linear-gradient(160deg,#ffe4f1,#e3f1ff 60%,#e8ffe9);--pink:#ff7eb6;--pink-d:#e0558f;--blue:#7ec8ff;--blue-d:#4fa3e0;--green:#5fd68a;--green-d:#33a862;--yellow:#ffd35c;--yellow-d:#e0a920;--red:#ff8a8a;--red-d:#e05a5a;--ink:#4a3b5c;--card:#fff}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{font-family:"Segoe UI",system-ui,Arial,sans-serif;color:var(--ink);background:var(--bg);background-attachment:fixed;overscroll-behavior:none;user-select:none}
+#app{max-width:520px;margin:0 auto;min-height:100%;padding:max(14px,env(safe-area-inset-top)) 16px max(20px,env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:14px}
+h1,h2,h3{margin:0}
+.top{display:flex;align-items:center;gap:10px}
+.top .sp{flex:1}
+.pill{background:#fff;border-radius:999px;padding:6px 14px;font-weight:700;box-shadow:0 3px 0 #0001;display:flex;align-items:center;gap:6px}
+.btn{font:inherit;font-weight:800;font-size:1.15rem;color:#fff;border:0;border-radius:26px;padding:14px 20px;cursor:pointer;background:var(--pink);box-shadow:0 6px 0 var(--pink-d);transition:transform .08s,box-shadow .08s;display:flex;align-items:center;justify-content:center;gap:8px;width:100%}
+.btn:active{transform:translateY(5px) scale(1.03,.96);box-shadow:0 1px 0 var(--pink-d)}
+.btn.blue{background:var(--blue);box-shadow:0 6px 0 var(--blue-d)}.btn.blue:active{box-shadow:0 1px 0 var(--blue-d)}
+.btn.green{background:var(--green);box-shadow:0 6px 0 var(--green-d)}.btn.green:active{box-shadow:0 1px 0 var(--green-d)}
+.btn.yellow{background:var(--yellow);color:#6b4b00;box-shadow:0 6px 0 var(--yellow-d)}.btn.yellow:active{box-shadow:0 1px 0 var(--yellow-d)}
+.btn.red{background:var(--red);box-shadow:0 6px 0 var(--red-d)}.btn.red:active{box-shadow:0 1px 0 var(--red-d)}
+.btn.small{width:auto;font-size:1rem;padding:8px 14px;border-radius:18px;box-shadow:0 4px 0 var(--pink-d)}
+.btn.ghost{background:#fff;color:var(--ink);box-shadow:0 5px 0 #0002}
+.panel{background:#fff;border-radius:28px;padding:16px;box-shadow:0 6px 0 #0000001a}
+.row{display:flex;gap:10px}.row>*{flex:1}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.profile{display:flex;flex-direction:column;align-items:center;gap:6px;background:#fff;border-radius:28px;padding:16px 8px;font-weight:800;font-size:1.2rem;cursor:pointer;box-shadow:0 6px 0 #0000001a;border:0;font-family:inherit;color:var(--ink)}
+.profile:active{transform:scale(.96,.92)}
+.sq{width:96px;height:96px;display:block}
+.sq.sm{width:64px;height:64px}.sq.lg{width:150px;height:150px}
+.squish{animation:squish .45s}
+@keyframes squish{0%{transform:scale(1)}30%{transform:scale(1.3,.7)}60%{transform:scale(.85,1.2)}100%{transform:scale(1)}}
+.bounce{animation:bounce 2.4s infinite ease-in-out}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.center{text-align:center}
+.bar{height:16px;border-radius:99px;background:#0000001a;overflow:hidden}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--yellow),var(--green));border-radius:99px;transition:width .4s}
+.scene{perspective:1000px;flex:1;min-height:300px;display:flex}
+.card{position:relative;width:100%;transition:transform .55s;transform-style:preserve-3d;cursor:pointer}
+.card.on{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:36px;background:#fff;box-shadow:0 8px 0 #0000001f;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px;text-align:center}
+.face.back{transform:rotateY(180deg);background:#fff8d6}
+.word{font-size:2.6rem;font-weight:900;word-break:break-word}
+.word.en{direction:ltr}
+.hint{opacity:.6;font-size:.95rem}
+.lesson{font-size:.85rem;background:#ffe4f1;border-radius:99px;padding:3px 12px}
+.answers{display:flex;gap:10px}.answers .btn{font-size:1rem;padding:14px 6px;flex-direction:column;gap:2px}
+.speak{background:var(--blue);border:0;border-radius:50%;width:54px;height:54px;font-size:1.6rem;box-shadow:0 5px 0 var(--blue-d);cursor:pointer}
+.speak:active{transform:translateY(4px);box-shadow:0 1px 0 var(--blue-d)}
+.mcol{display:flex;flex-direction:column;gap:10px;flex:1}
+.m{font:inherit;font-weight:800;font-size:1.2rem;color:var(--ink);background:#fff;border:3px solid transparent;border-radius:20px;padding:14px 8px;box-shadow:0 5px 0 #0000001a;cursor:pointer;min-height:58px}
+.m.en{direction:ltr}.m.sel{border-color:var(--pink);background:#fff0f7}.m.done{background:var(--green);color:#fff;visibility:hidden}.m.bad{animation:shake .4s;border-color:var(--red)}
+@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+select,input,textarea{font:inherit;color:var(--ink);border:3px solid #f0d6e6;border-radius:16px;padding:10px 12px;background:#fff;width:100%;user-select:text}
+textarea{min-height:90px;direction:ltr;text-align:left}
+label{font-weight:700;font-size:.9rem;display:block;margin:8px 0 4px}
+.seg{display:flex;background:#0000000f;border-radius:20px;padding:4px;gap:4px}
+.seg button{flex:1;font:inherit;font-weight:800;border:0;border-radius:16px;padding:10px 4px;background:transparent;color:var(--ink);cursor:pointer}
+.seg button.on{background:#fff;box-shadow:0 3px 0 #0002}
+.wl{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px dashed #0002}
+.wl b{direction:ltr}.wl span{flex:1}.wl .x{border:0;background:#ffe0e0;border-radius:12px;padding:6px 10px;cursor:pointer;font-size:1rem}
+.collgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.slot{background:#fff;border-radius:22px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 0 #0000001a;cursor:pointer;position:relative}
+.slot.lock{opacity:.5;font-size:2rem;cursor:default;filter:grayscale(1)}
+.slot.cur{outline:4px solid var(--yellow)}
+.slot small{position:absolute;bottom:3px;left:0;right:0;text-align:center;font-size:.66rem;font-weight:700;opacity:.75}
+.slot .sq{width:68%;height:68%;margin-bottom:10px}
+.slot.rare{background:linear-gradient(135deg,#fff7c9,#ffe0f3,#d8f0ff);box-shadow:0 0 0 3px #ffd35c,0 4px 0 #0000001a}
+.slot.rare.lock{opacity:.85;filter:none}
+.rtag{position:absolute;top:2px;right:5px;font-size:.85rem}
+.lore{margin-top:8px;font-size:1.05rem;font-weight:600;line-height:1.5;color:var(--ink)}
+.lore div+div{margin-top:4px}
+.pop{animation:pop .6s cubic-bezier(.2,1.4,.4,1)}
+@keyframes pop{0%{transform:scale(.4);opacity:0}100%{transform:scale(1);opacity:1}}
+.rarebox{position:relative;overflow:hidden;background:#fff7c9;box-shadow:0 0 0 5px #ffd35c,0 0 30px 6px #ffd35caa,0 6px 0 #0000001a;animation:pop .7s cubic-bezier(.2,1.4,.4,1),pulse 2s 1s infinite}
+.rarebox>*:not(.rays){position:relative;z-index:1}
+.rarebox .rays{position:absolute!important;inset:-60%;z-index:0;background:repeating-conic-gradient(#fff3a8 0 12deg,#ffe0f3 12deg 24deg,#d8f0ff 24deg 36deg);opacity:.85;animation:spin 14s linear infinite}
+.rarebox .sq.lg{width:190px;height:190px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{50%{box-shadow:0 0 0 5px #ffd35c,0 0 46px 14px #ffb347cc,0 6px 0 #0000001a}}
+.rare-title{font-size:1.8rem;font-weight:900;background:linear-gradient(90deg,#ff5d8f,#ff9f43,#e0a920,#33a862,#3a86d6,#7d51d6,#ff5d8f);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 3s linear infinite}
+@keyframes shine{to{background-position:200% 0}}
+.rare-sub{font-weight:800;color:#b07a00;margin:2px 0 6px}
+.slot.rare svg,.rarebox svg{animation:glow 2s infinite ease-in-out}
+@keyframes glow{50%{filter:drop-shadow(0 0 7px #ffd35c)}}
+.modal{position:fixed;inset:0;background:#4a3b5c99;display:flex;align-items:center;justify-content:center;padding:20px;z-index:50}
+.modal .panel{max-width:360px;width:100%}
+.confetti{position:fixed;top:-30px;font-size:1.6rem;z-index:100;pointer-events:none;animation:fall 2.6s linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg);opacity:.9}}
+.big{font-size:1.5rem;font-weight:900}
+.hubgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.optgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.opt{font:inherit;font-weight:800;font-size:1.5rem;color:var(--ink);background:#fff;border:3px solid transparent;border-radius:22px;padding:16px 8px;box-shadow:0 5px 0 #0000001a;cursor:pointer;min-height:68px}
+.opt:active{transform:translateY(3px)}
+.opt.en{direction:ltr}.opt.good{background:var(--green);color:#fff}.opt.bad{animation:shake .4s;border-color:var(--red);background:#ffecec}
+.lt{font-family:Verdana,"DejaVu Sans",sans-serif}.opt.lt{font-size:2rem}.m.lt{font-size:1.8rem}
+.pbig{font-size:5rem;line-height:1.1}.mp{font-size:2rem}
+.dot{display:inline-block;width:1em;height:1em;border-radius:50%;border:3px solid #0003;vertical-align:middle}
+.word.sent{font-size:1.9rem;margin-bottom:6px}.blank{color:var(--pink-d)}
+.slots{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:14px 0 4px}
+.tslot{min-width:50px;height:60px;border-bottom:5px dashed #0003;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:900;padding:0 6px}
+.tslot.full{border-bottom:5px solid var(--green);color:var(--green-d)}
+.slots.wide .tslot{font-size:1.3rem;min-width:56px}
+.tiles{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:6px}
+.tile{font:inherit;font-weight:900;font-size:1.9rem;min-width:58px;height:62px;padding:0 14px;border-radius:18px;border:0;background:var(--blue);color:#fff;box-shadow:0 5px 0 var(--blue-d);cursor:pointer}
+.tiles.wide .tile{font-size:1.3rem}
+.tile:active{transform:translateY(3px)}.tile.gone{visibility:hidden}
+.tile.bad{animation:shake .4s;background:var(--red);box-shadow:0 5px 0 var(--red-d)}
+.exam{background:#fff8d6;text-align:center}
+[data-say]{cursor:pointer}
+.statgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center}
+.statgrid b{display:block;font-size:1.5rem}.statgrid span{font-size:.8rem;opacity:.7}
+.skrow{margin-bottom:10px}.sktop{display:flex;justify-content:space-between;gap:8px;font-weight:700;margin-bottom:4px;flex-wrap:wrap}
+.meter{height:12px;background:#0001;border-radius:99px;overflow:hidden}.meter i{display:block;height:100%;border-radius:99px}
+.wrow{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px dashed #0002}.wl2{font-weight:800}
+.logrow{padding:7px 0;border-bottom:1px dashed #0002;font-size:.95rem}.logrow span{opacity:.85}
+.has-gift{position:relative;overflow:visible}
+.has-gift::after{content:'🎁';position:absolute;top:-12px;left:-9px;width:1.8rem;height:1.8rem;font-size:1.05rem;line-height:1;display:flex;align-items:center;justify-content:center;background:#fff;border-radius:50%;box-shadow:0 2px 0 #0003,0 0 0 2px #ffd35c;z-index:2;animation:wob 2.4s infinite ease-in-out;pointer-events:none}
+.btn.small.has-gift{padding-left:22px;padding-right:22px}
+.profile.has-gift{padding-top:22px}
+@keyframes wob{0%,100%{transform:rotate(-10deg)}50%{transform:rotate(10deg) scale(1.08)}}
+.chips{gap:14px 12px}
+.emo.txt{font-size:.38em;font-weight:900;display:inline-block;line-height:1.3;color:var(--ink)}
+.mp .emo.txt{font-size:.55em}
+.hw{vertical-align:-.4em;overflow:visible}
+.word .hw{margin:0 1px}
+.swatches{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:8px}
+.swatch{width:52px;height:52px;border-radius:50%;border:4px solid #fff;cursor:pointer}
+.swatch.on{outline:4px solid var(--ink)}
+.swatch:active{transform:translateY(3px) scale(.95)}
+.avg{grid-template-columns:repeat(4,1fr);margin-top:8px}
+.avg .slot .sq{width:80%;height:80%;margin:0}
+.lrow{display:flex;align-items:center;gap:10px;background:#fff0f7;border-radius:20px;padding:12px 14px;margin-bottom:8px;cursor:pointer}
+.lrow:active{transform:scale(.98)}.lrow .sp{flex:1}.lrow .chev{font-size:1.6rem;font-weight:900;opacity:.5}
+.wedit{display:flex;gap:6px;align-items:center;margin-bottom:8px}.wedit input{padding:8px 10px;min-width:0;flex:1}
+.x{border:0;background:#ffe0e0;border-radius:12px;padding:8px 10px;cursor:pointer;font-size:1rem}
+details>summary{list-style:none}details>summary::-webkit-details-marker{display:none}
+.credit{margin-top:18px;padding:12px 0 24px;text-align:center;font-size:1.2rem;font-weight:900;color:var(--pink-d);line-height:1.5}
+
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+'use strict';
+// ---------- נתונים ----------
+const KEY='engapp:v1';
+const DAYS=[0,1,2,4,7];            // מרווחי חזרה בימים לפי "קופסה"
+const PER_SESSION=10, STARS_PERFECT=5, N_BASE=24;
+const spp=()=>Math.max(1,Math.min(100,+(D.settings&&D.settings.spp)||10));   // כוכבים לסקוויש (ברירת מחדל 10)
+let nid=Date.now();
+const uid=()=>'x'+(nid++).toString(36);
+function fresh(){return{profiles:[newProfile('אגם',0),newProfile('שיר',0)],words:[],settings:{goal:10}}}
+function newProfile(name,avatar=0){return{id:uid(),name,avatar,color:0,stars:0,coll:[0],streak:0,last:'',day:'',dayCount:0,prog:{}}}
+function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.profiles&&d.words)return d}catch(e){}return fresh()}
+let D=load();
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){}};
+const save0=save;
+// שיעורים מובנים: נוספים פעם אחת בלבד לכל מכשיר (אפשר למחוק אותם בהגדרות)
+const PRESETS=[{lesson:'12.10.26',words:`
+zero|אפס (0)
+one|אחד (1)
+two|שניים (2)
+three|שלוש (3)
+four|ארבע (4)
+five|חמש (5)
+six|שש (6)
+seven|שבע (7)
+eight|שמונה (8)
+nine|תשע (9)
+ten|עשר (10)
+red|אדום
+blue|כחול
+yellow|צהוב
+green|ירוק
+orange|כתום
+purple|סגול
+pink|ורוד
+brown|חום
+black|שחור
+white|לבן
+wash my face|לשטוף את הפנים
+get dressed|להתלבש
+brush my teeth|לצחצח שיניים
+comb|מסרק / להסתרק
+go to school|ללכת לבית הספר
+clap your hands|למחוא כפיים
+fly|לעוף
+jump|לקפוץ
+run|לרוץ
+sleep|לישון
+sit|לשבת
+stand up|לעמוד
+chair|כיסא
+desk|שולחן
+clock|שעון
+lunch box|קופסת אוכל
+pencil case|קלמר
+pencil|עיפרון
+glue|דבק
+scissors|מספריים
+eraser|מחק
+crayon|צבעוני
+bag|תיק
+book|ספר
+father|אבא
+mother|אמא
+sister|אחות
+brother|אח
+baby|תינוק
+grandma|סבתא
+grandpa|סבא
+teacher|מורה
+pupils|תלמידים
+hello|שלום
+What's your name?|מה שמך?
+My name is...|קוראים לי...
+happy|שמח
+sad|עצוב
+angry|כועס
+surprised|מופתע`},{lesson:'אגם מבחן',owner:'אגם',words:`
+pen|עט
+rubber|מחק
+ruler|סרגל
+notebook|מחברת
+desk|שולחן
+chair|כיסא
+pencil case|קלמר
+crayon|צבעוני
+sharpener|מחדד
+pencil|עיפרון
+board|לוח
+scissors|מספריים
+school bag|תיק בית ספר
+bag|תיק
+book|ספר
+glue|דבק
+butterfly|פרפר
+ladybug|פרת משה רבנו
+bumble bee|דבורה
+happy|שמח
+scared|מפוחד
+sleepy|ישנוני
+nap|תנומה
+red|אדום
+orange|כתום
+yellow|צהוב
+blue|כחול
+purple|סגול
+pink|ורוד
+brown|חום
+gray|אפור
+frog|צפרדע
+apple|תפוח
+carrot|גזר
+lemon|לימון
+fish|דג
+flower|פרח
+flamingo|פלמינגו
+leg|רגל
+bed|מיטה
+send|לשלוח
+jet|מטוס סילון
+cut|לחתוך
+sit|לשבת
+rest|לנוח
+help|לעזור
+big|גדול
+small|קטן
+sad|עצוב
+mad|כועס
+long|ארוך
+tall|גבוה
+fast|מהיר
+soft|רך
+dog|כלב
+six|שש
+bus|אוטובוס
+sun|שמש
+she has|יש לה
+bat|עטלף
+nose|אף
+lips|שפתיים
+hand|יד
+rabbit|ארנב
+dress|שמלה
+skirt|חצאית
+hat|כובע
+pants|מכנסיים
+shoes|נעליים
+boots|מגפיים
+shorts|מכנסיים קצרים
+coat|מעיל
+mouth|פה
+ear|אוזן
+eye|עין
+head|ראש
+knee|ברך
+finger|אצבע
+toe|בוהן
+foot|כף רגל
+lion|אריה
+bird|ציפור
+duck|ברווז
+horse|סוס
+cow|פרה`}];
+if(!D.avatarFix){D.profiles.forEach(p=>{if(!p.coll.length)p.avatar=7});D.avatarFix=1;save0();}
+if(!D.v3){D.profiles.forEach(p=>{p.total=p.stars||0;p.stars=(p.stars||0)%spp()});D.v3=1;save0();}
+if(!D.v2){D.profiles.forEach(p=>{if(!p.coll.includes(0))p.coll.unshift(0);if(!p.coll.includes(p.avatar))p.avatar=0});D.v2=1;save0();}
+D.settings=D.settings||{goal:10};
+if(D.settings.exam===undefined)D.settings.exam={date:'2026-10-12',note:'חומר לחזרה: חוברת התכלת וספר Jet2 הירוק, עמ׳ 8-24'};
+D.profiles.forEach(p=>{if(p.en===undefined)p.en=p.name==='אגם'?'Agam':p.name==='שיר'?'Shir':''});
+save0();
+D.presets=D.presets||[];
+PRESETS.forEach(ps=>{if(D.presets.includes(ps.lesson))return;
+ ps.words.trim().split('\n').forEach(l=>{const[en,he]=l.split('|');D.words.push({id:uid(),en,he,lesson:ps.lesson,owner:ps.owner?((D.profiles.find(p=>p.name===ps.owner)||{}).id||''):''})});
+ D.presets.push(ps.lesson);save0();});
+
+const S={screen:'profiles',pid:null,mode:'en2he',lesson:'',run:null,game:null,gate:false};
+const P=()=>D.profiles.find(p=>p.id===S.pid);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const today=()=>new Date().toLocaleDateString('en-CA');
+const yesterday=()=>new Date(Date.now()-864e5).toLocaleDateString('en-CA');
+const vis=(w,p)=>!w.owner||w.owner===p.id;   // owner ריק = משותף לכולן
+const lessons=()=>{const p=P();return p?[...new Set(D.words.filter(w=>vis(w,p)).map(w=>w.lesson).filter(Boolean))]:[]};
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+
+// ---------- ערכות צבע ----------
+const THEMES=[
+ {n:'ורוד',a:'#ff7eb6',d:'#e0558f',bg:'linear-gradient(160deg,#ffe4f1,#e3f1ff 60%,#e8ffe9)'},
+ {n:'כחול',a:'#5aaeff',d:'#3a86d6',bg:'linear-gradient(160deg,#e0f0ff,#efe6ff 60%,#e6fff6)'},
+ {n:'ירוק',a:'#4fcf7f',d:'#2f9f5a',bg:'linear-gradient(160deg,#e6ffe9,#e0f6ff 60%,#fff7d6)'},
+ {n:'סגול',a:'#a77bff',d:'#7d51d6',bg:'linear-gradient(160deg,#efe6ff,#ffe4f4 60%,#e0f0ff)'},
+ {n:'כתום',a:'#ffa04d',d:'#d97a1f',bg:'linear-gradient(160deg,#fff0dc,#ffe4ec 60%,#fffbd6)'},
+ {n:'טורקיז',a:'#35cfc0',d:'#1f9f93',bg:'linear-gradient(160deg,#dcfaf6,#e6f0ff 60%,#fff0f6)'},
+ {n:'אדום',a:'#ff6b6b',d:'#d94545',bg:'linear-gradient(160deg,#ffe3e3,#fff0dc 60%,#ffe4f4)'}];
+const th=p=>THEMES[(p&&p.color)||0]||THEMES[0];
+function applyTheme(){const p=(S.pid&&!['profiles','settings'].includes(S.screen))?P():null,t=th(p),r=document.documentElement.style;
+ r.setProperty('--pink',t.a);r.setProperty('--pink-d',t.d);r.setProperty('--bg',t.bg)}
+
+// ---------- סקווישים (SVG) ----------
+const COL=['#ff9ec7','#9ad8ff','#ffe27a','#a6f0b4','#d3b4ff','#ffb88a','#8ef0e0','#ff9a9a','#c3e88d','#f7a8f0','#aab8ff','#ffd1a6'];
+const SHAPES=[
+ '<ellipse cx="50" cy="56" rx="38" ry="32" fill="C"/>',
+ '<rect x="14" y="22" width="72" height="64" rx="26" fill="C"/>',
+ '<path d="M12 72Q10 30 50 28Q90 30 88 72Q88 88 50 88Q12 88 12 72Z" fill="C"/>',
+ '<circle cx="50" cy="54" r="36" fill="C"/>',
+ '<path d="M14 60Q14 26 50 26Q86 26 86 58Q86 84 50 84Q14 84 14 60Z" fill="C"/>'];
+const NAMES=['בלובי','פלופי','מושי','גולי','טופי','פיפי'];
+// ---------- חיות (סקווישים מיוחדים) ----------
+const K='#4a3b5c';
+const eyes=(y=54,dx=15,r=5.5)=>`<circle cx="${50-dx}" cy="${y}" r="${r}" fill="${K}"/><circle cx="${50+dx}" cy="${y}" r="${r}" fill="${K}"/><circle cx="${52-dx}" cy="${y-2}" r="2" fill="#fff"/><circle cx="${52+dx}" cy="${y-2}" r="2" fill="#fff"/>`;
+const smile=(y=68,w=7)=>`<path d="M${50-w} ${y}Q50 ${y+9} ${50+w} ${y}" stroke="${K}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`;
+const cheeks=(y=64,dx=26)=>`<circle cx="${50-dx}" cy="${y}" r="5.5" fill="#ff7eb6" opacity=".35"/><circle cx="${50+dx}" cy="${y}" r="5.5" fill="#ff7eb6" opacity=".35"/>`;
+const body=(c,x='')=>`<ellipse cx="50" cy="58" rx="37" ry="31" fill="${c}" ${x}/>`;
+const shine='<ellipse cx="34" cy="42" rx="11" ry="5.5" fill="#fff" opacity=".4" transform="rotate(-20 34 42)"/>';
+const spark=(x,y,s=1)=>`<path d="M${x} ${y-7*s}l${2*s} ${5*s} ${5*s} ${2*s}-${5*s} ${2*s}-${2*s} ${5*s}-${2*s}-${5*s}-${5*s}-${2*s} ${5*s}-${2*s}z" fill="#ffd35c" stroke="#f5b800" stroke-width=".8"/>`;
+const starPts=(()=>{let p=[];for(let k=0;k<10;k++){const a=(-90+36*k)*Math.PI/180,r=k%2?21:46;p.push((50+r*Math.cos(a)).toFixed(1)+','+(54+r*Math.sin(a)).toFixed(1))}return p.join(' ')})();
+const ANIM=[
+ {n:'ארנבון',s:`<ellipse cx="33" cy="20" rx="9" ry="22" fill="#f4e4ff"/><ellipse cx="33" cy="22" rx="4.5" ry="15" fill="#ffb3cf"/><ellipse cx="67" cy="20" rx="9" ry="22" fill="#f4e4ff"/><ellipse cx="67" cy="22" rx="4.5" ry="15" fill="#ffb3cf"/>${body('#f4e4ff')}${shine}${cheeks()}${eyes(56)}<ellipse cx="50" cy="63" rx="3.5" ry="2.6" fill="#ff7eb6"/>${smile(66,6)}`},
+ {n:'דובי',s:`<circle cx="22" cy="28" r="12" fill="#c98f5a"/><circle cx="22" cy="28" r="6" fill="#f2d3ae"/><circle cx="78" cy="28" r="12" fill="#c98f5a"/><circle cx="78" cy="28" r="6" fill="#f2d3ae"/>${body('#c98f5a')}${shine}<ellipse cx="50" cy="66" rx="15" ry="11" fill="#f2d3ae"/>${eyes(52,17)}<ellipse cx="50" cy="62" rx="5.5" ry="4" fill="${K}"/><path d="M50 65V69M44 70Q50 75 56 70" stroke="${K}" stroke-width="3" fill="none" stroke-linecap="round"/>`},
+ {n:'פנדה',s:`<circle cx="22" cy="30" r="12" fill="${K}"/><circle cx="78" cy="30" r="12" fill="${K}"/>${body('#fff','stroke="#e0d6e8" stroke-width="2"')}<ellipse cx="35" cy="54" rx="9" ry="12" fill="${K}" transform="rotate(20 35 54)"/><ellipse cx="65" cy="54" rx="9" ry="12" fill="${K}" transform="rotate(-20 65 54)"/><circle cx="35" cy="54" r="4" fill="#fff"/><circle cx="65" cy="54" r="4" fill="#fff"/><circle cx="35" cy="54" r="2" fill="${K}"/><circle cx="65" cy="54" r="2" fill="${K}"/><ellipse cx="50" cy="65" rx="5" ry="3.6" fill="${K}"/><path d="M44 71Q50 77 56 71" stroke="${K}" stroke-width="3" fill="none" stroke-linecap="round"/>${cheeks(68,30)}`},
+ {n:'פינגווין',s:`<ellipse cx="50" cy="56" rx="34" ry="36" fill="#5a6a9a"/><ellipse cx="50" cy="64" rx="22" ry="26" fill="#fff"/><circle cx="38" cy="44" r="7" fill="#fff"/><circle cx="62" cy="44" r="7" fill="#fff"/><circle cx="38" cy="45" r="3.8" fill="${K}"/><circle cx="62" cy="45" r="3.8" fill="${K}"/><polygon points="43,52 57,52 50,62" fill="#ffb347"/><ellipse cx="36" cy="93" rx="11" ry="4.5" fill="#ffb347"/><ellipse cx="64" cy="93" rx="11" ry="4.5" fill="#ffb347"/>${cheeks(54,22)}`},
+ {n:'צפרדע',s:`<ellipse cx="50" cy="64" rx="39" ry="28" fill="#7ed98a"/><circle cx="30" cy="36" r="14" fill="#7ed98a"/><circle cx="70" cy="36" r="14" fill="#7ed98a"/><circle cx="30" cy="35" r="9.5" fill="#fff"/><circle cx="70" cy="35" r="9.5" fill="#fff"/><circle cx="31" cy="36" r="4.8" fill="${K}"/><circle cx="69" cy="36" r="4.8" fill="${K}"/><path d="M26 64Q50 88 74 64" stroke="${K}" stroke-width="3.5" fill="none" stroke-linecap="round"/><circle cx="45" cy="54" r="1.6" fill="${K}"/><circle cx="55" cy="54" r="1.6" fill="${K}"/>${cheeks(66,30)}`},
+ {n:'חזרזיר',s:`<polygon points="20,36 26,10 46,26" fill="#ffa3bf"/><polygon points="80,36 74,10 54,26" fill="#ffa3bf"/>${body('#ffb3c7')}${shine}<ellipse cx="50" cy="64" rx="15" ry="11" fill="#ff8fb0"/><ellipse cx="44.5" cy="64" rx="2.2" ry="3.8" fill="#c0507a"/><ellipse cx="55.5" cy="64" rx="2.2" ry="3.8" fill="#c0507a"/>${eyes(48,17)}${cheeks(60,30)}`},
+ {n:'שועל',s:`<polygon points="14,42 18,6 46,28" fill="#ff9a4d"/><polygon points="86,42 82,6 54,28" fill="#ff9a4d"/><polygon points="20,32 21,16 34,27" fill="${K}"/><polygon points="80,32 79,16 66,27" fill="${K}"/>${body('#ff9a4d')}<path d="M13 62Q50 50 87 62Q80 90 50 90Q20 90 13 62Z" fill="#fff6ea"/>${shine}${eyes(52,17)}<ellipse cx="50" cy="66" rx="4.5" ry="3.4" fill="${K}"/><path d="M50 69V72M44 73Q50 77 56 73" stroke="${K}" stroke-width="3" fill="none" stroke-linecap="round"/>`},
+ {n:'ינשוף',s:`<polygon points="18,36 22,6 44,26" fill="#9c6b3f"/><polygon points="82,36 78,6 56,26" fill="#9c6b3f"/><ellipse cx="50" cy="56" rx="37" ry="34" fill="#b98b5e"/><ellipse cx="50" cy="72" rx="21" ry="17" fill="#e8cfa8"/><circle cx="35" cy="46" r="14" fill="#fff" stroke="#8a5f3a" stroke-width="3"/><circle cx="65" cy="46" r="14" fill="#fff" stroke="#8a5f3a" stroke-width="3"/><circle cx="36" cy="47" r="6.5" fill="${K}"/><circle cx="64" cy="47" r="6.5" fill="${K}"/><circle cx="38" cy="45" r="2.2" fill="#fff"/><circle cx="66" cy="45" r="2.2" fill="#fff"/><polygon points="45,57 55,57 50,68" fill="#ffb347"/>`},
+ {n:'כלבלב',s:`<ellipse cx="14" cy="50" rx="10" ry="21" fill="#9c6b3f" transform="rotate(15 14 50)"/><ellipse cx="86" cy="50" rx="10" ry="21" fill="#9c6b3f" transform="rotate(-15 86 50)"/>${body('#e8c08a')}<ellipse cx="66" cy="50" rx="11" ry="12" fill="#c99a62"/>${shine}<ellipse cx="50" cy="68" rx="14" ry="11" fill="#fff2dc"/>${eyes(50,16)}<ellipse cx="50" cy="62" rx="6" ry="4.3" fill="${K}"/><path d="M50 66V70M43 70Q50 76 57 70" stroke="${K}" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M46 73Q50 82 54 73Z" fill="#ff7a8a"/>`},
+ {n:'אפרוח',s:`<path d="M42 30Q38 12 48 16Q52 4 58 14Q66 14 58 30Z" fill="#ffe066"/><ellipse cx="13" cy="62" rx="8" ry="13" fill="#ffd23f" transform="rotate(-20 13 62)"/><ellipse cx="87" cy="62" rx="8" ry="13" fill="#ffd23f" transform="rotate(20 87 62)"/>${body('#ffe066')}${shine}${eyes(52,15)}<polygon points="43,58 57,58 50,68" fill="#ff9f43"/>${cheeks(62,28)}<line x1="42" y1="90" x2="42" y2="96" stroke="#ff9f43" stroke-width="3" stroke-linecap="round"/><line x1="58" y1="90" x2="58" y2="96" stroke="#ff9f43" stroke-width="3" stroke-linecap="round"/>`},
+ // ----- נדירים -----
+ {n:'חד קרן',r:1,s:`<circle cx="12" cy="44" r="9" fill="#ff9ec7"/><circle cx="9" cy="60" r="9" fill="#9ad8ff"/><circle cx="14" cy="76" r="9" fill="#a6f0b4"/><polygon points="24,36 22,16 40,28" fill="#ffd1e8"/><polygon points="76,36 78,16 60,28" fill="#ffd1e8"/>${body('#fff0fb','stroke="#f3c6e8" stroke-width="2"')}<polygon points="50,0 42,30 58,30" fill="#ffd35c" stroke="#e0a920" stroke-width="1.5"/><path d="M45 21L55 17M46 26L54 23" stroke="#e0a920" stroke-width="2"/>${eyes(56,15)}<path d="M29 52l6 3M71 52l-6 3" stroke="${K}" stroke-width="2.5" stroke-linecap="round"/>${cheeks(65)}${smile(67,6)}${spark(88,18)}${spark(10,16,.7)}`},
+ {n:'דרקון',r:1,s:`<path d="M16 52Q-6 30 8 16Q14 34 28 40Z" fill="#b48cff"/><path d="M84 52Q106 30 92 16Q86 34 72 40Z" fill="#b48cff"/><polygon points="26,38 22,14 40,30" fill="#ffd35c"/><polygon points="74,38 78,14 60,30" fill="#ffd35c"/><polygon points="40,29 46,12 52,28" fill="#ff9f43"/><polygon points="50,27 56,10 62,29" fill="#ff9f43"/>${body('#6fd08c')}<ellipse cx="50" cy="74" rx="22" ry="15" fill="#c8f2c8"/>${shine}${eyes(52,16)}<circle cx="45" cy="64" r="1.8" fill="${K}"/><circle cx="55" cy="64" r="1.8" fill="${K}"/>${smile(70,7)}<polygon points="55,70 58,70 56.5,75" fill="#fff"/>${cheeks(62,31)}`},
+ {n:'דינוזאור',r:1,s:`<polygon points="22,40 28,16 40,32" fill="#ffb347"/><polygon points="38,30 48,6 60,30" fill="#ffb347"/><polygon points="60,32 72,16 78,40" fill="#ffb347"/>${body('#62d6c0')}<circle cx="28" cy="68" r="4" fill="#3fb59f" opacity=".7"/><circle cx="72" cy="74" r="5" fill="#3fb59f" opacity=".7"/><circle cx="68" cy="44" r="3" fill="#3fb59f" opacity=".7"/>${shine}${eyes(50,16)}<path d="M33 64Q50 86 67 64Z" fill="${K}"/><polygon points="40,65 44,65 42,70" fill="#fff"/><polygon points="56,65 60,65 58,70" fill="#fff"/><path d="M42 76Q50 82 58 76Z" fill="#ff7a8a"/>${cheeks(60,31)}`},
+ {n:'חייזר',r:1,s:`<line x1="36" y1="32" x2="26" y2="10" stroke="#6bbf3f" stroke-width="3" stroke-linecap="round"/><circle cx="26" cy="9" r="6" fill="#ff7eb6"/><line x1="64" y1="32" x2="74" y2="10" stroke="#6bbf3f" stroke-width="3" stroke-linecap="round"/><circle cx="74" cy="9" r="6" fill="#ffd35c"/>${body('#9be86b')}${shine}<ellipse cx="34" cy="54" rx="10" ry="14" fill="${K}" transform="rotate(-18 34 54)"/><ellipse cx="66" cy="54" rx="10" ry="14" fill="${K}" transform="rotate(18 66 54)"/><circle cx="31" cy="49" r="3.2" fill="#fff"/><circle cx="63" cy="49" r="3.2" fill="#fff"/><path d="M43 73Q50 79 57 73" stroke="${K}" stroke-width="3.2" fill="none" stroke-linecap="round"/><circle cx="22" cy="72" r="3" fill="#6bbf3f" opacity=".6"/><circle cx="80" cy="66" r="2.5" fill="#6bbf3f" opacity=".6"/>${spark(88,30,.7)}`},
+ {n:'ענן קשת',r:1,s:`<path d="M10 66A40 40 0 0 1 90 66" stroke="#ff7a7a" stroke-width="5" fill="none"/><path d="M16 66A34 34 0 0 1 84 66" stroke="#ffb347" stroke-width="5" fill="none"/><path d="M22 66A28 28 0 0 1 78 66" stroke="#ffe066" stroke-width="5" fill="none"/><path d="M28 66A22 22 0 0 1 72 66" stroke="#7ed98a" stroke-width="5" fill="none"/><path d="M34 66A16 16 0 0 1 66 66" stroke="#7ec8ff" stroke-width="5" fill="none"/><ellipse cx="50" cy="82" rx="38" ry="9" fill="#cfe6f7"/><circle cx="26" cy="72" r="17" fill="#eaf6ff"/><circle cx="74" cy="72" r="17" fill="#eaf6ff"/><circle cx="50" cy="64" r="21" fill="#f4faff"/><ellipse cx="50" cy="78" rx="36" ry="12" fill="#eaf6ff"/>${eyes(68,13)}${smile(75,6)}${cheeks(75,24)}${spark(90,22,.8)}${spark(8,20,.7)}`},
+ {n:'כוכב זהב',r:1,s:`<polygon points="${starPts}" fill="#ffd54a" stroke="#f5b800" stroke-width="4" stroke-linejoin="round"/><ellipse cx="38" cy="38" rx="8" ry="4" fill="#fff" opacity=".5" transform="rotate(-30 38 38)"/>${eyes(54,11,5)}${smile(63,6)}${cheeks(62,21)}${spark(10,12,.8)}${spark(90,86,.8)}`}
+];
+// ---------- עוד 60 סקווישים (עד 100 בסך הכל) ----------
+const ring=(n,cx,cy,rx,ry,f)=>Array.from({length:n},(_,k)=>f(+(cx+rx*Math.cos(k*2*Math.PI/n)).toFixed(1),+(cy+ry*Math.sin(k*2*Math.PI/n)).toFixed(1),k)).join('');
+const eyeW=(y,dx,r=5.5,pr=2.8)=>`<circle cx="${50-dx}" cy="${y}" r="${r}" fill="#fff"/><circle cx="${50+dx}" cy="${y}" r="${r}" fill="#fff"/><circle cx="${51-dx}" cy="${y+1}" r="${pr}" fill="${K}"/><circle cx="${51+dx}" cy="${y+1}" r="${pr}" fill="${K}"/>`;
+ANIM.push(
+ // ----- חיות -----
+ {n:'עכברי',s:`<circle cx="20" cy="32" r="15" fill="#b9b4c9"/><circle cx="20" cy="32" r="8.5" fill="#ffb3cf"/><circle cx="80" cy="32" r="15" fill="#b9b4c9"/><circle cx="80" cy="32" r="8.5" fill="#ffb3cf"/>${body('#d6d1e4')}${shine}${eyes(52,15,5)}<ellipse cx="50" cy="63" rx="4" ry="3" fill="#ff7eb6"/><path d="M14 62H32M16 70L32 66M86 62H68M84 70L68 66" stroke="#9c95b4" stroke-width="2" stroke-linecap="round"/>${smile(67,5)}${cheeks(66,30)}`},
+ {n:'אוגר',s:`<circle cx="28" cy="28" r="10" fill="#f0b878"/><circle cx="72" cy="28" r="10" fill="#f0b878"/>${body('#ffd9a8')}<ellipse cx="22" cy="66" rx="13" ry="11" fill="#fff1de"/><ellipse cx="78" cy="66" rx="13" ry="11" fill="#fff1de"/>${shine}${eyes(50,14,5)}<ellipse cx="50" cy="60" rx="4" ry="3" fill="#ff7eb6"/><rect x="45.5" y="65" width="9" height="9" rx="2.5" fill="#fff" stroke="${K}" stroke-width="1.8"/><line x1="50" y1="65" x2="50" y2="74" stroke="${K}" stroke-width="1.2"/>`},
+ {n:'קואלה',s:`<circle cx="15" cy="36" r="17" fill="#b8bcc8"/><circle cx="15" cy="36" r="9.5" fill="#eceef4"/><circle cx="85" cy="36" r="17" fill="#b8bcc8"/><circle cx="85" cy="36" r="9.5" fill="#eceef4"/>${body('#c9cdd8')}${shine}${eyes(50,15,4.5)}<ellipse cx="50" cy="62" rx="9" ry="12" fill="#4a4558"/><ellipse cx="47" cy="58" rx="2.5" ry="1.8" fill="#fff" opacity=".5"/>${cheeks(68,30)}`},
+ {n:'היפופוטמית',s:`<circle cx="26" cy="30" r="8" fill="#a99dd8"/><circle cx="74" cy="30" r="8" fill="#a99dd8"/>${body('#b7aee0')}${shine}<ellipse cx="50" cy="70" rx="29" ry="18" fill="#d9d2f5"/><circle cx="40" cy="63" r="3.5" fill="#8a7fc0"/><circle cx="60" cy="63" r="3.5" fill="#8a7fc0"/>${eyes(46,17,4.8)}<path d="M38 77Q50 84 62 77" stroke="${K}" stroke-width="3" fill="none" stroke-linecap="round"/>`},
+ {n:'ברווזון',s:`<path d="M44 28Q42 14 50 18Q54 8 58 16Q64 18 58 28Z" fill="#ffe45c"/>${body('#ffe45c')}${shine}<ellipse cx="14" cy="64" rx="7" ry="12" fill="#ffd23f" transform="rotate(-15 14 64)"/><ellipse cx="86" cy="64" rx="7" ry="12" fill="#ffd23f" transform="rotate(15 86 64)"/>${eyes(50,15,5)}<ellipse cx="50" cy="66" rx="17" ry="8" fill="#ff9f43"/><path d="M36 66Q50 70 64 66" stroke="#d97a1f" stroke-width="2" fill="none"/>${cheeks(62,31)}`},
+ {n:'צבי',s:`<circle cx="20" cy="82" r="9" fill="#9bd48a"/><circle cx="80" cy="82" r="9" fill="#9bd48a"/><ellipse cx="50" cy="40" rx="36" ry="26" fill="#3f9e5a"/><path d="M50 14V66M26 26L36 44M74 26L64 44M20 48H80" stroke="#2e7d46" stroke-width="2.5" fill="none"/><ellipse cx="50" cy="68" rx="28" ry="22" fill="#9bd48a"/>${eyes(64,13,5)}${smile(74,6)}${cheeks(72,22)}`},
+ {n:'חילזוני',s:`<ellipse cx="50" cy="78" rx="40" ry="15" fill="#e8c49a"/><line x1="30" y1="66" x2="26" y2="36" stroke="#d9a974" stroke-width="5" stroke-linecap="round"/><line x1="44" y1="66" x2="44" y2="34" stroke="#d9a974" stroke-width="5" stroke-linecap="round"/><circle cx="26" cy="32" r="8" fill="#fff"/><circle cx="44" cy="30" r="8" fill="#fff"/><circle cx="27" cy="33" r="4" fill="${K}"/><circle cx="45" cy="31" r="4" fill="${K}"/><circle cx="68" cy="54" r="26" fill="#ff9ec7"/><path d="M68 54a6 6 0 0 1 12 0a12 12 0 0 1-24 0a18 18 0 0 1 36 0" stroke="#e0558f" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M26 80Q34 86 42 80" stroke="${K}" stroke-width="3" fill="none" stroke-linecap="round"/>`},
+ {n:'פרת משה',s:`<line x1="40" y1="30" x2="32" y2="12" stroke="${K}" stroke-width="3" stroke-linecap="round"/><line x1="60" y1="30" x2="68" y2="12" stroke="${K}" stroke-width="3" stroke-linecap="round"/><circle cx="32" cy="11" r="4" fill="${K}"/><circle cx="68" cy="11" r="4" fill="${K}"/>${body('#ff5a5a')}<ellipse cx="50" cy="68" rx="26" ry="19" fill="${K}"/><path d="M50 30V50" stroke="${K}" stroke-width="3"/><circle cx="28" cy="46" r="6" fill="${K}"/><circle cx="72" cy="46" r="6" fill="${K}"/><circle cx="50" cy="40" r="4.5" fill="${K}"/><circle cx="40" cy="62" r="6.5" fill="#fff"/><circle cx="60" cy="62" r="6.5" fill="#fff"/><circle cx="41" cy="63" r="3" fill="${K}"/><circle cx="61" cy="63" r="3" fill="${K}"/><path d="M42 76Q50 82 58 76" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>`},
+ {n:'דבורונת',s:`<ellipse cx="34" cy="26" rx="15" ry="10" fill="#bfe6ff" opacity=".85" transform="rotate(-25 34 26)"/><ellipse cx="66" cy="26" rx="15" ry="10" fill="#bfe6ff" opacity=".85" transform="rotate(25 66 26)"/><line x1="42" y1="30" x2="34" y2="12" stroke="${K}" stroke-width="3" stroke-linecap="round"/><line x1="58" y1="30" x2="66" y2="12" stroke="${K}" stroke-width="3" stroke-linecap="round"/><circle cx="34" cy="11" r="4" fill="${K}"/><circle cx="66" cy="11" r="4" fill="${K}"/>${body('#ffd23f')}<path d="M15 70Q50 82 85 70M30 82Q50 90 70 82" stroke="${K}" stroke-width="6" fill="none" stroke-linecap="round"/>${shine}${eyes(50,15,5)}${smile(60,6)}${cheeks(58,28)}`},
+ {n:'פרפרית',s:`<path d="M44 52Q4 14 8 46Q10 66 44 62Z" fill="#ff9ec7"/><path d="M56 52Q96 14 92 46Q90 66 56 62Z" fill="#ff9ec7"/><path d="M44 62Q8 70 20 88Q36 94 46 70Z" fill="#ffb347"/><path d="M56 62Q92 70 80 88Q64 94 54 70Z" fill="#ffb347"/><circle cx="22" cy="48" r="6" fill="#fff" opacity=".7"/><circle cx="78" cy="48" r="6" fill="#fff" opacity=".7"/><ellipse cx="50" cy="58" rx="14" ry="26" fill="#6b4b9b"/><line x1="46" y1="34" x2="38" y2="14" stroke="${K}" stroke-width="3" stroke-linecap="round"/><line x1="54" y1="34" x2="62" y2="14" stroke="${K}" stroke-width="3" stroke-linecap="round"/><circle cx="38" cy="13" r="4" fill="#ff7eb6"/><circle cx="62" cy="13" r="4" fill="#ff7eb6"/><circle cx="45" cy="52" r="3.6" fill="#fff"/><circle cx="55" cy="52" r="3.6" fill="#fff"/><circle cx="45" cy="53" r="1.8" fill="${K}"/><circle cx="55" cy="53" r="1.8" fill="${K}"/><path d="M46 62Q50 67 54 62" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>`},
+ {n:'תמנונית',s:`<ellipse cx="22" cy="76" rx="9" ry="16" fill="#b48cff"/><ellipse cx="41" cy="82" rx="9" ry="14" fill="#b48cff"/><ellipse cx="59" cy="82" rx="9" ry="14" fill="#b48cff"/><ellipse cx="78" cy="76" rx="9" ry="16" fill="#b48cff"/><path d="M12 66Q12 12 50 12Q88 12 88 66Z" fill="#b48cff"/><rect x="13" y="60" width="74" height="12" fill="#b48cff"/><circle cx="28" cy="30" r="4" fill="#d3b4ff"/><circle cx="72" cy="26" r="3" fill="#d3b4ff"/><circle cx="64" cy="38" r="2.5" fill="#d3b4ff"/>${eyes(48,16,5.5)}${smile(58,6)}${cheeks(56,28)}`},
+ {n:'לווייתנית',s:`<path d="M50 30Q50 18 40 12M50 30Q50 18 60 12" stroke="#7ec8ff" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="38" cy="10" r="3" fill="#7ec8ff"/><circle cx="62" cy="10" r="3" fill="#7ec8ff"/>${body('#5aaeff')}<ellipse cx="50" cy="76" rx="30" ry="14" fill="#d7ecff"/>${shine}${eyes(54,16,5)}${smile(64,7)}${cheeks(64,28)}`},
+ {n:'סרטני',s:`<circle cx="12" cy="42" r="12" fill="#ff6b6b"/><path d="M12 42L8 32L16 34Z" fill="#fff0f0"/><circle cx="88" cy="42" r="12" fill="#ff6b6b"/><path d="M88 42L92 32L84 34Z" fill="#fff0f0"/><line x1="38" y1="48" x2="36" y2="28" stroke="#e04545" stroke-width="5" stroke-linecap="round"/><line x1="62" y1="48" x2="64" y2="28" stroke="#e04545" stroke-width="5" stroke-linecap="round"/><circle cx="36" cy="26" r="8" fill="#fff"/><circle cx="64" cy="26" r="8" fill="#fff"/><circle cx="37" cy="27" r="4" fill="${K}"/><circle cx="63" cy="27" r="4" fill="${K}"/><ellipse cx="50" cy="66" rx="36" ry="24" fill="#ff6b6b"/>${shine}${smile(70,8)}${cheeks(68,26)}`},
+ {n:'דולפי',s:`<polygon points="44,30 58,30 54,6" fill="#6a93c8"/>${body('#7fa8d8')}<ellipse cx="50" cy="76" rx="30" ry="13" fill="#d4e4f5"/>${shine}<ellipse cx="50" cy="68" rx="17" ry="9" fill="#a9c6ea"/>${eyes(50,15,5)}${smile(70,7)}`},
+ {n:'כלב ים',s:`<ellipse cx="18" cy="82" rx="12" ry="6" fill="#8895ab"/><ellipse cx="82" cy="82" rx="12" ry="6" fill="#8895ab"/>${body('#9aa5b8')}${shine}${eyes(50,15,5)}<ellipse cx="50" cy="66" rx="16" ry="11" fill="#e9edf5"/><ellipse cx="50" cy="61" rx="5.5" ry="4" fill="${K}"/><path d="M50 65V69M44 70Q50 75 56 70" stroke="${K}" stroke-width="2.8" fill="none" stroke-linecap="round"/><path d="M26 66H8M26 72L10 76M74 66H92M74 72L90 76" stroke="#6b7690" stroke-width="2" stroke-linecap="round"/>`},
+ {n:'סוסון',s:`<polygon points="22,40 24,12 42,28" fill="#a8703a"/><polygon points="78,40 76,12 58,28" fill="#a8703a"/>${body('#c98f5a')}<path d="M36 26Q50 4 64 26Q56 36 50 28Q44 36 36 26Z" fill="#6b3f1d"/>${shine}<ellipse cx="50" cy="70" rx="17" ry="13" fill="#f2d3ae"/><circle cx="44" cy="70" r="2.5" fill="${K}"/><circle cx="56" cy="70" r="2.5" fill="${K}"/>${eyes(50,17,5)}`},
+ {n:'פרתי',s:`<ellipse cx="12" cy="44" rx="10" ry="6" fill="#ddd" transform="rotate(25 12 44)"/><ellipse cx="88" cy="44" rx="10" ry="6" fill="#ddd" transform="rotate(-25 88 44)"/><path d="M28 30Q20 22 24 12M72 30Q80 22 76 12" stroke="#f0d9a8" stroke-width="6" fill="none" stroke-linecap="round"/>${body('#fff','stroke="#e8e0f0" stroke-width="2"')}<ellipse cx="24" cy="40" rx="10" ry="8" fill="${K}"/><ellipse cx="76" cy="54" rx="9" ry="12" fill="${K}"/><ellipse cx="50" cy="70" rx="19" ry="13" fill="#ffb3c7"/><ellipse cx="43" cy="70" rx="2.6" ry="3.8" fill="#c0507a"/><ellipse cx="57" cy="70" rx="2.6" ry="3.8" fill="#c0507a"/>${eyes(54,17,5)}`},
+ {n:'כבשונת',s:`${[[22,42],[36,26],[64,26],[78,42],[16,62],[84,62],[50,20],[24,80],[76,80]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="15" fill="#fff" stroke="#e4dcec" stroke-width="2"/>`).join('')}<ellipse cx="50" cy="64" rx="23" ry="25" fill="#5a4a6a"/><ellipse cx="24" cy="58" rx="8" ry="5" fill="#4a3b5c" transform="rotate(25 24 58)"/><ellipse cx="76" cy="58" rx="8" ry="5" fill="#4a3b5c" transform="rotate(-25 76 58)"/><circle cx="40" cy="58" r="5" fill="#fff"/><circle cx="60" cy="58" r="5" fill="#fff"/><circle cx="41" cy="59" r="2.6" fill="${K}"/><circle cx="61" cy="59" r="2.6" fill="${K}"/><path d="M44 74Q50 80 56 74" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>`},
+ {n:'אריה',s:`${ring(12,50,56,34,32,(x,y)=>`<circle cx="${x}" cy="${y}" r="14" fill="#e8913a"/>`)}<circle cx="50" cy="56" r="28" fill="#ffcf7a"/><circle cx="26" cy="38" r="7" fill="#ffcf7a"/><circle cx="74" cy="38" r="7" fill="#ffcf7a"/><ellipse cx="50" cy="68" rx="14" ry="10" fill="#fff1d6"/><polygon points="46,61 54,61 50,67" fill="#c0507a"/>${eyes(52,15,5)}<path d="M44 73Q50 78 56 73" stroke="${K}" stroke-width="3" fill="none" stroke-linecap="round"/>`},
+ {n:'קופיף',s:`<circle cx="14" cy="54" r="12" fill="#8a5f3a"/><circle cx="14" cy="54" r="6.5" fill="#f2d3ae"/><circle cx="86" cy="54" r="12" fill="#8a5f3a"/><circle cx="86" cy="54" r="6.5" fill="#f2d3ae"/>${body('#a8764a')}<ellipse cx="50" cy="64" rx="28" ry="23" fill="#f2d3ae"/><path d="M28 46Q50 36 72 46Q60 54 50 50Q40 54 28 46Z" fill="#f2d3ae"/>${eyes(54,13,5)}<circle cx="45" cy="64" r="1.8" fill="#8a5f3a"/><circle cx="55" cy="64" r="1.8" fill="#8a5f3a"/>${smile(70,8)}`},
+ {n:'ג׳ירפית',s:`<line x1="36" y1="30" x2="34" y2="12" stroke="#c98f3a" stroke-width="4"/><circle cx="34" cy="10" r="5" fill="#8a5f3a"/><line x1="64" y1="30" x2="66" y2="12" stroke="#c98f3a" stroke-width="4"/><circle cx="66" cy="10" r="5" fill="#8a5f3a"/><ellipse cx="14" cy="44" rx="10" ry="6" fill="#ffd35c" transform="rotate(25 14 44)"/><ellipse cx="86" cy="44" rx="10" ry="6" fill="#ffd35c" transform="rotate(-25 86 44)"/>${body('#ffd35c')}<circle cx="28" cy="42" r="6" fill="#c98f3a"/><circle cx="72" cy="40" r="7" fill="#c98f3a"/><circle cx="62" cy="78" r="5" fill="#c98f3a"/><ellipse cx="50" cy="70" rx="17" ry="12" fill="#fff0c8"/><circle cx="44" cy="70" r="2.4" fill="#8a5f3a"/><circle cx="56" cy="70" r="2.4" fill="#8a5f3a"/>${eyes(52,16,5)}`},
+ {n:'זברוש',s:`<polygon points="22,40 24,12 42,28" fill="${K}"/><polygon points="78,40 76,12 58,28" fill="${K}"/>${body('#fff','stroke="#ddd4ea" stroke-width="2"')}<path d="M44 26V38M56 26V38M30 36Q32 46 28 56M70 36Q68 46 72 56M20 62Q26 66 22 74M80 62Q74 66 78 74" stroke="${K}" stroke-width="5" fill="none" stroke-linecap="round"/><ellipse cx="50" cy="72" rx="16" ry="11" fill="#6b5a8e"/><circle cx="44" cy="72" r="2.4" fill="#ddd"/><circle cx="56" cy="72" r="2.4" fill="#ddd"/>${eyes(52,17,5)}`},
+ {n:'נמרוד',s:`<circle cx="22" cy="30" r="11" fill="#ff9f43"/><circle cx="22" cy="30" r="5.5" fill="#fff1d6"/><circle cx="78" cy="30" r="11" fill="#ff9f43"/><circle cx="78" cy="30" r="5.5" fill="#fff1d6"/>${body('#ff9f43')}<path d="M50 28V40M40 30L42 40M60 30L58 40M16 52L28 54M16 62L28 62M84 52L72 54M84 62L72 62" stroke="${K}" stroke-width="4" fill="none" stroke-linecap="round"/>${shine}<ellipse cx="50" cy="68" rx="17" ry="12" fill="#fff6ea"/><ellipse cx="50" cy="63" rx="5" ry="3.5" fill="#ff7eb6"/>${eyes(52,17,5)}<path d="M44 71Q50 76 56 71" stroke="${K}" stroke-width="3" fill="none" stroke-linecap="round"/>`},
+ {n:'תוכי',s:`<polygon points="42,30 36,8 48,24" fill="#ff5a5a"/><polygon points="50,28 50,4 58,26" fill="#ffb347"/><polygon points="58,30 66,10 62,28" fill="#ff5a5a"/>${body('#5fd68a')}${shine}<ellipse cx="30" cy="62" rx="9" ry="12" fill="#fff"/><ellipse cx="70" cy="62" rx="9" ry="12" fill="#fff"/><circle cx="34" cy="52" r="6.5" fill="#fff" stroke="#33a862" stroke-width="2"/><circle cx="66" cy="52" r="6.5" fill="#fff" stroke="#33a862" stroke-width="2"/><circle cx="35" cy="53" r="3.2" fill="${K}"/><circle cx="65" cy="53" r="3.2" fill="${K}"/><path d="M38 60Q50 54 62 60Q60 78 50 80Q40 78 38 60Z" fill="#ffb347"/><path d="M42 68Q50 72 58 68" stroke="#d97a1f" stroke-width="2" fill="none"/>`},
+ {n:'עטלפון',s:`<polygon points="16,44 18,6 42,28" fill="#6b5a8e"/><polygon points="84,44 82,6 58,28" fill="#6b5a8e"/><polygon points="22,36 22,16 34,28" fill="#ffb3cf"/><polygon points="78,36 78,16 66,28" fill="#ffb3cf"/>${body('#7d6ba3')}${shine}<circle cx="36" cy="54" r="7" fill="#fff3a8"/><circle cx="64" cy="54" r="7" fill="#fff3a8"/><circle cx="37" cy="55" r="3.4" fill="${K}"/><circle cx="65" cy="55" r="3.4" fill="${K}"/><path d="M40 70Q50 78 60 70" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/><polygon points="43,71 47,71 45,77" fill="#fff"/><polygon points="53,71 57,71 55,77" fill="#fff"/>${cheeks(66,28)}`},
+ {n:'עכבישי',s:`<path d="M22 46Q6 38 6 22M20 56Q2 54 2 42M20 66Q4 72 6 86M26 74Q14 86 18 96M78 46Q94 38 94 22M80 56Q98 54 98 42M80 66Q96 72 94 86M74 74Q86 86 82 96" stroke="${K}" stroke-width="4" fill="none" stroke-linecap="round"/><ellipse cx="50" cy="58" rx="30" ry="28" fill="#5a4a6a"/>${shine}<circle cx="44" cy="36" r="3" fill="#fff"/><circle cx="56" cy="36" r="3" fill="#fff"/>${eyeW(52,10,8,3.6)}<path d="M42 72Q50 79 58 72" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>`},
+ {n:'נחשוש',s:`<ellipse cx="50" cy="58" rx="36" ry="30" fill="#7ed98a"/><path d="M30 34L36 44L30 54L24 44ZM70 34L76 44L70 54L64 44Z" fill="#ffe27a" opacity=".8"/>${shine}<circle cx="35" cy="52" r="7" fill="#fff3a8"/><circle cx="65" cy="52" r="7" fill="#fff3a8"/><circle cx="35" cy="52" r="3.4" fill="${K}"/><circle cx="65" cy="52" r="3.4" fill="${K}"/><path d="M40 68Q50 76 60 68" stroke="${K}" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M50 74V84M50 84L44 90M50 84L56 90" stroke="#ff5d8f" stroke-width="3" fill="none" stroke-linecap="round"/>${cheeks(66,26)}`},
+ {n:'דביבון',s:`<circle cx="22" cy="30" r="11" fill="#a9a3b8"/><circle cx="22" cy="30" r="5" fill="${K}"/><circle cx="78" cy="30" r="11" fill="#a9a3b8"/><circle cx="78" cy="30" r="5" fill="${K}"/>${body('#b9b4c9')}<path d="M16 48Q50 34 84 48Q82 66 62 62Q50 58 38 62Q18 66 16 48Z" fill="${K}"/><ellipse cx="50" cy="72" rx="16" ry="12" fill="#eceaf4"/><ellipse cx="50" cy="66" rx="5" ry="3.6" fill="${K}"/><circle cx="36" cy="52" r="5.5" fill="#fff"/><circle cx="64" cy="52" r="5.5" fill="#fff"/><circle cx="37" cy="53" r="2.8" fill="${K}"/><circle cx="65" cy="53" r="2.8" fill="${K}"/><path d="M44 74Q50 79 56 74" stroke="${K}" stroke-width="3" fill="none" stroke-linecap="round"/>`},
+ {n:'קיפוד',s:`<path d="M8 62L10 36L20 46L22 24L32 36L38 14L48 32L58 14L64 34L74 22L76 40L88 32L92 62Z" fill="#8a5f3a"/><ellipse cx="50" cy="68" rx="31" ry="22" fill="#f2d3ae"/>${eyes(62,14,5)}<circle cx="50" cy="73" r="4.5" fill="${K}"/>${cheeks(72,25)}`},
+ {n:'איילה',s:`<path d="M30 30L22 8M22 8L12 14M22 8L26 0M70 30L78 8M78 8L88 14M78 8L74 0" stroke="#8a5f3a" stroke-width="4" fill="none" stroke-linecap="round"/><ellipse cx="14" cy="46" rx="10" ry="6" fill="#c9946a" transform="rotate(25 14 46)"/><ellipse cx="86" cy="46" rx="10" ry="6" fill="#c9946a" transform="rotate(-25 86 46)"/>${body('#d9a77a')}<circle cx="30" cy="40" r="2.8" fill="#fff"/><circle cx="70" cy="38" r="2.8" fill="#fff"/><circle cx="50" cy="34" r="2.8" fill="#fff"/>${shine}<ellipse cx="50" cy="70" rx="15" ry="11" fill="#f6e0c8"/><ellipse cx="50" cy="65" rx="5" ry="3.6" fill="${K}"/>${eyes(52,17,5)}${smile(72,5)}`},
+ {n:'זאב',s:`<polygon points="14,44 16,6 44,28" fill="#7a8398"/><polygon points="86,44 84,6 56,28" fill="#7a8398"/><polygon points="22,34 22,16 34,27" fill="#d9deea"/><polygon points="78,34 78,16 66,27" fill="#d9deea"/>${body('#9aa3b5')}<polygon points="12,58 28,56 22,72" fill="#d9deea"/><polygon points="88,58 72,56 78,72" fill="#d9deea"/>${shine}<ellipse cx="50" cy="70" rx="16" ry="13" fill="#d9deea"/><polygon points="44,62 56,62 50,70" fill="${K}"/><circle cx="34" cy="50" r="5.5" fill="#f5b800"/><circle cx="66" cy="50" r="5.5" fill="#f5b800"/><circle cx="34" cy="50" r="2.6" fill="${K}"/><circle cx="66" cy="50" r="2.6" fill="${K}"/><path d="M44 76Q50 80 56 76" stroke="${K}" stroke-width="3" fill="none" stroke-linecap="round"/>`},
+ {n:'פילפיל',s:`<circle cx="12" cy="50" r="21" fill="#b8bdd0"/><circle cx="12" cy="50" r="12" fill="#ffc4d8"/><circle cx="88" cy="50" r="21" fill="#b8bdd0"/><circle cx="88" cy="50" r="12" fill="#ffc4d8"/>${body('#c7cbdc')}${shine}${eyes(50,17,5)}<path d="M50 60Q50 88 62 86Q66 84 64 78" stroke="#b8bdd0" stroke-width="14" fill="none" stroke-linecap="round"/>${cheeks(62,30)}`},
+ {n:'תרנגול',s:`<circle cx="40" cy="22" r="8" fill="#ff5a5a"/><circle cx="50" cy="16" r="9" fill="#ff5a5a"/><circle cx="60" cy="22" r="8" fill="#ff5a5a"/>${body('#fff3e2')}${shine}${eyes(50,15,5)}<polygon points="43,56 57,56 50,68" fill="#ffb347"/><ellipse cx="50" cy="74" rx="5" ry="7" fill="#ff5a5a"/>${cheeks(60,30)}`},
+ {n:'תנינון',s:`<circle cx="34" cy="34" r="12" fill="#7ed98a"/><circle cx="66" cy="34" r="12" fill="#7ed98a"/>${body('#7ed98a')}<ellipse cx="50" cy="70" rx="30" ry="15" fill="#6fc77a"/><circle cx="43" cy="62" r="2.2" fill="#3f9e5a"/><circle cx="57" cy="62" r="2.2" fill="#3f9e5a"/><circle cx="34" cy="33" r="7" fill="#fff"/><circle cx="66" cy="33" r="7" fill="#fff"/><circle cx="35" cy="34" r="3.6" fill="${K}"/><circle cx="65" cy="34" r="3.6" fill="${K}"/><path d="M26 74Q50 88 74 74" stroke="${K}" stroke-width="3" fill="none" stroke-linecap="round"/><polygon points="34,78 38,78 36,73" fill="#fff"/><polygon points="62,78 66,78 64,73" fill="#fff"/><polygon points="48,82 52,82 50,77" fill="#fff"/>`},
+ {n:'ג׳ינג׳י',s:`<polygon points="18,40 22,8 44,28" fill="#ffa65c"/><polygon points="82,40 78,8 56,28" fill="#ffa65c"/><polygon points="24,32 25,16 35,27" fill="#ffb3cf"/><polygon points="76,32 75,16 65,27" fill="#ffb3cf"/>${body('#ffa65c')}<path d="M50 30V40M42 31L44 40M58 31L56 40M14 56L26 58M14 66L26 64M86 56L74 58M86 66L74 64" stroke="#e0801f" stroke-width="3.5" fill="none" stroke-linecap="round"/>${shine}${eyes(52,16,5)}<polygon points="46,62 54,62 50,67" fill="#ff7eb6"/><path d="M44 70Q50 75 56 70" stroke="${K}" stroke-width="3" fill="none" stroke-linecap="round"/>${cheeks(66,28)}`},
+ {n:'דלמטי',s:`<ellipse cx="14" cy="50" rx="10" ry="20" fill="${K}" transform="rotate(15 14 50)"/><ellipse cx="86" cy="50" rx="10" ry="20" fill="${K}" transform="rotate(-15 86 50)"/>${body('#fff','stroke="#e8e0f0" stroke-width="2"')}<circle cx="30" cy="42" r="6" fill="${K}"/><circle cx="68" cy="38" r="7" fill="${K}"/><circle cx="76" cy="62" r="5" fill="${K}"/><circle cx="24" cy="66" r="4.5" fill="${K}"/>${eyes(52,16,5)}<ellipse cx="50" cy="64" rx="6" ry="4.4" fill="${K}"/><path d="M50 68V72M43 72Q50 78 57 72" stroke="${K}" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M46 75Q50 84 54 75Z" fill="#ff7a8a"/>`},
+ // ----- ממתקים וטבע -----
+ {n:'קאפקייק',s:`<path d="M20 60H80L72 94Q50 98 28 94Z" fill="#ffb3c7"/><path d="M30 60V92M42 60V94M54 60V94M66 60V92" stroke="#ff8fb0" stroke-width="3"/><ellipse cx="50" cy="56" rx="38" ry="14" fill="#fff0f7"/><ellipse cx="50" cy="40" rx="30" ry="16" fill="#ffd1e8"/><ellipse cx="50" cy="26" rx="20" ry="13" fill="#fff0f7"/><circle cx="50" cy="12" r="6" fill="#ff5a5a"/><path d="M50 8Q54 2 58 3" stroke="#3f9e5a" stroke-width="2.5" fill="none"/>${eyes(44,13,4.8)}${smile(52,5)}${cheeks(52,22)}`},
+ {n:'סופגנייה',s:`<circle cx="50" cy="54" r="38" fill="#f0b878"/><path d="M13 52Q13 16 50 16Q87 16 87 52Q87 58 80 60Q76 52 70 60Q64 70 58 62Q52 72 46 62Q40 70 34 60Q28 52 22 60Q13 58 13 52Z" fill="#ff9ec7"/><rect x="26" y="30" width="9" height="3.5" rx="1.7" fill="#fff" transform="rotate(30 30 31)"/><rect x="62" y="26" width="9" height="3.5" rx="1.7" fill="#ffe27a" transform="rotate(-25 66 28)"/><rect x="72" y="42" width="9" height="3.5" rx="1.7" fill="#7ec8ff" transform="rotate(60 76 44)"/><rect x="18" y="44" width="9" height="3.5" rx="1.7" fill="#a6f0b4" transform="rotate(-60 22 46)"/>${eyes(44,14,5)}${smile(54,6)}${cheeks(54,26)}`},
+ {n:'גלידה',s:`<polygon points="30,62 70,62 50,98" fill="#f0b878"/><path d="M36 66L58 88M46 64L62 82M56 63L66 74M40 80L52 66" stroke="#d9944a" stroke-width="2"/><circle cx="50" cy="44" r="30" fill="#ff9ec7"/><circle cx="50" cy="12" r="6" fill="#ff5a5a"/><rect x="30" y="30" width="8" height="3" rx="1.5" fill="#fff" transform="rotate(30 34 31)"/><rect x="62" y="28" width="8" height="3" rx="1.5" fill="#ffe27a" transform="rotate(-30 66 29)"/>${eyes(44,13,5)}${smile(52,6)}${cheeks(52,24)}`},
+ {n:'תות',s:`<path d="M50 94Q14 74 12 44Q12 22 34 24Q50 28 66 24Q88 22 88 44Q86 74 50 94Z" fill="#ff5a6e"/><path d="M36 22Q42 6 50 18Q58 6 64 22Q50 28 36 22Z" fill="#43a047"/><rect x="48" y="4" width="4" height="12" rx="2" fill="#2e7d32"/>${[[26,52],[74,52],[34,72],[66,72],[50,82],[22,38],[78,38]].map(([x,y])=>`<ellipse cx="${x}" cy="${y}" rx="2" ry="3" fill="#ffe27a"/>`).join('')}${eyes(46,13,5)}${smile(56,6)}${cheeks(56,24)}`},
+ {n:'אבטיח',s:`<g transform="translate(0 6)"><path d="M6 30A44 44 0 0 0 94 30Z" fill="#43a047"/><path d="M12 30A38 38 0 0 0 88 30Z" fill="#e8f7d8"/><path d="M16 30A34 34 0 0 0 84 30Z" fill="#ff5d6c"/><ellipse cx="32" cy="46" rx="2.5" ry="4" fill="${K}"/><ellipse cx="68" cy="46" rx="2.5" ry="4" fill="${K}"/><ellipse cx="50" cy="38" rx="2.5" ry="4" fill="${K}"/>${eyes(48,13,5)}${smile(58,6)}${cheeks(58,25)}</g>`},
+ {n:'פטרייה',s:`<rect x="30" y="52" width="40" height="42" rx="16" fill="#fff0dc"/><path d="M6 56Q6 8 50 8Q94 8 94 56Q94 62 86 62H14Q6 62 6 56Z" fill="#ff5a5a"/><circle cx="28" cy="32" r="8" fill="#fff"/><circle cx="62" cy="22" r="7" fill="#fff"/><circle cx="76" cy="44" r="6" fill="#fff"/><circle cx="46" cy="44" r="5" fill="#fff"/>${eyes(74,10,4.5)}${smile(82,4)}${cheeks(80,17)}`},
+ {n:'קקטוס',s:`<rect x="32" y="14" width="36" height="80" rx="18" fill="#5fc27a"/><path d="M32 52H18Q10 52 10 44V36" stroke="#5fc27a" stroke-width="12" fill="none" stroke-linecap="round"/><path d="M68 64H80Q90 64 90 54V46" stroke="#5fc27a" stroke-width="12" fill="none" stroke-linecap="round"/><circle cx="50" cy="12" r="8" fill="#ff7eb6"/><circle cx="50" cy="12" r="3.5" fill="#ffd35c"/><path d="M40 30L36 28M60 36L64 34M42 80L38 82M60 84L64 82" stroke="#fff" stroke-width="2" stroke-linecap="round"/>${eyes(50,8,4.5)}${smile(60,4)}${cheeks(60,13)}`},
+ {n:'פרח',s:`<g transform="translate(50 54) scale(.84) translate(-50 -54)">${Array.from({length:8},(_,k)=>`<ellipse cx="50" cy="20" rx="12" ry="18" fill="#ff9ec7" transform="rotate(${k*45} 50 54)"/>`).join('')}<circle cx="50" cy="54" r="24" fill="#ffd35c"/>${eyes(52,10,4.5)}${smile(60,5)}${cheeks(60,16)}</g>`},
+ {n:'טיפה',s:`<path d="M50 6Q86 48 80 68Q72 94 50 94Q28 94 20 68Q14 48 50 6Z" fill="#7ec8ff"/><ellipse cx="38" cy="50" rx="6" ry="12" fill="#fff" opacity=".45" transform="rotate(15 38 50)"/>${eyes(66,11,5)}${smile(74,6)}${cheeks(74,22)}`},
+ {n:'עננון',s:`<ellipse cx="50" cy="82" rx="40" ry="10" fill="#d4e8f7"/><circle cx="26" cy="64" r="20" fill="#f0f8ff"/><circle cx="74" cy="64" r="20" fill="#f0f8ff"/><circle cx="50" cy="48" r="26" fill="#f8fcff"/><ellipse cx="50" cy="68" rx="38" ry="18" fill="#f0f8ff"/><path d="M30 90l2 6M50 92l2 6M70 90l2 6" stroke="#7ec8ff" stroke-width="3" stroke-linecap="round"/>${eyes(60,13,5)}${smile(68,6)}${cheeks(68,26)}`},
+ {n:'ירח',s:`<circle cx="50" cy="54" r="40" fill="#fff3a8"/><circle cx="30" cy="40" r="7" fill="#f0dd78" opacity=".7"/><circle cx="72" cy="36" r="5" fill="#f0dd78" opacity=".7"/><circle cx="68" cy="76" r="8" fill="#f0dd78" opacity=".7"/>${eyes(54,14,5)}${smile(64,7)}${cheeks(64,28)}${spark(88,14,.7)}`},
+ {n:'דלעת',s:`<ellipse cx="50" cy="58" rx="40" ry="32" fill="#ff9f43"/><ellipse cx="30" cy="58" rx="16" ry="32" fill="#ff8a1f" opacity=".6"/><ellipse cx="70" cy="58" rx="16" ry="32" fill="#ff8a1f" opacity=".6"/><ellipse cx="50" cy="58" rx="12" ry="32" fill="#ffb86b"/><path d="M50 28Q48 14 58 10" stroke="#43a047" stroke-width="6" fill="none" stroke-linecap="round"/>${eyes(56,18,5)}${smile(66,7)}${cheeks(66,30)}`},
+ {n:'איש שלג',s:`<circle cx="50" cy="74" r="26" fill="#fff" stroke="#d4e8f7" stroke-width="3"/><circle cx="50" cy="38" r="22" fill="#fff" stroke="#d4e8f7" stroke-width="3"/><rect x="34" y="14" width="32" height="6" rx="2" fill="${K}"/><rect x="40" y="2" width="20" height="14" rx="3" fill="${K}"/><path d="M30 56Q50 66 70 56" stroke="#ff5a5a" stroke-width="7" fill="none" stroke-linecap="round"/><polygon points="50,40 66,44 50,46" fill="#ff9f43"/>${eyes(34,9,3.8)}<circle cx="50" cy="72" r="2.6" fill="${K}"/><circle cx="50" cy="82" r="2.6" fill="${K}"/>`},
+ {n:'אבוקדו',s:`<path d="M50 4Q86 24 86 64Q86 94 50 94Q14 94 14 64Q14 24 50 4Z" fill="#43a047"/><path d="M50 12Q80 28 80 64Q80 88 50 88Q20 88 20 64Q20 28 50 12Z" fill="#d9f2a3"/><circle cx="50" cy="68" r="17" fill="#8a5f3a"/><ellipse cx="45" cy="62" rx="5" ry="3.5" fill="#fff" opacity=".35"/>${eyes(42,12,4.8)}${smile(50,5)}${cheeks(50,20)}`},
+ // ----- נדירים -----
+ {n:'רובוט',r:1,s:`<line x1="50" y1="24" x2="50" y2="8" stroke="#8a95ab" stroke-width="4"/><circle cx="50" cy="8" r="6" fill="#ff5a6e"/><rect x="6" y="46" width="10" height="22" rx="4" fill="#8a95ab"/><rect x="84" y="46" width="10" height="22" rx="4" fill="#8a95ab"/><rect x="14" y="24" width="72" height="64" rx="20" fill="#c3ccdc"/><rect x="22" y="38" width="56" height="28" rx="12" fill="#2b3a55"/><rect x="31" y="46" width="12" height="12" rx="3" fill="#6fe8ff"/><rect x="57" y="46" width="12" height="12" rx="3" fill="#6fe8ff"/><path d="M34 78H66" stroke="#8a95ab" stroke-width="5" stroke-linecap="round" stroke-dasharray="4 5"/><circle cx="24" cy="74" r="4" fill="#ff7eb6" opacity=".5"/><circle cx="76" cy="74" r="4" fill="#ff7eb6" opacity=".5"/><ellipse cx="32" cy="30" rx="9" ry="3.5" fill="#fff" opacity=".45"/>${spark(90,16,.8)}`},
+ {n:'רוח רפאים',r:1,s:`<path d="M14 92V50Q14 10 50 10Q86 10 86 50V92L74 82L62 92L50 82L38 92L26 82Z" fill="#fff" stroke="#e0d6f2" stroke-width="3" stroke-linejoin="round"/>${shine}${eyes(50,15,5.5)}<ellipse cx="50" cy="66" rx="5" ry="6" fill="${K}"/>${cheeks(62,28)}${spark(90,16,.8)}${spark(8,30,.6)}`},
+ {n:'קוסם',r:1,s:`<path d="M18 40L50 2L82 40Z" fill="#7d51d6"/><rect x="12" y="36" width="76" height="9" rx="4.5" fill="#5a3aa8"/>${spark(50,24,.9)}<circle cx="38" cy="32" r="2.5" fill="#ffd35c"/><circle cx="62" cy="30" r="2" fill="#ffd35c"/><ellipse cx="50" cy="62" rx="30" ry="24" fill="#ffdcb8"/><path d="M22 66Q30 96 50 98Q70 96 78 66Q64 78 50 76Q36 78 22 66Z" fill="#f4f1fa"/>${eyes(58,13,4.5)}<circle cx="50" cy="66" r="4" fill="#ff9ec7"/>${cheeks(66,26)}${spark(90,60,.7)}`},
+ {n:'פיראט',r:1,s:`${body('#ffdcb8')}<path d="M13 46Q50 4 87 46Q50 36 13 46Z" fill="#ff5a5a"/><circle cx="82" cy="44" r="6" fill="#ff5a5a"/><circle cx="40" cy="26" r="3" fill="#fff"/><circle cx="56" cy="22" r="3" fill="#fff"/><circle cx="64" cy="32" r="3" fill="#fff"/><circle cx="16" cy="68" r="4.5" fill="#ffd35c" stroke="#e0a920" stroke-width="1.5"/><circle cx="34" cy="58" r="5.5" fill="${K}"/><circle cx="36" cy="56" r="2" fill="#fff"/><path d="M14 50L54 54M74 56L86 52" stroke="${K}" stroke-width="2.5" stroke-linecap="round"/><ellipse cx="64" cy="58" rx="10" ry="9" fill="${K}"/><path d="M38 72Q50 82 62 72" stroke="${K}" stroke-width="3.5" fill="none" stroke-linecap="round"/><rect x="55" y="72" width="4" height="5" rx="1" fill="#ffd35c"/>${cheeks(70,28)}`},
+ {n:'אסטרונאוט',r:1,s:`<circle cx="50" cy="54" r="40" fill="#f4f6fb" stroke="#d0d7e6" stroke-width="3"/><rect x="38" y="88" width="24" height="8" rx="3" fill="#8a95ab"/><ellipse cx="50" cy="54" rx="31" ry="27" fill="#2b3a55"/><ellipse cx="50" cy="56" rx="23" ry="21" fill="#ffdcb8"/>${eyes(56,11,4.8)}${smile(65,5)}${cheeks(64,17)}<path d="M26 44Q34 30 50 28" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" opacity=".7"/><circle cx="14" cy="38" r="3" fill="#ff5a5a"/>${spark(90,14,.8)}${spark(10,84,.6)}`},
+ {n:'נינג׳ה',r:1,s:`<circle cx="50" cy="56" r="38" fill="#2b3a55"/><rect x="14" y="44" width="72" height="22" rx="10" fill="#ffdcb8"/><rect x="12" y="30" width="76" height="9" rx="4" fill="#ff5a5a"/><path d="M84 32L98 22M84 36L100 38" stroke="#ff5a5a" stroke-width="5" stroke-linecap="round"/><circle cx="34" cy="56" r="6" fill="#fff"/><circle cx="66" cy="56" r="6" fill="#fff"/><circle cx="35" cy="57" r="3.4" fill="${K}"/><circle cx="67" cy="57" r="3.4" fill="${K}"/><path d="M24 46L42 51M76 46L58 51" stroke="${K}" stroke-width="3.5" stroke-linecap="round"/><ellipse cx="32" cy="40" rx="9" ry="3" fill="#fff" opacity=".2"/>${spark(90,86,.7)}`},
+ {n:'בת ים',r:1,s:`<path d="M8 56Q4 14 50 12Q96 14 92 56Q94 84 86 98Q80 78 78 64H22Q20 78 14 98Q6 84 8 56Z" fill="#35cfc0"/><ellipse cx="50" cy="58" rx="29" ry="27" fill="#ffdcb8"/><path d="M22 46Q40 22 50 40Q60 22 78 46Q70 30 50 28Q30 30 22 46Z" fill="#35cfc0"/><path d="M62 22Q74 12 82 22Q76 34 62 22Z" fill="#ff9ec7"/><path d="M66 22L72 28M72 18L74 28M78 20L76 28" stroke="#e0558f" stroke-width="1.5"/>${eyes(58,12,4.8)}<path d="M28 52L33 54M72 52L67 54" stroke="${K}" stroke-width="2" stroke-linecap="round"/>${smile(68,6)}${cheeks(66,22)}<circle cx="10" cy="22" r="4" fill="none" stroke="#9ad8ff" stroke-width="2"/><circle cx="92" cy="40" r="3" fill="none" stroke="#9ad8ff" stroke-width="2"/>${spark(90,12,.7)}`},
+ {n:'עוף החול',r:1,s:`<path d="M50 2Q62 20 56 30Q70 18 72 36Q82 22 82 46H18Q18 22 28 36Q30 18 44 30Q38 20 50 2Z" fill="#ff7a3c"/><path d="M50 14Q58 26 52 34Q60 28 62 40H38Q40 28 48 34Q42 26 50 14Z" fill="#ffd35c"/>${body('#ff5a5a')}${shine}<ellipse cx="50" cy="72" rx="22" ry="14" fill="#ffb347"/><path d="M12 62Q0 70 6 86Q16 80 20 70Z" fill="#ff7a3c"/><path d="M88 62Q100 70 94 86Q84 80 80 70Z" fill="#ff7a3c"/>${eyes(52,15,5)}<polygon points="43,60 57,60 50,72" fill="#ffd35c" stroke="#e0a920" stroke-width="1.5"/>${spark(10,14,.8)}${spark(90,12,.8)}`},
+ {n:'המלכה',r:1,s:`<path d="M12 60Q10 18 50 16Q90 18 88 60Q88 86 78 94Q76 74 74 62H26Q24 74 22 94Q12 86 12 60Z" fill="#8a4f2a"/><ellipse cx="50" cy="62" rx="28" ry="26" fill="#ffdcb8"/><path d="M26 36L30 12L40 24L50 6L60 24L70 12L74 36Z" fill="#ffd35c" stroke="#e0a920" stroke-width="2" stroke-linejoin="round"/><circle cx="50" cy="13" r="3.5" fill="#ff5a6e"/><circle cx="30" cy="18" r="3" fill="#6fe8ff"/><circle cx="70" cy="18" r="3" fill="#a77bff"/>${eyes(60,12,4.8)}<path d="M28 56L33 58M72 56L67 58" stroke="${K}" stroke-width="2" stroke-linecap="round"/>${smile(70,6)}${cheeks(68,22)}<path d="M32 90Q50 98 68 90" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="1 7"/>${spark(92,40,.7)}`},
+ {n:'גלקסיה',r:1,s:`<defs><radialGradient id="gx" cx="38%" cy="32%"><stop offset="0" stop-color="#a77bff"/><stop offset=".55" stop-color="#4a3b9c"/><stop offset="1" stop-color="#1f1b4d"/></radialGradient></defs>${body('url(#gx)')}<path d="M18 70Q50 40 84 66" stroke="#ff9ec7" stroke-width="3" fill="none" opacity=".6"/>${[[26,38],[70,34],[78,56],[30,76],[62,82],[50,30],[16,56]].map(([x,y],k)=>`<circle cx="${x}" cy="${y}" r="${k%2?1.6:2.2}" fill="#fff"/>`).join('')}<circle cx="35" cy="54" r="6" fill="#fff"/><circle cx="65" cy="54" r="6" fill="#fff"/><circle cx="36" cy="55" r="3" fill="#2b2d6e"/><circle cx="66" cy="55" r="3" fill="#2b2d6e"/><path d="M42 68Q50 76 58 68" stroke="#fff" stroke-width="3.2" fill="none" stroke-linecap="round"/>${cheeks(64,27)}${spark(88,14,.9)}${spark(10,22,.7)}`}
+);
+
+// ---------- עוד 100 סקווישים (מספרים 100-199): 84 רגילים + 16 נדירים ----------
+const W2=(y=54,dx=15)=>`<circle cx="${50-dx}" cy="${y}" r="6.5" fill="#fff"/><circle cx="${50+dx}" cy="${y}" r="6.5" fill="#fff"/><circle cx="${50-dx}" cy="${y}" r="3.6" fill="${K}"/><circle cx="${50+dx}" cy="${y}" r="3.6" fill="${K}"/>`;
+const nz=(c='#ff7eb6',y=62)=>`<ellipse cx="50" cy="${y}" rx="3.5" ry="2.6" fill="${c}"/>`;
+const fc=(y=56,w=0)=>`${cheeks(y+8)}${w?W2(y):eyes(y)}${smile(y+10,6)}`;
+const wsk='<path d="M24 62h-12M24 67l-11 4M76 62h12M76 67l11 4" stroke="#00000055" stroke-width="1.8" stroke-linecap="round"/>';
+const ER={
+ cat:(c,i='#ffb3cf')=>`<polygon points="18,40 20,10 44,30" fill="${c}"/><polygon points="82,40 80,10 56,30" fill="${c}"/><polygon points="23,32 24,18 35,29" fill="${i}"/><polygon points="77,32 76,18 65,29" fill="${i}"/>`,
+ round:(c,i='#f2d3ae')=>`<circle cx="22" cy="28" r="12" fill="${c}"/><circle cx="22" cy="28" r="6" fill="${i}"/><circle cx="78" cy="28" r="12" fill="${c}"/><circle cx="78" cy="28" r="6" fill="${i}"/>`,
+ bun:(c,i='#ffb3cf')=>`<ellipse cx="33" cy="20" rx="9" ry="22" fill="${c}"/><ellipse cx="33" cy="22" rx="4.5" ry="15" fill="${i}"/><ellipse cx="67" cy="20" rx="9" ry="22" fill="${c}"/><ellipse cx="67" cy="22" rx="4.5" ry="15" fill="${i}"/>`,
+ lop:c=>`<ellipse cx="13" cy="50" rx="9" ry="22" fill="${c}" transform="rotate(12 13 50)"/><ellipse cx="87" cy="50" rx="9" ry="22" fill="${c}" transform="rotate(-12 87 50)"/>`,
+ horn:(c='#fff3c4')=>`<path d="M26 34Q18 14 30 8Q34 22 38 30Z" fill="${c}"/><path d="M74 34Q82 14 70 8Q66 22 62 30Z" fill="${c}"/>`};
+const T=(c,e='',x='',acc='',o={})=>`${e}${body(c)}${shine}${x}${fc(o.y||56,o.w)}${acc}`;
+const rays=(n,r1,r2,c,w=7)=>Array.from({length:n},(_,k)=>{const a=2*Math.PI*k/n;return `<path d="M${(50+r1*Math.cos(a)).toFixed(1)} ${(54+r1*Math.sin(a)).toFixed(1)}L${(50+r2*Math.cos(a)).toFixed(1)} ${(54+r2*Math.sin(a)).toFixed(1)}" stroke="${c}" stroke-width="${w}" stroke-linecap="round"/>`}).join('');
+const auraS=spark(10,22,1.2)+spark(92,16,1)+spark(90,82,.9)+spark(8,78,.8);
+const ANIM2=[
+// ===== חיות (29) =====
+ {n:'חתלתול',s:T('#ffb866',ER.cat('#ffb866'),`<path d="M42 31v8M50 29v9M58 31v8" stroke="#e08a2e" stroke-width="3" stroke-linecap="round"/>${nz()}${wsk}`)},
+ {n:'שחורי',s:`${ER.cat('#4a4a5e','#ff9ec7')}${body('#4a4a5e')}${shine}${cheeks(64)}${W2(56)}${nz('#ff9ec7')}${smile(67,6).replace(K,'#ffd1e8')}${wsk.replace(/#00000055/g,'#ffffff77')}`},
+ {n:'פודל',s:`<circle cx="13" cy="52" r="13" fill="#f1dcff"/><circle cx="87" cy="52" r="13" fill="#f1dcff"/><circle cx="50" cy="24" r="12" fill="#f1dcff"/>${body('#f1dcff')}${shine}${fc(58)}<ellipse cx="50" cy="66" rx="4" ry="3" fill="${K}"/><path d="M50 32l-10-7v14zM50 32l10-7v14z" fill="#ff5d8f"/>`},
+ {n:'קנגורו',s:`<polygon points="26,38 24,6 44,28" fill="#d99a5e"/><polygon points="74,38 76,6 56,28" fill="#d99a5e"/>${body('#d99a5e')}${shine}<path d="M30 78Q50 98 70 78Q50 86 30 78Z" fill="#f0c89a"/>${fc(54)}<ellipse cx="50" cy="63" rx="4" ry="3" fill="${K}"/>`},
+ {n:'לאמה',s:`<ellipse cx="32" cy="16" rx="6" ry="16" fill="#f6e6c8" transform="rotate(-8 32 16)"/><ellipse cx="68" cy="16" rx="6" ry="16" fill="#f6e6c8" transform="rotate(8 68 16)"/>${body('#f6e6c8')}<circle cx="50" cy="32" r="10" fill="#ffe3a8"/>${shine}${fc(56)}<ellipse cx="50" cy="66" rx="4" ry="3" fill="#e0a0b0"/>`},
+ {n:'גמלון',s:`<ellipse cx="50" cy="24" rx="17" ry="15" fill="#d9a865"/>${ER.round('#e8bd7c','#f7dcae')}${body('#e8bd7c')}${shine}<ellipse cx="50" cy="68" rx="16" ry="10" fill="#f7dcae"/>${eyes(54)}${cheeks(64,28)}${smile(70,5)}<circle cx="45" cy="64" r="1.8" fill="${K}"/><circle cx="55" cy="64" r="1.8" fill="${K}"/>`},
+ {n:'קרנפי',s:T('#9aa5b8',ER.round('#9aa5b8','#c9d1de'),`<path d="M43 60Q50 34 57 60Z" fill="#efe6d4"/>`)},
+ {n:'פלמינגו',s:`<path d="M38 88v10M62 88v10" stroke="#ff6fa0" stroke-width="3.5" stroke-linecap="round"/><path d="M38 34Q50 14 62 34Z" fill="#ff6fa0"/>${body('#ff8fb8')}${shine}${cheeks(62)}${eyes(52,16)}<path d="M40 60Q50 54 60 60Q57 72 50 74Q43 72 40 60Z" fill="#ffd1a6"/><path d="M50 61Q58 61 58 66Q54 71 50 73Z" fill="${K}"/><path d="M84 54Q98 52 92 72Q84 66 80 62Z" fill="#ff6fa0"/>`},
+ {n:'ברבור',s:`<path d="M40 32Q50 6 60 32" fill="#fff" stroke="#e5dcf0" stroke-width="2"/>${body('#fff','stroke="#e5dcf0" stroke-width="2"')}${shine}${cheeks(62,27)}${eyes(50,17,4.8)}<path d="M38 60Q50 54 62 60Q57 74 50 74Q43 74 38 60Z" fill="#ffa94d"/><circle cx="50" cy="61" r="2" fill="${K}"/>`},
+ {n:'טוקן',s:`${body('#3b3550')}<ellipse cx="50" cy="72" rx="24" ry="17" fill="#fff"/>${W2(46,14)}<path d="M12 56Q40 44 74 54Q80 64 72 74Q40 82 12 70Z" fill="#ff9f43"/><path d="M12 63Q42 60 76 64" stroke="#ffd35c" stroke-width="5"/><circle cx="26" cy="60" r="2" fill="#c76a1a"/>`},
+ {n:'צבצב',s:`<ellipse cx="50" cy="66" rx="32" ry="24" fill="#b6e8a8"/><path d="M12 62Q14 14 50 14Q86 14 88 62Z" fill="#5fb86e"/><path d="M32 62Q30 34 40 20M68 62Q70 34 60 20M50 14V62M16 44H84" stroke="#3f8f50" stroke-width="3" fill="none"/>${fc(66)}`},
+ {n:'זהבהב',s:`<path d="M80 58L100 38V78Z" fill="#ff9a3c"/><path d="M38 30Q50 8 64 30Z" fill="#ff9a3c"/>${body('#ffb347')}${shine}<path d="M30 44Q24 58 30 72" stroke="#e8861f" stroke-width="3" fill="none"/><circle cx="36" cy="52" r="7" fill="#fff"/><circle cx="37" cy="52" r="4" fill="${K}"/><circle cx="21" cy="62" r="3.5" fill="#ff7a5c"/><path d="M42 72Q50 80 58 72" stroke="${K}" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="70" cy="50" r="3" fill="#ffd7a0"/><circle cx="64" cy="62" r="3" fill="#ffd7a0"/>`},
+ {n:'כרישון',s:`<path d="M38 34L50 4L64 34Z" fill="#7aa2cc"/>${body('#8fb4d9')}<ellipse cx="50" cy="74" rx="26" ry="13" fill="#eaf4ff"/>${shine}${eyes(52,17,4.8)}${cheeks(62,28)}<path d="M33 66Q50 82 67 66Z" fill="#fff" stroke="${K}" stroke-width="2.5" stroke-linejoin="round"/><path d="M40 68l3 5 3-5M50 70l3 5 3-5M58 68l3 4" fill="${K}"/>`},
+ {n:'מדוזה',s:`<path d="M22 56q-5 14 2 26M38 56q-5 14 2 30M62 56q5 14-2 30M78 56q5 14-2 26" stroke="#c48cf5" stroke-width="5.5" fill="none" stroke-linecap="round"/><path d="M12 56Q12 8 50 8Q88 8 88 56Z" fill="#d9a8ff"/><ellipse cx="34" cy="26" rx="10" ry="5" fill="#fff" opacity=".5" transform="rotate(-25 34 26)"/>${cheeks(48,26)}${eyes(40)}${smile(50,6)}<circle cx="30" cy="12" r="2.5" fill="#fff" opacity=".7"/>`},
+ {n:'כוכב ים',s:`<polygon points="${starPts}" fill="#ff9a6c" stroke="#ff9a6c" stroke-width="6" stroke-linejoin="round"/><g fill="#ffc9a8"><circle cx="50" cy="20" r="2.5"/><circle cx="14" cy="46" r="2.5"/><circle cx="86" cy="46" r="2.5"/><circle cx="26" cy="86" r="2.5"/><circle cx="74" cy="86" r="2.5"/></g>${cheeks(62,16)}${eyes(52,9,4.2)}${smile(62,4)}`},
+ {n:'ברווז גומי',s:`<path d="M80 58Q94 52 94 68Q88 74 80 70Z" fill="#ffd21f"/>${body('#ffe14d')}${shine}${cheeks(60,27)}${eyes(50,17,5)}<ellipse cx="50" cy="64" rx="13" ry="7.5" fill="#ff9f43"/><path d="M44 64Q50 68 56 64" stroke="#c76a1a" stroke-width="2" fill="none" stroke-linecap="round"/>`},
+ {n:'יונה',s:`<ellipse cx="12" cy="60" rx="11" ry="19" fill="#e3ebff" transform="rotate(-20 12 60)"/><ellipse cx="88" cy="60" rx="11" ry="19" fill="#e3ebff" transform="rotate(20 88 60)"/>${body('#f6f9ff','stroke="#d7def0" stroke-width="2"')}${shine}${cheeks(62,27)}${eyes(52,17)}<polygon points="44,60 56,60 50,70" fill="#ffa94d"/><path d="M62 28Q76 18 82 32Q68 40 62 28Z" fill="#7ed98a"/><path d="M64 30Q72 28 78 31" stroke="#4fb868" stroke-width="1.5" fill="none"/>`},
+ {n:'אייל קרניים',s:`<path d="M30 34Q10 30 12 10M22 24Q12 18 18 8M70 34Q90 30 88 10M78 24Q88 18 82 8" stroke="#a9794a" stroke-width="5" fill="none" stroke-linecap="round"/>${body('#b98558')}${shine}<ellipse cx="50" cy="68" rx="17" ry="12" fill="#d9b08a"/>${eyes(52,17)}${cheeks(62,29)}<ellipse cx="50" cy="63" rx="5.5" ry="4" fill="${K}"/>${smile(72,5)}`},
+ {n:'סיאמי',s:`${ER.cat('#7a6a66','#c9a8a0')}${body('#f6e8d8')}<ellipse cx="50" cy="62" rx="21" ry="17" fill="#8b7770" opacity=".5"/>${shine}${cheeks(66,26)}${W2(55)}${nz('#6b5a56',62)}${smile(68,5).replace(K,'#fff')}`},
+ {n:'ארנבת',s:T('#cfc9de',ER.lop('#b3adc6'),nz())},
+ {n:'שרקן',s:`<path d="M26 32l6-12 6 12M44 28l6-14 6 14M62 32l6-12 6 12" fill="#5fbf6a"/>${body('#8de08a')}${shine}<circle cx="30" cy="48" r="4" fill="#6bd07a"/><circle cx="72" cy="46" r="5" fill="#6bd07a"/><circle cx="64" cy="76" r="4" fill="#6bd07a"/>${fc(55)}<path d="M50 74v10l-3 3M50 84l3 3" stroke="#ff5d7a" stroke-width="3" fill="none" stroke-linecap="round"/>`},
+ {n:'ינשוף שלג',s:`<polygon points="22,40 26,12 42,30" fill="#e3eaf8"/><polygon points="78,40 74,12 58,30" fill="#e3eaf8"/>${body('#f4f7ff','stroke="#dce4f5" stroke-width="2"')}<circle cx="35" cy="52" r="13" fill="#fff" stroke="#dce4f5" stroke-width="2"/><circle cx="65" cy="52" r="13" fill="#fff" stroke="#dce4f5" stroke-width="2"/><circle cx="35" cy="52" r="7" fill="#ffd35c"/><circle cx="65" cy="52" r="7" fill="#ffd35c"/><circle cx="35" cy="52" r="3.6" fill="${K}"/><circle cx="65" cy="52" r="3.6" fill="${K}"/><polygon points="45,62 55,62 50,73" fill="#ffa94d"/>`},
+ {n:'דוב קוטב',s:T('#f3f8ff',ER.round('#f3f8ff','#cfe3ff'),`<ellipse cx="50" cy="66" rx="14" ry="10" fill="#dcebff"/><ellipse cx="50" cy="62" rx="5" ry="3.8" fill="${K}"/>`).replace('<ellipse cx="50" cy="58" rx="37" ry="31" fill="#f3f8ff" />','<ellipse cx="50" cy="58" rx="37" ry="31" fill="#f3f8ff" stroke="#cfe0f5" stroke-width="2"/>')},
+ {n:'נמר שלג',s:T('#e6ebf5',ER.round('#e6ebf5','#fff'),`<g fill="#8a96b0"><circle cx="28" cy="46" r="4"/><circle cx="72" cy="46" r="4"/><circle cx="22" cy="64" r="3.5"/><circle cx="78" cy="64" r="3.5"/><circle cx="40" cy="34" r="3"/><circle cx="60" cy="34" r="3"/></g>${nz('#9aa5c0')}`)},
+ {n:'יעל',s:`<path d="M30 34Q8 30 12 4Q22 20 38 28Z" fill="#8a6a4a"/><path d="M70 34Q92 30 88 4Q78 20 62 28Z" fill="#8a6a4a"/>${body('#c9a678')}${shine}${fc(55)}${nz('#6b4a2f')}<path d="M44 78Q50 96 56 78Z" fill="#8a6a4a"/>`},
+ {n:'עיזי',s:`<path d="M30 34L24 12L40 28ZM70 34L76 12L60 28Z" fill="#c9b8a0"/><ellipse cx="12" cy="52" rx="14" ry="7" fill="#e8dfd2" transform="rotate(20 12 52)"/><ellipse cx="88" cy="52" rx="14" ry="7" fill="#e8dfd2" transform="rotate(-20 88 52)"/>${body('#f2ece4')}${shine}${fc(55)}${nz('#e0a0a0')}<path d="M44 76Q50 98 56 76Z" fill="#fff" stroke="#ddd"/>`},
+ {n:'פוני',s:`<polygon points="22,38 26,10 42,28" fill="#e0a56a"/><polygon points="78,38 74,10 58,28" fill="#e0a56a"/>${body('#e0a56a')}<path d="M38 24Q50 8 62 24Q58 38 50 44Q42 38 38 24Z" fill="#6b4a2f"/>${shine}<ellipse cx="50" cy="69" rx="15" ry="10" fill="#f3cfa4"/>${eyes(54)}<circle cx="45" cy="68" r="1.8" fill="${K}"/><circle cx="55" cy="68" r="1.8" fill="${K}"/>${cheeks(64,29)}`},
+ {n:'סנאי',s:`<path d="M80 72Q106 62 96 22Q78 34 76 56Z" fill="#d98a4a"/>${ER.round('#e3a25f','#f2cfa0')}${body('#e3a25f')}${shine}${fc(54)}<rect x="46" y="68" width="8" height="9" rx="2" fill="#fff" stroke="#e0d0c0"/>${nz('#6b4a2f',62)}`},
+ {n:'חמורון',s:`<ellipse cx="28" cy="16" rx="8" ry="20" fill="#9aa0b4" transform="rotate(-12 28 16)"/><ellipse cx="72" cy="16" rx="8" ry="20" fill="#9aa0b4" transform="rotate(12 72 16)"/>${body('#a9afc2')}${shine}<ellipse cx="50" cy="68" rx="16" ry="11" fill="#eee6d8"/>${eyes(52,17)}${cheeks(60,29)}<circle cx="45" cy="66" r="1.8" fill="${K}"/><circle cx="55" cy="66" r="1.8" fill="${K}"/>${smile(72,5)}`},
+ {n:'תרנגולת',s:`<path d="M40 32Q40 12 48 24Q50 8 56 24Q62 12 62 32Z" fill="#ff5a6e"/>${body('#fff','stroke="#ecdfe8" stroke-width="2"')}${shine}${cheeks(62,27)}${eyes(52,17)}<polygon points="43,60 57,60 50,71" fill="#ffb347"/><ellipse cx="50" cy="75" rx="4" ry="5" fill="#ff5a6e"/>`},
+// ===== אוכל (22) =====
+ {n:'פיצה',s:`<path d="M50 96L10 26Q50 6 90 26Z" fill="#ffd36e" stroke="#e8a838" stroke-width="3" stroke-linejoin="round"/><path d="M10 26Q50 6 90 26" stroke="#e08a3c" stroke-width="10" fill="none" stroke-linecap="round"/><circle cx="34" cy="38" r="6" fill="#ff6b6b"/><circle cx="66" cy="38" r="6" fill="#ff6b6b"/><circle cx="50" cy="76" r="5" fill="#ff6b6b"/>${cheeks(60,15)}${eyes(50,10,4.5)}${smile(60,5)}`},
+ {n:'המבורגר',s:`<path d="M10 46Q10 8 50 8Q90 8 90 46Z" fill="#e8a45c"/><g fill="#fff3d0"><ellipse cx="30" cy="22" rx="3" ry="1.8"/><ellipse cx="50" cy="16" rx="3" ry="1.8"/><ellipse cx="70" cy="22" rx="3" ry="1.8"/></g><path d="M8 50Q19 60 30 50Q41 60 52 50Q63 60 74 50Q85 60 92 50V56H8Z" fill="#7ed98a"/><rect x="10" y="54" width="80" height="15" rx="7.5" fill="#7a4a30"/><path d="M10 70H90Q90 92 50 92Q10 92 10 70Z" fill="#e8a45c"/>${cheeks(38,22)}${eyes(30,13,4.5)}${smile(38,5)}`},
+ {n:'פופקורן',s:`<g fill="#fff3b0" stroke="#f0d878" stroke-width="2"><circle cx="28" cy="38" r="13"/><circle cx="50" cy="28" r="14"/><circle cx="72" cy="38" r="13"/><circle cx="38" cy="26" r="10"/><circle cx="62" cy="24" r="10"/></g><path d="M20 50H80L74 94H26Z" fill="#fff"/><path d="M31 50L33 94M50 50V94M69 50L67 94" stroke="#ff5a6e" stroke-width="9"/>${cheeks(70,14)}${eyes(66,10,4.5)}${smile(75,5)}`},
+ {n:'אננס',s:`<path d="M50 34Q38 14 28 4Q44 8 50 22Q56 8 72 4Q62 14 50 34Z" fill="#5fbf6a"/><ellipse cx="50" cy="64" rx="30" ry="32" fill="#ffd23f"/><path d="M28 44l44 44M28 60l30 30M44 34l34 34M72 44L28 88M74 60L44 90M58 34L26 66" stroke="#e8a81f" stroke-width="2" opacity=".7"/>${shine}${cheeks(70,17)}${eyes(60,12,5)}${smile(72,6)}`},
+ {n:'בננה',s:`<path d="M62 20l9-11" stroke="#8a6a2a" stroke-width="8" stroke-linecap="round"/><ellipse cx="50" cy="58" rx="24" ry="40" fill="#ffe14d" stroke="#e8c21f" stroke-width="3" transform="rotate(-22 50 58)"/><ellipse cx="38" cy="40" rx="5" ry="12" fill="#fff" opacity=".45" transform="rotate(-22 38 40)"/>${cheeks(68,17)}${eyes(58,11,5)}${smile(70,5)}`},
+ {n:'דובדבנים',s:`<path d="M30 52Q38 22 56 10M70 52Q64 26 56 10" stroke="#4aa35a" stroke-width="3.5" fill="none"/><path d="M56 10Q70 0 82 10Q70 20 56 10Z" fill="#6cc27a"/><circle cx="30" cy="72" r="23" fill="#ff4d6a"/><circle cx="70" cy="72" r="23" fill="#e8385a"/><ellipse cx="22" cy="62" rx="6" ry="3.5" fill="#fff" opacity=".5"/><ellipse cx="62" cy="62" rx="6" ry="3.5" fill="#fff" opacity=".5"/><circle cx="23" cy="74" r="3" fill="${K}"/><circle cx="37" cy="74" r="3" fill="${K}"/><circle cx="63" cy="74" r="3" fill="${K}"/><circle cx="77" cy="74" r="3" fill="${K}"/><path d="M26 81Q30 86 34 81M66 81Q70 86 74 81" stroke="${K}" stroke-width="2.5" fill="none" stroke-linecap="round"/>`},
+ {n:'לימוני',s:`<path d="M62 30Q76 14 86 26Q72 38 62 30Z" fill="#6cc27a"/><path d="M5 58Q9 52 17 50Q50 20 83 50Q91 52 95 58Q91 64 83 66Q50 96 17 66Q9 64 5 58Z" fill="#fff06a" stroke="#e8d21f" stroke-width="2.5"/>${shine}${cheeks(66,20)}${eyes(55,13,5)}${smile(66,6)}`},
+ {n:'תפוחון',s:`<path d="M50 30Q28 18 16 40Q6 66 28 86Q40 94 50 88Q60 94 72 86Q94 66 84 40Q72 18 50 30Z" fill="#ff6b6b"/><path d="M50 30Q50 16 56 8" stroke="#8a5a3a" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M54 18Q68 8 78 18Q66 28 54 18Z" fill="#6cc27a"/><ellipse cx="30" cy="46" rx="7" ry="4" fill="#fff" opacity=".45" transform="rotate(-30 30 46)"/>${cheeks(68,24)}${eyes(56,15,5.5)}${smile(66,6)}`},
+ {n:'גזרי',s:`<path d="M50 30Q40 12 34 6M50 30V4M50 30Q60 12 66 6" stroke="#5fbf6a" stroke-width="5" stroke-linecap="round" fill="none"/><path d="M22 34Q50 22 78 34Q72 64 50 98Q28 64 22 34Z" fill="#ff9a3c"/><path d="M34 46h10M56 58h10M40 70h8" stroke="#e8761f" stroke-width="3" stroke-linecap="round"/>${cheeks(58,16)}${eyes(48,11,4.8)}${smile(58,5)}`},
+ {n:'פרוסת עוגה',s:`<rect x="10" y="50" width="80" height="40" rx="9" fill="#ffd6a6"/><rect x="10" y="64" width="80" height="6" fill="#ff9ec7"/><path d="M10 52Q18 36 50 36Q82 36 90 52Z" fill="#ff9ec7"/><circle cx="50" cy="30" r="8" fill="#ff4d6a"/><path d="M50 22Q52 14 58 12" stroke="#4aa35a" stroke-width="3" fill="none"/>${cheeks(82,20)}${eyes(78,12,4.5)}${smile(84,5)}`},
+ {n:'סוכרייה',s:`<circle cx="50" cy="42" r="34" fill="#ff9ec7"/><path d="M50 42m0 0a4 4 0 1 1 8 0a10 10 0 1 1-20 0a17 17 0 1 1 34 0a24 24 0 1 1-48 0" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" opacity=".7"/><rect x="47" y="74" width="6" height="24" rx="3" fill="#e8dfe8"/>${cheeks(52,20)}${eyes(42,12,5)}${smile(52,6)}`},
+ {n:'שוקולד',s:`<rect x="14" y="14" width="72" height="76" rx="10" fill="#8a5a3a"/><path d="M14 40H86M14 66H86M38 14V90M62 14V90" stroke="#6b4228" stroke-width="3"/><path d="M14 14H86V30H14Z" fill="#ff9ec7" opacity=".0"/>${cheeks(66,20)}${W2(52,13)}${smile(64,6).replace(K,'#fff')}`},
+ {n:'טוסטון',s:`<path d="M20 34Q8 18 28 16Q50 8 72 16Q92 18 80 34V86Q80 92 74 92H26Q20 92 20 86Z" fill="#f2c27a"/><rect x="27" y="36" width="46" height="48" rx="9" fill="#fff0c8"/><rect x="36" y="42" width="14" height="12" rx="2" fill="#ffe97a" opacity=".9"/>${cheeks(70,16)}${eyes(62,11,4.8)}${smile(72,5)}`},
+ {n:'ביצת עין',s:`<path d="M16 52Q8 24 36 20Q54 6 72 22Q96 28 86 56Q94 84 62 86Q44 98 28 84Q6 78 16 52Z" fill="#fff" stroke="#ecdfe8" stroke-width="2"/><circle cx="50" cy="54" r="22" fill="#ffc83d"/><ellipse cx="42" cy="44" rx="6" ry="3.5" fill="#fff" opacity=".55"/>${cheeks(62,15)}${eyes(52,10,4.5)}${smile(62,5)}`},
+ {n:'סושי',s:`<rect x="12" y="52" width="76" height="36" rx="18" fill="#fff" stroke="#ecdfe8" stroke-width="2"/><path d="M8 58Q50 16 92 58Q50 68 8 58Z" fill="#ff8a6c"/><path d="M26 44Q34 56 30 62M44 36Q52 50 48 62M62 38Q70 52 66 62" stroke="#ffd0bf" stroke-width="3" fill="none"/><rect x="43" y="28" width="14" height="62" fill="#2b3a4a" opacity=".88"/>${cheeks(76,22)}${eyes(72,14,4.5)}${smile(80,5)}`},
+ {n:'קרמבו',s:`<ellipse cx="50" cy="88" rx="36" ry="8" fill="#e8c27a"/><path d="M14 86Q8 26 50 14Q92 26 86 86Z" fill="#7a4a30"/><path d="M34 22Q50 4 66 22" stroke="#fff" stroke-width="6" fill="none" stroke-linecap="round"/><ellipse cx="34" cy="40" rx="8" ry="4" fill="#fff" opacity=".35" transform="rotate(-25 34 40)"/>${cheeks(70,22)}${W2(58,14)}${smile(70,6).replace(K,'#fff')}`},
+ {n:'צ׳יפס',s:`<g fill="#ffd54f" stroke="#e8b81f" stroke-width="1.5"><rect x="24" y="14" width="11" height="40" rx="3" transform="rotate(-8 30 34)"/><rect x="38" y="8" width="11" height="44" rx="3"/><rect x="52" y="10" width="11" height="42" rx="3" transform="rotate(5 58 30)"/><rect x="66" y="16" width="11" height="38" rx="3" transform="rotate(12 72 34)"/></g><path d="M16 46H84L76 94H24Z" fill="#ff5a6e"/><path d="M30 60Q50 52 70 60" stroke="#fff" stroke-width="4" fill="none" opacity=".5"/>${cheeks(76,16)}${W2(70,12)}${smile(81,5).replace(K,'#fff')}`},
+ {n:'עוגייה',s:`<circle cx="50" cy="56" r="38" fill="#e8b36a"/><g fill="#6b4228"><ellipse cx="30" cy="38" rx="5" ry="3.5" transform="rotate(20 30 38)"/><ellipse cx="68" cy="34" rx="5" ry="3.5"/><ellipse cx="78" cy="58" rx="4.5" ry="3"/><ellipse cx="22" cy="62" rx="4.5" ry="3"/><ellipse cx="38" cy="84" rx="5" ry="3.5"/><ellipse cx="66" cy="82" rx="5" ry="3.5"/></g>${shine}${fc(54)}`},
+ {n:'וופל',s:`<rect x="12" y="16" width="76" height="74" rx="15" fill="#f2c27a"/><path d="M37 16V90M63 16V90M12 41H88M12 66H88" stroke="#d99a45" stroke-width="3.5"/><rect x="38" y="41" width="25" height="25" rx="4" fill="#ffe97a" opacity=".9"/>${cheeks(70,20)}${eyes(58,15,5)}${smile(70,6)}`},
+ {n:'תירסון',s:`<path d="M26 92Q8 60 24 28Q36 56 50 94Z" fill="#7ed98a"/><path d="M74 92Q92 60 76 28Q64 56 50 94Z" fill="#6cc27a"/><ellipse cx="50" cy="54" rx="25" ry="38" fill="#ffd54f"/><g stroke="#e8b81f" stroke-width="1.8" opacity=".7"><path d="M32 30H68M28 44H72M26 58H74M28 72H72M36 86H64M38 22V88M50 18V92M62 22V88"/></g>${cheeks(62,15)}${eyes(52,10,4.5)}${smile(62,5)}`},
+ {n:'תפוזי',s:`<path d="M54 24Q70 8 84 20Q68 34 54 24Z" fill="#6cc27a"/><circle cx="50" cy="58" r="36" fill="#ffa94d"/><g fill="#ff9230" opacity=".6"><circle cx="30" cy="40" r="1.8"/><circle cx="68" cy="38" r="1.8"/><circle cx="76" cy="62" r="1.8"/><circle cx="24" cy="66" r="1.8"/><circle cx="46" cy="86" r="1.8"/></g><ellipse cx="32" cy="40" rx="9" ry="5" fill="#fff" opacity=".4" transform="rotate(-25 32 40)"/>${fc(58)}`},
+ {n:'ארטיק',s:`<rect x="46" y="76" width="8" height="22" rx="3" fill="#e0b07a"/><path d="M24 44Q24 12 50 12Q76 12 76 44V80H24Z" fill="#7ad7ff"/><path d="M24 62H76V80H24Z" fill="#ff9ec7"/><path d="M62 12Q74 14 76 28" stroke="#fff" stroke-width="4" fill="none" opacity=".5" stroke-linecap="round"/>${cheeks(54,20)}${eyes(44,11,4.8)}${smile(54,5)}`},
+// ===== טבע (15) =====
+ {n:'שמשון',s:`${rays(12,38,50,'#ffb300',7)}<circle cx="50" cy="54" r="36" fill="#ffd93d"/>${shine}${fc(54)}`},
+ {n:'פתית שלג',s:`<g stroke="#9ed3ff" stroke-width="5" stroke-linecap="round">${[0,60,120].map(a=>`<path d="M50 6V102" transform="rotate(${a} 50 54)"/>`).join('')}</g><g stroke="#9ed3ff" stroke-width="3.5" stroke-linecap="round">${[0,60,120,180,240,300].map(a=>`<path d="M42 14L50 22L58 14" transform="rotate(${a} 50 54)"/>`).join('')}</g><circle cx="50" cy="54" r="26" fill="#e8f5ff" stroke="#b7dcff" stroke-width="3"/>${cheeks(60,15)}${eyes(52,10,4.5)}${smile(60,5)}`},
+ {n:'ברקי',s:`<path d="M60 4L14 56H44L34 98L86 38H56Z" fill="#ffe14d" stroke="#f5b800" stroke-width="3.5" stroke-linejoin="round"/>${cheeks(58,12)}${eyes(48,9,3.8)}${smile(58,4)}`},
+ {n:'להבה',s:`<path d="M50 4Q64 30 82 48Q98 74 74 90Q50 102 26 90Q2 74 22 48Q30 38 34 22Q42 34 44 40Q50 24 50 4Z" fill="#ff7a3c"/><path d="M50 44Q62 60 68 74Q64 92 50 92Q36 92 32 74Q38 60 50 44Z" fill="#ffd35c"/>${cheeks(78,13)}${eyes(68,9,4)}${smile(78,4)}`},
+ {n:'עלה',s:`<path d="M50 6Q94 26 86 66Q78 94 50 96Q22 94 14 66Q6 26 50 6Z" fill="#7ed98a"/><path d="M50 18V94M50 40L30 28M50 56L70 44M50 70L32 60" stroke="#4fb868" stroke-width="3" fill="none" stroke-linecap="round"/>${cheeks(66,20)}${eyes(56,14,5)}${smile(66,6)}`},
+ {n:'עצי',s:`<rect x="43" y="62" width="14" height="34" rx="4" fill="#a9794a"/><g fill="#5fbf6a"><circle cx="32" cy="50" r="24"/><circle cx="68" cy="50" r="24"/><circle cx="50" cy="34" r="26"/></g><circle cx="30" cy="30" r="4" fill="#ff6b6b"/><circle cx="72" cy="40" r="4" fill="#ff6b6b"/>${cheeks(54,22)}${eyes(44,15,5)}${smile(54,6)}`},
+ {n:'חמנית',s:`${Array.from({length:12},(_,k)=>`<ellipse cx="50" cy="16" rx="8" ry="15" fill="#ffd93d" transform="rotate(${k*30} 50 54)"/>`).join('')}<circle cx="50" cy="54" r="27" fill="#8a5a3a"/><circle cx="50" cy="54" r="27" fill="none" stroke="#6b4228" stroke-width="3" stroke-dasharray="2 5"/>${cheeks(63,17)}${W2(52,11)}${smile(63,6).replace(K,'#fff')}`},
+ {n:'ורדה',s:`<path d="M30 80Q14 72 12 58Q28 56 36 70ZM70 80Q86 72 88 58Q72 56 64 70Z" fill="#6cc27a"/><circle cx="50" cy="52" r="38" fill="#ff7aa8"/><path d="M50 40m-9 0a9 9 0 1 1 18 0a16 16 0 1 1-32 0a24 24 0 1 1 48 0" stroke="#e0558f" stroke-width="3" fill="none" stroke-linecap="round" opacity=".6"/>${cheeks(64,22)}${eyes(56,14,5)}${smile(66,6)}`},
+ {n:'טוליפון',s:`<path d="M50 70V98M50 90Q30 90 24 76Q40 78 50 90ZM50 90Q70 90 76 76Q60 78 50 90Z" stroke="#4fb868" stroke-width="4" fill="#6cc27a"/><path d="M20 28L34 44L50 20L66 44L80 28Q90 66 68 84Q50 94 32 84Q10 66 20 28Z" fill="#ff6b8a"/>${cheeks(66,18)}${eyes(58,12,4.8)}${smile(68,5)}`},
+ {n:'הרי',s:`<path d="M4 92L36 26Q50 6 64 26L96 92Z" fill="#8fa3c7"/><path d="M36 26Q50 6 64 26L57 38L50 30L43 40Z" fill="#fff"/><path d="M26 92L48 52L70 92Z" fill="#7a8fb5" opacity=".5"/>${cheeks(76,22)}${eyes(68,14,4.8)}${smile(78,6)}`},
+ {n:'פנינה',s:`<path d="M8 56Q8 96 50 96Q92 96 92 56Z" fill="#ffc4d9"/><path d="M8 56Q8 14 50 14Q92 14 92 56Z" fill="#ffd9e6"/><path d="M30 56Q26 34 34 20M50 56V14M70 56Q74 34 66 20" stroke="#ffb0cc" stroke-width="3" fill="none"/>${cheeks(46,26)}${eyes(36,13,4.8)}${smile(46,5)}<circle cx="50" cy="68" r="13" fill="#fff" stroke="#e8e0ff" stroke-width="2"/><ellipse cx="46" cy="64" rx="4" ry="2.5" fill="#fff"/>`},
+ {n:'ענן גשם',s:`<g fill="#b7c3d9"><circle cx="30" cy="48" r="20"/><circle cx="52" cy="38" r="24"/><circle cx="74" cy="50" r="19"/><rect x="26" y="48" width="56" height="20" rx="10"/></g><path d="M30 78l-4 12M50 76l-4 14M70 78l-4 12" stroke="#5aaeff" stroke-width="5" stroke-linecap="round"/>${cheeks(56,26)}${eyes(48,14,5)}${smile(58,6)}`},
+ {n:'כדור הארץ',s:`<circle cx="50" cy="54" r="38" fill="#4aa8ff"/><path d="M26 34Q40 22 52 32Q46 44 34 46Q24 46 26 34ZM58 56Q76 50 82 62Q78 78 64 80Q54 70 58 56Z" fill="#6cd07a"/><ellipse cx="34" cy="36" rx="9" ry="4" fill="#fff" opacity=".4" transform="rotate(-25 34 36)"/>${cheeks(70,22)}${W2(56,14)}${smile(68,6).replace(K,'#fff')}`},
+ {n:'כוכב לכת',s:`<ellipse cx="50" cy="56" rx="48" ry="12" fill="none" stroke="#ffc9a0" stroke-width="6" transform="rotate(-18 50 56)"/><circle cx="50" cy="54" r="30" fill="#ff9a6c"/><path d="M24 44Q50 36 76 46M22 60Q50 54 78 62" stroke="#ffc9a0" stroke-width="4" fill="none" opacity=".7"/><path d="M4 66Q50 80 96 42" stroke="#ffc9a0" stroke-width="6" fill="none" stroke-linecap="round" transform="rotate(0)"/>${cheeks(62,17)}${eyes(52,11,4.8)}${smile(62,5)}`},
+// ===== חפצים ודמויות (18) =====
+ {n:'בלונצ׳יק',s:`<path d="M50 94Q44 96 52 100" stroke="#999" stroke-width="2" fill="none"/><path d="M50 8Q86 14 84 52Q80 82 50 86Q20 82 16 52Q14 14 50 8Z" fill="#ff6b8a"/><polygon points="44,86 56,86 50,94" fill="#e0405f"/><ellipse cx="34" cy="30" rx="8" ry="12" fill="#fff" opacity=".4" transform="rotate(20 34 30)"/>${cheeks(60,20)}${eyes(50,13,5)}${smile(60,6)}`},
+ {n:'מתנה',s:`<rect x="12" y="38" width="76" height="52" rx="8" fill="#a77bff"/><rect x="8" y="30" width="84" height="18" rx="6" fill="#c3a4ff"/><rect x="43" y="30" width="14" height="60" fill="#ffd35c"/><path d="M50 30Q34 6 28 20Q30 30 50 30ZM50 30Q66 6 72 20Q70 30 50 30Z" fill="#ffd35c" stroke="#e8b81f" stroke-width="1.5"/>${cheeks(76,22)}${eyes(66,16,4.8)}${smile(78,5)}`},
+ {n:'מטרייה',s:`<path d="M50 52V84Q50 94 60 92" stroke="#8a5a3a" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M6 54Q8 8 50 8Q92 8 94 54Q82 46 72 54Q61 44 50 54Q39 44 28 54Q18 46 6 54Z" fill="#ff6b8a"/><path d="M50 8Q40 28 42 52M50 8Q60 28 58 52" stroke="#ffb3c7" stroke-width="3" fill="none"/>${cheeks(40,26)}${eyes(30,14,4.5)}${smile(40,5)}`},
+ {n:'כדור פורח',s:`<path d="M30 70L38 86H62L70 70" stroke="#a9794a" stroke-width="2.5" fill="none"/><rect x="36" y="84" width="28" height="14" rx="4" fill="#c9965a"/><path d="M50 4Q90 8 88 46Q86 62 66 74H34Q14 62 12 46Q10 8 50 4Z" fill="#5aaeff"/><path d="M50 4Q34 30 36 74M50 4Q66 30 64 74" stroke="#fff" stroke-width="4" fill="none" opacity=".7"/>${cheeks(54,26)}${eyes(44,16,4.8)}${smile(54,5)}`},
+ {n:'מכונית',s:`<path d="M24 42Q30 20 50 20Q70 20 76 42Z" fill="#9ad8ff" stroke="#5aaeff" stroke-width="3"/><rect x="8" y="40" width="84" height="40" rx="16" fill="#ff6b6b"/><circle cx="26" cy="82" r="10" fill="${K}"/><circle cx="74" cy="82" r="10" fill="${K}"/><circle cx="26" cy="82" r="4" fill="#ddd"/><circle cx="74" cy="82" r="4" fill="#ddd"/><circle cx="18" cy="60" r="5" fill="#ffe14d"/><circle cx="82" cy="60" r="5" fill="#ffe14d"/>${eyes(54,13,4.5)}${smile(64,6)}`},
+ {n:'חללית',s:`<path d="M50 4Q80 24 76 66H24Q20 24 50 4Z" fill="#f4f6fb" stroke="#d0d7e6" stroke-width="2.5"/><path d="M24 54L8 78L28 70ZM76 54L92 78L72 70Z" fill="#ff6b6b"/><path d="M34 66H66L60 92Q50 98 40 92Z" fill="#ffb347"/><path d="M42 66H58L55 84Q50 88 45 84Z" fill="#ffe14d"/><circle cx="50" cy="38" r="14" fill="#9ad8ff" stroke="#5aaeff" stroke-width="3"/>${cheeks(46,11)}${eyes(37,5,2.6)}${smile(44,3)}`},
+ {n:'כדורגל',s:`<circle cx="50" cy="54" r="38" fill="#fff" stroke="#d8d8e4" stroke-width="2.5"/><polygon points="50,28 66,40 60,58 40,58 34,40" fill="${K}"/><g stroke="${K}" stroke-width="3" fill="none"><path d="M50 28V18M66 40L78 36M60 58L68 72M40 58L32 72M34 40L22 36"/></g><circle cx="44" cy="43" r="3" fill="#fff"/><circle cx="56" cy="43" r="3" fill="#fff"/><path d="M45 50Q50 55 55 50" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>`},
+ {n:'ספרון',s:`<rect x="14" y="12" width="72" height="80" rx="8" fill="#5aaeff"/><rect x="14" y="12" width="12" height="80" rx="5" fill="#3a86d6"/><rect x="82" y="16" width="6" height="72" fill="#fff"/><rect x="34" y="22" width="40" height="12" rx="4" fill="#ffd35c"/>${cheeks(66,16)}${eyes(56,11,4.8)}${smile(67,5)}`},
+ {n:'עפרוני',s:`<path d="M30 20L50 4L70 20V78H30Z" fill="#ffd93d"/><path d="M30 20L50 4L70 20Z" fill="#f2c27a"/><path d="M42 12L50 4L58 12Z" fill="${K}"/><rect x="30" y="20" width="40" height="8" fill="#ff7aa8"/><path d="M30 78H70L50 98Z" fill="#f2c27a"/><path d="M42 90L50 98L58 90Z" fill="${K}"/><path d="M40 28V78M60 28V78" stroke="#e8b81f" stroke-width="2"/>${cheeks(58,12)}${eyes(48,8,3.6)}${smile(58,4)}`},
+ {n:'פעמון',s:`<circle cx="50" cy="12" r="6" fill="#ffd35c"/><path d="M50 14Q22 18 22 56Q22 74 10 84H90Q78 74 78 56Q78 18 50 14Z" fill="#ffd35c" stroke="#e8b81f" stroke-width="2.5"/><circle cx="50" cy="90" r="8" fill="#e8b81f"/><ellipse cx="38" cy="36" rx="6" ry="12" fill="#fff" opacity=".45" transform="rotate(12 38 36)"/>${cheeks(66,17)}${eyes(56,12,4.8)}${smile(66,5)}`},
+ {n:'נרי',s:`<path d="M50 4Q60 16 56 24Q50 28 44 24Q40 16 50 4Z" fill="#ffb347"/><path d="M50 12Q54 18 52 22Q48 22 48 18Z" fill="#ffe14d"/><rect x="30" y="26" width="40" height="68" rx="8" fill="#fff6e0" stroke="#f0dfb8" stroke-width="2"/><path d="M30 38Q40 46 50 38Q60 46 70 38V34H30Z" fill="#ffe97a"/>${cheeks(70,14)}${eyes(60,10,4.5)}${smile(70,5)}`},
+ {n:'לבבי',s:`<path d="M50 90Q4 58 10 34Q14 12 34 12Q46 12 50 26Q54 12 66 12Q86 12 90 34Q96 58 50 90Z" fill="#ff5d8f"/><ellipse cx="30" cy="30" rx="8" ry="5" fill="#fff" opacity=".45" transform="rotate(-30 30 30)"/>${cheeks(54,22)}${eyes(44,13,5)}${smile(54,6)}`},
+ {n:'מלאכון',s:`<ellipse cx="12" cy="52" rx="13" ry="20" fill="#fff" stroke="#e3ebff" stroke-width="2" transform="rotate(-20 12 52)"/><ellipse cx="88" cy="52" rx="13" ry="20" fill="#fff" stroke="#e3ebff" stroke-width="2" transform="rotate(20 88 52)"/>${body('#fff7ee')}${shine}${fc(58)}<ellipse cx="50" cy="20" rx="17" ry="5" fill="none" stroke="#ffd35c" stroke-width="4.5"/>`},
+ {n:'גמדון',s:`<path d="M20 44Q22 14 50 2Q78 14 80 44Z" fill="#ff5a6e"/><circle cx="50" cy="3" r="6" fill="#fff"/><rect x="16" y="40" width="68" height="9" rx="4.5" fill="#fff"/>${body('#ffdcb8')}<path d="M16 50H84V58Q84 90 50 90Q16 90 16 58Z" fill="#ffdcb8"/><ellipse cx="50" cy="48" rx="34" ry="8" fill="#ffdcb8" opacity="0"/>${cheeks(66,25)}${eyes(58,14,5)}<ellipse cx="50" cy="66" rx="5" ry="4" fill="#ff9a8a"/><path d="M26 78Q50 104 74 78Q50 90 26 78Z" fill="#fff"/>`.replace(body('#ffdcb8'),'')},
+ {n:'בלרינה',s:`<circle cx="50" cy="16" r="10" fill="#8a5a3a"/><ellipse cx="50" cy="58" rx="36" ry="30" fill="#ffd6e8"/>${shine}<path d="M10 80Q50 68 90 80Q86 96 50 96Q14 96 10 80Z" fill="#ff9ec7"/><path d="M14 84Q50 74 86 84" stroke="#fff" stroke-width="2" fill="none" opacity=".7"/>${fc(55)}<path d="M40 8Q50 2 60 8" stroke="#ff5d8f" stroke-width="4" fill="none" stroke-linecap="round"/>`},
+ {n:'שף',s:`<g fill="#fff" stroke="#e5e5f0" stroke-width="2"><circle cx="30" cy="20" r="14"/><circle cx="50" cy="12" r="15"/><circle cx="70" cy="20" r="14"/></g><rect x="26" y="26" width="48" height="18" fill="#fff" stroke="#e5e5f0" stroke-width="2"/><path d="M14 66Q14 40 50 40Q86 40 86 66Q86 90 50 90Q14 90 14 66Z" fill="#ffdcb8"/>${cheeks(70,24)}${eyes(60,14,5)}${smile(70,6)}<path d="M36 78Q50 74 64 78Q58 86 50 86Q42 86 36 78Z" fill="#6b4228"/>`.replace('<path d="M36 78Q50 74 64 78Q58 86 50 86Q42 86 36 78Z" fill="#6b4228"/>','')},
+ {n:'כבאי',s:`<path d="M14 50Q14 12 50 12Q86 12 86 50Z" fill="#ff5a5a"/><path d="M4 50H96Q96 58 88 58H12Q4 58 4 50Z" fill="#d93f3f"/><rect x="40" y="18" width="20" height="22" rx="6" fill="#ffd35c"/><path d="M12 62Q12 58 14 58H86Q88 58 88 62Q88 90 50 90Q12 90 12 62Z" fill="#ffdcb8"/>${cheeks(74,24)}${eyes(66,14,4.8)}${smile(76,5)}`},
+ {n:'ליצן',s:`<circle cx="14" cy="40" r="12" fill="#ff5a6e"/><circle cx="86" cy="40" r="12" fill="#5aaeff"/><circle cx="14" cy="40" r="12" fill="none" stroke="#fff" stroke-width="0"/>${body('#fff6ee')}<path d="M26 30L50 2L74 30Z" fill="#a77bff"/><circle cx="50" cy="4" r="5" fill="#ffd35c"/>${shine}${cheeks(62,26)}${eyes(54,15,5)}<circle cx="50" cy="63" r="6" fill="#ff4d6a"/>${smile(72,7)}`}
+// ===== 16 נדירים =====
+,{n:'אבירה',r:1,s:`${auraS}<path d="M14 62Q10 90 50 94Q90 90 86 62Z" fill="#ffdcb8"/><path d="M12 62Q12 12 50 12Q88 12 88 62Z" fill="#c9d2e3" stroke="#9aa5b8" stroke-width="2.5"/><path d="M50 12Q62 -4 82 6Q66 10 60 24Z" fill="#ff5a6e"/><rect x="22" y="40" width="56" height="16" rx="6" fill="#2b3a55"/><path d="M50 12V40" stroke="#9aa5b8" stroke-width="3"/><circle cx="38" cy="48" r="3" fill="#ffd35c"/><circle cx="62" cy="48" r="3" fill="#ffd35c"/>${cheeks(74,24)}${smile(78,6)}`}
+,{n:'ויקינג',r:1,s:`${auraS}<path d="M18 40Q-2 34 4 6Q18 16 26 30Z" fill="#fff3c4" stroke="#e8d79a" stroke-width="2"/><path d="M82 40Q102 34 96 6Q82 16 74 30Z" fill="#fff3c4" stroke="#e8d79a" stroke-width="2"/><ellipse cx="50" cy="60" rx="34" ry="30" fill="#ffdcb8"/><path d="M16 46Q16 12 50 12Q84 12 84 46Z" fill="#9aa5b8"/><rect x="14" y="42" width="72" height="8" rx="4" fill="#7a869c"/><path d="M18 62Q20 94 36 98L40 80L50 100L60 80L64 98Q80 94 82 62Q70 76 50 72Q30 76 18 62Z" fill="#e0a24a"/>${eyes(58,14,4.8)}${cheeks(66,26)}${smile(70,5)}`}
+,{n:'פיית יער',r:1,s:`${auraS}<ellipse cx="14" cy="34" rx="14" ry="24" fill="#d9f0ff" stroke="#b7dcff" stroke-width="2" opacity=".9" transform="rotate(-28 14 34)"/><ellipse cx="86" cy="34" rx="14" ry="24" fill="#ffe3f4" stroke="#ffc4e4" stroke-width="2" opacity=".9" transform="rotate(28 86 34)"/>${body('#c8f7c5')}${shine}<circle cx="30" cy="30" r="6" fill="#ff7eb6"/><circle cx="44" cy="24" r="6" fill="#ffd35c"/><circle cx="58" cy="24" r="6" fill="#a77bff"/><circle cx="72" cy="30" r="6" fill="#5aaeff"/><path d="M26 34Q50 20 74 34" stroke="#4fb868" stroke-width="3" fill="none"/>${fc(58)}`}
+,{n:'מלך הים',r:1,s:`${auraS}<path d="M90 24V96M82 14v16M90 10v18M98 14v16M82 30Q90 38 98 30" stroke="#ffd35c" stroke-width="3.5" fill="none" stroke-linecap="round"/>${body('#35cfc0')}${shine}<path d="M28 28L32 8L42 20L50 4L58 20L68 8L72 28Z" fill="#ffd35c" stroke="#e0a920" stroke-width="2" stroke-linejoin="round"/><path d="M26 62Q26 92 50 96Q74 92 74 62Q62 76 50 70Q38 76 26 62Z" fill="#fff"/>${eyes(54,14,5)}${cheeks(64,26)}`}
+,{n:'רוח הקשת',r:1,s:`${auraS}<g fill="none" stroke-width="5" stroke-linecap="round"><path d="M6 76Q6 10 50 10Q94 10 94 76" stroke="#ff6b6b"/><path d="M14 76Q14 18 50 18Q86 18 86 76" stroke="#ffb347"/><path d="M22 76Q22 26 50 26Q78 26 78 76" stroke="#ffe14d"/><path d="M30 76Q30 34 50 34Q70 34 70 76" stroke="#6cd07a"/><path d="M38 76Q38 42 50 42Q62 42 62 76" stroke="#5aaeff"/></g><g fill="#fff" stroke="#e5ecff" stroke-width="2"><circle cx="20" cy="82" r="14"/><circle cx="50" cy="76" r="18"/><circle cx="80" cy="82" r="14"/><rect x="20" y="78" width="60" height="16" rx="8" stroke="none"/></g>${cheeks(82,18)}${eyes(74,11,4.8)}${smile(83,5)}`}
+,{n:'קוסמת',r:1,s:`${auraS}<path d="M82 44L96 30M92 22l4 8 8 4-8 4-4 8-4-8-8-4 8-4z" stroke="#ffd35c" stroke-width="3" fill="#ffd35c" stroke-linecap="round" transform="scale(.7) translate(36 8)"/><path d="M12 74Q10 98 22 98L26 80Z" fill="#8a4f2a"/><path d="M88 74Q90 98 78 98L74 80Z" fill="#8a4f2a"/><ellipse cx="50" cy="66" rx="30" ry="26" fill="#ffdcb8"/><path d="M20 44Q50 24 80 44L72 12Q50 -2 30 14Z" fill="#7d51d6"/><ellipse cx="50" cy="44" rx="38" ry="8" fill="#a77bff"/><path d="M50 8l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="#ffd35c"/>${cheeks(72,22)}${eyes(62,13,4.8)}${smile(74,5)}`}
+,{n:'שועל קסם',r:1,s:`${auraS}<g><ellipse cx="14" cy="64" rx="9" ry="24" fill="#ff9a3c" transform="rotate(30 14 64)"/><ellipse cx="86" cy="64" rx="9" ry="24" fill="#ff9a3c" transform="rotate(-30 86 64)"/><ellipse cx="50" cy="94" rx="9" ry="14" fill="#ff9a3c"/></g><circle cx="8" cy="46" r="4" fill="#9ad8ff"/><circle cx="92" cy="46" r="4" fill="#9ad8ff"/>${ER.cat('#ff9a3c','#fff')}${body('#ff9a3c')}<path d="M14 66Q50 60 86 66Q76 90 50 92Q24 90 14 66Z" fill="#fff" opacity=".9"/>${shine}${fc(56)}${nz('#4a3b5c')}<path d="M44 34h12" stroke="#9ad8ff" stroke-width="4" stroke-linecap="round"/>`}
+,{n:'מלאך זהב',r:1,s:`${auraS}<ellipse cx="9" cy="52" rx="15" ry="24" fill="#fff" stroke="#ffe9a0" stroke-width="3" transform="rotate(-20 9 52)"/><ellipse cx="91" cy="52" rx="15" ry="24" fill="#fff" stroke="#ffe9a0" stroke-width="3" transform="rotate(20 91 52)"/>${body('#ffe9a0')}<ellipse cx="50" cy="58" rx="37" ry="31" fill="none" stroke="#ffd35c" stroke-width="2.5"/>${shine}${fc(58)}<ellipse cx="50" cy="16" rx="19" ry="5.5" fill="none" stroke="#ffb300" stroke-width="5"/>`}
+,{n:'חתול כוכבים',r:1,s:`${auraS}${ER.cat('#2b2f6b','#6a6fc9')}${body('#2b2f6b')}${shine}<g fill="#fff"><circle cx="24" cy="48" r="1.8"/><circle cx="78" cy="42" r="1.8"/><circle cx="72" cy="78" r="1.8"/><circle cx="26" cy="76" r="1.8"/><circle cx="62" cy="34" r="1.4"/></g><path d="M52 24A9 9 0 1 0 52 40A7 7 0 1 1 52 24Z" fill="#ffe14d"/>${cheeks(66,26)}${W2(56)}${nz('#ff9ec7',63)}${smile(68,6).replace(K,'#ffd1e8')}`}
+,{n:'ינשוף חכם',r:1,s:`${auraS}<polygon points="22,40 24,14 42,32" fill="#8a6a4a"/><polygon points="78,40 76,14 58,32" fill="#8a6a4a"/>${body('#a98467')}<ellipse cx="50" cy="72" rx="22" ry="16" fill="#e8d3b4"/><circle cx="34" cy="54" r="13" fill="#fff" stroke="#2b3a55" stroke-width="3"/><circle cx="66" cy="54" r="13" fill="#fff" stroke="#2b3a55" stroke-width="3"/><path d="M47 54H53" stroke="#2b3a55" stroke-width="3"/><circle cx="34" cy="54" r="5.5" fill="${K}"/><circle cx="66" cy="54" r="5.5" fill="${K}"/><polygon points="45,64 55,64 50,74" fill="#ffa94d"/><polygon points="50,6 94,22 50,38 6,22" fill="#2b3a55"/><path d="M86 24V44" stroke="#ffd35c" stroke-width="3"/><circle cx="86" cy="46" r="4" fill="#ffd35c"/>`}
+,{n:'פיל זהב',r:1,s:`${auraS}<circle cx="12" cy="52" r="17" fill="#ffd35c" stroke="#e8b81f" stroke-width="2"/><circle cx="88" cy="52" r="17" fill="#ffd35c" stroke="#e8b81f" stroke-width="2"/>${body('#ffe08a')}${shine}<path d="M42 62Q38 90 56 92Q62 84 54 80Q54 68 58 62Z" fill="#ffc83d"/><polygon points="50,24 56,32 50,40 44,32" fill="#ff5a8f" stroke="#fff" stroke-width="2"/>${cheeks(66,27)}${eyes(52,18,5)}`}
+,{n:'כוכב נופל',r:1,s:`<path d="M2 14L40 40M0 36L34 50M14 2L44 30" stroke="#ffb3e6" stroke-width="4" stroke-linecap="round" opacity=".8"/>${spark(86,16,1.4)}${spark(92,84,1)}<polygon points="${starPts}" fill="#ffe14d" stroke="#ffd35c" stroke-width="7" stroke-linejoin="round" transform="translate(6 4) scale(.94)"/>${cheeks(62,17)}${eyes(52,11,5)}${smile(62,6)}`}
+,{n:'כדור שלג קסום',r:1,s:`${auraS}<rect x="22" y="82" width="56" height="16" rx="6" fill="#8a5a3a"/><circle cx="50" cy="48" r="42" fill="#dff1ff" stroke="#b7dcff" stroke-width="3" opacity=".9"/><ellipse cx="32" cy="26" rx="8" ry="14" fill="#fff" opacity=".6" transform="rotate(25 32 26)"/><circle cx="50" cy="68" r="17" fill="#fff"/><circle cx="50" cy="46" r="13" fill="#fff"/><polygon points="50,46 62,49 50,52" fill="#ff9f43"/><circle cx="45" cy="42" r="2" fill="${K}"/><circle cx="55" cy="42" r="2" fill="${K}"/><g fill="#fff"><circle cx="22" cy="40" r="2.5"/><circle cx="76" cy="34" r="2.5"/><circle cx="70" cy="64" r="2.5"/><circle cx="28" cy="62" r="2.5"/></g>`}
+,{n:'אריה יהלום',r:1,s:`${auraS}<polygon points="50,-2 70,10 92,22 100,48 92,74 70,88 50,98 30,88 8,74 0,48 8,22 30,10" fill="#9fd8ff" stroke="#fff" stroke-width="2"/><path d="M50 -2L50 98M0 48H100M8 22L92 74M92 22L8 74" stroke="#fff" stroke-width="1.5" opacity=".5"/><circle cx="50" cy="54" r="30" fill="#f2fbff"/>${ER.round('#9fd8ff','#fff').replace(/cy="28"/g,'cy="26"')}${shine}${fc(54)}${nz('#7aa8d0',62)}`}
+,{n:'תוכי קשת',r:1,s:`${auraS}<path d="M36 28Q30 8 40 4Q44 18 46 28Z" fill="#ff6b6b"/><path d="M46 26Q46 4 56 2Q58 16 54 28Z" fill="#ffe14d"/><path d="M54 28Q60 8 70 8Q68 22 62 32Z" fill="#5aaeff"/><circle cx="50" cy="58" r="37" fill="#ff6b6b"/><path d="M16 66Q50 42 84 66" stroke="#ffb347" stroke-width="10" fill="none"/><path d="M20 78Q50 58 80 78" stroke="#6cd07a" stroke-width="10" fill="none"/><path d="M28 90Q50 76 72 90" stroke="#5aaeff" stroke-width="9" fill="none"/><circle cx="36" cy="46" r="10" fill="#fff"/><circle cx="64" cy="46" r="10" fill="#fff"/><circle cx="37" cy="46" r="5" fill="${K}"/><circle cx="65" cy="46" r="5" fill="${K}"/><path d="M40 54Q50 48 60 54Q58 70 50 74Q42 70 40 54Z" fill="#ffd35c"/>`}
+,{n:'דרקון ים',r:1,s:`${auraS}<path d="M32 30L36 10L44 26L52 6L58 26L68 12L70 32Z" fill="#ff8a8a"/>${body('#2fb7d6')}<path d="M16 70Q26 62 36 70Q46 62 56 70Q66 62 76 70Q82 66 86 70" stroke="#1e8fb0" stroke-width="3" fill="none"/><path d="M20 80Q32 74 44 80Q56 74 68 80" stroke="#1e8fb0" stroke-width="3" fill="none"/>${shine}${W2(50,14)}${cheeks(60,27)}<path d="M36 62Q50 76 64 62Z" fill="#fff" stroke="${K}" stroke-width="2.5" stroke-linejoin="round"/><circle cx="14" cy="30" r="5" fill="#fff" opacity=".6"/><circle cx="88" cy="22" r="4" fill="#fff" opacity=".6"/>`}
+];
+ANIM.push(...ANIM2);
+const N_SQ=N_BASE+ANIM.length;
+const isRare=i=>i>=N_BASE&&!!ANIM[i-N_BASE].r;
+const sqName=i=>i>=N_BASE?ANIM[i-N_BASE].n:BLOBN[i];
+const BLOBN=["בלובי","קוביקי","כיסוני","עיגולי","שעועית","מיאושי","חתולוק","מיאוכיסון","פוזי","גרגורי","פפיונה","מסיבונה","פיונקה","כדורית","ממתקה","אנטנוש","בזזי","אנטנית","לוויינון","קליטה","מושי","בלוקי","פלופי","גולגול"];
+const LORE=[
+ ["בלובי חושב שהוא ג'לי, אבל הוא בעצם רק מתרגש.","כל פעם שלוחצים עליו הוא אומר: בלוּפּ!"],
+ ["קוביקי ניסה להתגלגל פעם אחת. הוא עדיין תקוע בפינה.","הוא טוען שפינות זה סגנון, לא באג."],
+ ["כיסוני ממולא ב-100% חיוכים ובקצת אבקת סוכר.","אסור לאכול אותו! הוא עוד צריך ללמוד מילים."],
+ ["עיגולי הוא הכי עגול בעולם, ויודע לגלגל בדיחות.","הבדיחה הכי טובה שלו מתגלגלת עד הבוקר."],
+ ["שעועית מעולם לא פגש שעועית אחרת, והוא בטוח שהוא מיוחד.","(והוא צודק!)"],
+ ["מיאושי חושב שהוא חתול. הוא גם חושב שהוא דג.","הוא בן יומיים, תסלחו לו."],
+ ["חתולוק הפיל כוס מהשולחן רק כדי לבדוק אם היא עדיין שם.","הכוס הייתה דמיונית. הוא לא התנצל."],
+ ["מיאוכיסון ישן 23 שעות ביום, ובשעה הנותרת הוא מתמתח.","הוא מבטיח שהוא חולם על מילים באנגלית."],
+ ["פוזי הכי אוהב לשבת בדיוק על הדף שאת צריכה.","הוא לא יזוז עד שתגידי cat באנגלית."],
+ ["גרגורי מגרגר כל כך חזק שהחלון רועד.","הוא אומר שזה המנוע. זה לא."],
+ ["פפיונה לובשת פפיון כי היא בדרך למסיבה.","היא לא יודעת איזו, אבל בטוחה שיש עוגה."],
+ ["מסיבונה מארגנת מסיבות לכל מי שהיא פוגשת.","אפילו לנעל שנשארה ליד הדלת."],
+ ["פיונקה נותנת פפיון לכל מי שעבר מבחן.","ולפעמים גם למי שעבר ליד מבחן."],
+ ["כדורית מתגלגלת לשיעורים לאט, ובכל זאת מגיעה ראשונה.","כי כולם עוצרים להגיד וואו על הפפיון שלה."],
+ ["ממתקה כל כך מתוקה שנמלים עומדות בתור אליה.","היא מחלקת להן אנגלית במקום סוכר."],
+ ["אנטנוש קולט וייפיי, רדיו, ולפעמים מה שהמורה חושבת.","הוא אף פעם לא מגלה."],
+ ["בזזי מקבל שידורים מכוכב רחוק רחוק.","ההודעה האחרונה: לצחצח שיניים לפני השינה!"],
+ ["אנטנית שומעת קרקור של צפרדע מהצד השני של העיר.","והיא עונה לה בחזרה: ribbit!"],
+ ["לוויינון מקיף את החדר פעמיים ביום.","פעם אחת בחיפוש אחרי גרב. הוא עדיין לא מצא."],
+ ["קליטה תמיד קולטת קודם כל את ריח העוגיות.","ורק אחר כך את החדשות."],
+ ["מושי רך, נחמד, ולא מבין אף בדיחה.","אבל הוא צוחק עם כולם. זה מספיק."],
+ ["בלוקי בטוח שהוא לגו, והוא מחפש את החלק החסר שלו.","עד עכשיו הוא מצא... גרב."],
+ ["פלופי נופל על הרצפה ומקפץ בחזרה: בּוֹיינג!","הוא מחשיב את זה לספורט אולימפי."],
+ ["גולגול ניסה להצטרף לקבוצת כדורגל.","הוא שיחק מעולה, אבל כל פעם שבעטו בו הוא צחק."],
+ // חיות
+ ["ארנבון אוהב לקפוץ, אבל רק על הרגל השמאלית.","הוא אומר שזה סגנון."],
+ ["דובי ישן כל החורף ומתעורר רק בשביל מילה אחת: honey.","ובשביל חיבוק."],
+ ["פנדה אוכל במבוק כל היום ומקווה שיום אחד יצמחו עוגיות.","הוא עדיין מחכה לגשם של שוקולד."],
+ ["פינגווין לובש חליפה כל יום, ליתר ביטחון, למקרה שיזמינו אותו למסיבה.","ובינתיים הוא מחליק על הבטן."],
+ ["צפרדע התאמנה כל הלילה על קרוּאָק בעברית ובאנגלית.","באנגלית זה ribbit, אבל בעברית זה יותר מצחיק."],
+ ["חזרזיר החליט להפסיק להתלכלך. הוא החזיק מעמד 4 דקות.","אחר כך הוא נכנס לשלולית, רק לבדוק."],
+ ["שועל מתחכם לכולם, חוץ ממי שמחזיק עוגיה.","מול עוגיה הוא מוריד ידיים."],
+ ["ינשוף ער כל הלילה כי הוא חושב שהוא שומר הכוכבים.","ביום הוא מנמנם בשיעורים, עם עין אחת פקוחה."],
+ ["כלבלב קופץ משמחה כשחוזרים מהחדר השכן.","גם אחרי 30 שניות. הוא פשוט מתגעגע."],
+ ["אפרוח יצא מהביצה ושאל: כבר ארוחת בוקר?","מאז הוא לא מפסיק לצייץ על אוכל."],
+ // נדירים
+ ["חד קרן עושה ברק בכל פעם שהוא מתעטש.","וכל ברק הופך לקשת קטנה!"],
+ ["דרקון ניסה לפוצץ בלון עם להבה. הבלון התפוצץ, והוא התעטש.","עכשיו הוא מנופף לשלום בלי להבות, ויש לו בלון חדש."],
+ ["דינוזאור מנסה להתחבק, אבל הידיים שלו קצרות מדי.","אז הוא מתחבק עם הלב. זה עובד אותו דבר."],
+ ["חייזר הגיע מכוכב רחוק רק כדי ללמוד אנגלית.","הוא כבר יודע להגיד hello ו-pizza."],
+ ["ענן קשת בוכה צבעים כשהוא צוחק חזק.","אז אצלו תמיד יש יום של מסיבת קשת."],
+ ["כוכב זהב מנצנץ כל כך חזק שצריך משקפי שמש.","גם בלילה. גם בחדר החשוך."]
+];
+LORE.push(
+ ["עכברי מפחד מחתולים, אבל רק מאלה שאין להם גבינה.","והוא יודע לצייץ באנגלית: squeak!"],
+ ["אוגר מאחסן אוכל בלחיים ואז שוכח איפה שם אותו.","מזל שהחיים שלו מלאים הפתעות... בלחיים."],
+ ["קואלה ישן 20 שעות ביום ואומר שזה סוג של תרגול.","תרגול חלומות באנגלית."],
+ ["היפופוטמית פוערת פה ענק רק כדי להגיד hello.","ובכל זאת כולם שומעים אותה עד השכנים."],
+ ["ברווזון חושב שכל שלולית היא בריכה פרטית.","וכל מי שעובר שם מקבל קוואק."],
+ ["צבי הגיע ראשון למסיבה. הוא יצא מהבית בשבוע שעבר.","הוא מבטיח שהוא בדיוק בזמן."],
+ ["חילזוני נושא את הבית על הגב ושוכח איפה השאיר את המפתחות.","הם בתוך הבית. הוא פשוט לא מסתכל."],
+ ["לפרת משה יש 7 נקודות והיא מסרבת לגלות מה הן אומרות.","אומרים שכל נקודה היא סוד קטן."],
+ ["דבורונת עובדת כל היום ואומרת בז-ז-ז.","זה בעצם שיר, אבל אף אחד לא שואל."],
+ ["פרפרית הייתה פעם זחל, והיא אומרת שלא זוכרת כלום.","(היא זוכרת. בעיקר את העלים.)"],
+ ["לתמנונית יש 8 ידיים ובכל זאת היא לא מוצאת את הגרב.","כנראה כי הגרב ביד התשיעית."],
+ ["לווייתנית מתעטשת מים וקוראת לזה מזרקה.","כל הדגים באים לצלם."],
+ ["סרטני הולך הצידה ומתעקש שזה הכיוון קדימה.","אף אחד לא יכול להוכיח אחרת."],
+ ["דולפי קופץ מעל הגלים רק כדי שיראו אותו.","וכל פעם הוא אומר: זה היה בכוונה!"],
+ ["כלב ים מוחא כפיים לעצמו אחרי כל מילה באנגלית.","ומי אנחנו שנעצור אותו?"],
+ ["סוסון אוהב לרוץ, אבל מסתובב לראות אם מישהו מסתכל.","מישהו תמיד מסתכל."],
+ ["פרתי אומרת מוּ, ובאנגלית זה moo, ואין שום הבדל.","זה מרגיע אותה מאוד."],
+ ["כבשונת ניסתה לספור כבשים כדי להירדם, ונרדמה באמצע 3.","היא עדיין חולמת על 4."],
+ ["אריה שואג כל כך חזק שהשכנים חושבים שזה רעם.","אבל בלילה הוא מפחד מהחושך. גם אריות מתרגלים."],
+ ["קופיף מתלבט בכל בוקר: בננה או בננה.","בסוף הוא בוחר בננה."],
+ ["ג׳ירפית רואה את הגג של כל הבתים, ואת העוגיות על הארון.","כן. גם שם."],
+ ["זברוש לא יודע אם הוא לבן עם פסים שחורים או להפך.","הוא החליט שזה לא משנה, הוא יפה."],
+ ["נמרוד ספר את הפסים שלו וקיבל תוצאה שונה כל פעם.","מאז הוא אומר: יש לי המון, אל תשאלו."],
+ ["תוכי חוזר על כל מה שאומרים לו. כל מה שאומרים לו.","(הוא עושה את זה כבר חצי שעה.)"],
+ ["עטלפון ישן הפוך כי ככה כל העולם נראה לו מצחיק.","ואחר כך הוא מתעורר רעב."],
+ ["לעכבישי יש 8 רגליים ו-0 נעליים. הוא טוען שזה חסכוני.","הוא רק שוכח את הגרביים."],
+ ["נחשוש ניסה לקשור שרוך וגילה שהוא פשוט נחש.","הקשר הצליח, אבל הוא נתקע."],
+ ["דביבון שוטף כל אוכל לפני שהוא אוכל אותו, אפילו עוגיות.","העוגייה נהפכה לבלילה. הוא אכל גם אותה."],
+ ["קיפוד רוצה חיבוק, אבל מבין למה כולם נעצרים באמצע.","אז הוא מציע חיבוק מרחוק, עם מילה טובה."],
+ ["איילה קופצת בין העצים כמו בבלט.","וכשהיא נופלת: זה היה חלק מהריקוד!"],
+ ["זאב מיילל לירח, והירח לא עונה כבר שנים.","הוא ממשיך לנסות. זו התמדה."],
+ ["פילפיל זוכר הכול: כל מילה, כל שיר, ומי לקח לו את הבננה.","כן, אנחנו יודעים מי."],
+ ["תרנגול קם ראשון בבוקר ומעיר את כולם.","ואז חוזר לישון."],
+ ["תנינון מחייך חיוך ענק, אבל כולם לא בטוחים אם זה טוב.","הוא רק רוצה חבר."],
+ ["ג׳ינג׳י בטוח שהוא נמר קטן ושכל הבית שלו.","הכרית? שלו. הספה? שלו. אתם? גם."],
+ ["לדלמטי יש 101 נקודות והוא יודע לספור אותן באנגלית.","הוא נתקע בשמונה-עשרה ומתחיל מחדש."],
+ ["קאפקייק מקושט בקרם וחלומות.","ואם תנסו לאכול אותו, הוא יבקש להפוך לחבר."],
+ ["סופגנייה גילתה שהחור באמצע זה לא באג, זה סגנון.","היא משלימה אותו בזילוף קרם."],
+ ["גלידה נמסה בכל פעם שמתרגשים. היא קוראת לזה 'התרגשות חמה'.","בסוף תמיד מישהו מציל אותה עם כפית."],
+ ["תות חושב שהנקודות עליו הן פסים של מכנסיים.","אל תספרו לו."],
+ ["אבטיח מלא במים וגם בגרעינים, והוא לא מבין למה.","אנחנו כן: כדי שנירק אותם רחוק."],
+ ["פטרייה צומחת אחרי הגשם ולא מבינה למה כולם מחייכים אליה.","הם פשוט חושבים שהיא חמודה."],
+ ["קקטוס אוהב חיבוקים, אבל רק מרחוק.","ולפעמים הוא מוציא פרח כדי לפייס."],
+ ["פרח מסתובב אחרי השמש כל היום כמו מצלמה.","כשהיא שוקעת הוא מנמנם."],
+ ["טיפה ירדה מהענן ולא ידעה שזה הרגע שהחיים שלה מתחילים.","עכשיו היא שלולית, והיא מאושרת."],
+ ["עננון ניסה להתקלח ופתאום ירד גשם.","מאז הוא מתקלח רק כשצריך."],
+ ["ירח הוא כמו פנס שאף אחד לא חיבר לחשמל.","ובכל זאת הוא מאיר. שיעור באמונה."],
+ ["דלעת מתכוננת כל השנה ליום אחד של מסכות.","בשאר הימים היא סתם דלעת עם חיוך."],
+ ["איש שלג חולם על גלידה, אבל החלום נמס.","הוא ממשיך לחלום בקור."],
+ ["אבוקדו ירוק מבחוץ, רך מבפנים, ועם גלעין ענק.","זה לא סוד, זה אופי."],
+ ["רובוט יודע לספור עד אינסוף אבל לא יודע לספר בדיחות.","לכן הוא מתרגל איתך. beep boop!"],
+ ["רוח רפאים מפחידה אנשים כבר 300 שנה והם עדיין צוחקים.","היא פשוט צריכה חבר."],
+ ["קוסם הצליח להפוך ארנב לכובע, אבל שכח איך חוזרים.","הארנב מרוצה. הכובע פחות."],
+ ["פיראט מחפש אוצר כבר 10 שנים.","האוצר היה בכיס. עם המפה."],
+ ["אסטרונאוט ראה את כדור הארץ מהחלל ואמר: וואו, איזה גן שעשועים.","מאז הוא חוזר לבית הספר עם חיוך ענק."],
+ ["נינג׳ה מתגנב בלי להשמיע קול, חוץ מהבטן שלו.","גם נינג׳ות מקבלות רעב."],
+ ["בת ים שרה כל כך יפה שהדגים מוחאים כפיים עם הסנפירים.","והצדפות נפתחות רק כדי לשמוע."],
+ ["עוף החול נשרף ונולד מחדש בכל פעם שהוא מתרגש.","גם כשרק קיבל מילה חדשה באנגלית."],
+ ["המלכה מנהיגה את כל הסקווישים בלי לומר מילה.","מספיק שהיא מרימה גבה, וכולם מתרגלים אנגלית."],
+ ["בגלקסיה יש מיליארד כוכבים, והיא מכירה כל אחד בשמו.","בעיקר את אלה שמתרגלים עד הסוף."]
+);
+
+LORE.push(
+ ["חתלתול ישן 23 שעות ביום, ובשעה האחרונה הוא עסוק מאוד בלהתמתח.","אם הוא מגרגר, סימן שהמילה באנגלית נכנסה לו לראש."],
+ ["שחורי מתחבא בחושך, אבל העיניים הלבנות שלו תמיד מסגירות אותו.","הוא עדיין מאמין שהוא ניינג'ה בהסוואה מלאה."],
+ ["לפודל יש תספורת חדשה כל יום, והוא מרגיש כמו כוכב קולנוע.","הוא לא מוכן ללכת בגשם. השיער שלו עסוק."],
+ ["לקנגורו יש כיס, ובתוכו תמיד נשכח משהו: חטיף, גרב או ספר אנגלית.","הוא קופץ לתרגל ונוחת בדיוק על התשובה הנכונה."],
+ ["הלאמה לא יורקת. היא רק מדברת קצת בנחרצות.","היא מבטיחה שאם תתרגלי היום, מחר זה יהיה קל."],
+ ["הגמלון סוחב בגב עוד קצת מילים בשביל המסע במדבר.","הוא לא שותה בכלל, כי הוא עסוק בללמוד."],
+ ["הקרנפי חושב שהקרן שלו היא נעלי ספורט למצח.","הוא מגיע לכל מקום ראשון, בעיקר בגלל הקרן."],
+ ["הפלמינגו עומד על רגל אחת כבר שנתיים, כי שכח איפה השנייה.","הוא ורוד כי הוא אוכל רק דברים מתוקים וצוחק הרבה."],
+ ["הברבור היה פעם ברווזון מכוער, ואז למד אנגלית והתחיל להאמין בעצמו.","היום הוא מחליק על האגם כמו מלך."],
+ ["לטוקן יש מקור כל כך גדול שהוא משתמש בו כמטריה.","כשהוא אומר hello, כל היער שומע."],
+ ["הצבצב מתקדם לאט, אבל הוא תמיד מגיע עם התשובה הנכונה.","הבית שלו על הגב, אז הוא אף פעם לא מאחר הביתה."],
+ ["זהבהב זוכר הכול, אבל רק עד הסיבוב הבא בקערה.","בכל סיבוב הוא אומר: וואו, איזה מקום חדש!"],
+ ["כרישון מחייך הרבה שיניים, אבל הוא בעצם אוהב רק גלידה.","כשהוא שוחה, כל הדגים מתרגלים אנגלית בשקט."],
+ ["המדוזה זוהרת בחושך ומשמשת פנס לכל האוקיינוס.","היא לא נושכת, היא רק מדגדגת בגמישות."],
+ ["לכוכב ים יש חמש ידיים וכולן מוכנות לחיבוק.","אם הוא מאבד יד, יש לו בדיוק עוד אחת בשבילך."],
+ ["ברווז הגומי צף על כל בועה ואומר squeak בכל הזדמנות.","הוא הכי מצחיק באמבטיה, ובעיקר כשהוא קם מוקדם."],
+ ["היונה מביאה הודעות מרחוק, ובדרך כלל זו הודעת שלום.","גם היום היא הביאה עלה זית ושתי מילים חדשות."],
+ ["לאייל הקרניים יש קרניים כמו אנטנה, והוא קולט כל מילה.","בלילה הוא תולה עליהן נורות, כדי שיהיה חג."],
+ ["הסיאמי מדבר הרבה, ורוב הזמן הוא מבקש עוד אוכל.","יש לו עיניים כחולות, והן יודעות כשאת עייפה."],
+ ["הארנבת קופצת, בולטת באוזניים, ומאבדת תמיד גזר אחד.","בסוף היא מוצאת אותו בכיס. תמיד בכיס."],
+ ["השרקן ישן על סלע חם וחולם על ארוחת צהריים.","אם תתקרבי, הוא ישלח לשון מצחיקה ויברח."],
+ ["ינשוף השלג ער כל הלילה, ובבוקר הוא עסוק בלישון.","הוא רואה בחושך, אבל מעדיף לראות סרטים."],
+ ["דוב הקוטב מחבק את כל הקרח ולא מוכן לעזוב.","יש לו מעיל כל כך חם שהוא מוריד אותו רק בקיץ."],
+ ["נמר השלג מטפס על הרים כאילו זה מדרגות לגן שעשועים.","הזנב שלו הוא צעיף, ולא כל כך קר לו."],
+ ["היעל קופץ בין סלעים בלי לפחד, אפילו בלי לקרוא את הוראות הזהירות.","הוא אומר שהכול עניין של מחשבה חיובית."],
+ ["העיזי אוכל כל מה שהוא מוצא, כולל מילים חדשות.","הזקן שלו משמש מטלית, ובכל זאת הוא מקפיד על ניקיון."],
+ ["הפוני מנסה לגדול לסוס, אבל הוא נהנה להיות קטן.","בכל בוקר הוא מסרק את הרעמה שלו לתסרוקת חדשה."],
+ ["הסנאי אוסף אגוזים ושוכח איפה שם אותם, ואז צומח עץ.","הוא קורא לזה גינה בשיטת הפתעה."],
+ ["החמורון מאמין שכל בעיה נפתרת בחיבוק ובקצת סבלנות.","הוא עקשן, אבל רק כשהוא באמת צודק."],
+ ["התרנגולת מקשקשת כל היום, ותמיד מוסיפה: אל תגידו לאף אחד.","היא מטילה ביצה ומיד מכריזה על זה בכל החצר."],
+ ["הפיצה אומרת שהיא הכי טעימה כשהיא עגולה, חמה ועם חיוך.","היא מתחרטת רק על הזיתים, אבל מוותרת עליהם."],
+ ["ההמבורגר מסתכל על כולם מלמעלה, כי הוא ממש גבוה.","הוא מבטיח שיש בו ירקות, ואף אחד לא מאמין."],
+ ["הפופקורן קופץ מהסיר בכל פעם שהוא שומע בדיחה.","וכשהוא צוחק הוא מתפוצץ, ממש."],
+ ["לאננס יש כתר על הראש והוא לא מוכן להוריד אותו.","הוא נראה קוצני, אבל בפנים הוא מתוק."],
+ ["הבננה מחליקה על קליפה, ואז צוחקת: זה לא אני!","היא עושה את זה בכוונה, רק בשביל הצחוק."],
+ ["הדובדבנים הם תאומים, ושניהם אומרים אותו משפט באותו רגע.","הם תלויים ביחד וממש אוהבים להתנדנד."],
+ ["לימוני חמוץ, אבל רק כשהוא מתעצבן על השמש.","אחרי חיבוק הוא נהיה סוכר טהור."],
+ ["התפוחון אומר שתפוח ביום מרחיק את הרופא, והרופא מסכים.","הוא מחזיק את הענף חזק, אבל נופל על כל בדיחה."],
+ ["הגזרי מתחבא באדמה ומעדיף שלא יראו את העלים שלו.","הוא טוען שהוא טוב לעיניים, וגם לבדיחות."],
+ ["פרוסת העוגה לא שורדת הרבה זמן, כי כולם מגיעים אליה.","עם הדובדבן למעלה היא מרגישה כמו מלכה."],
+ ["הסוכרייה מסתובבת ומסתובבת ומסתחררת מהצבעים של עצמה.","היא נשבעת שהיא לא ממכרת, רק מתוקה מאוד."],
+ ["השוקולד נמס כשהוא מתרגש, ואז הוא בעצם יוצא לחופשה.","הוא מבקש לא להיות לבד בחדר חם."],
+ ["הטוסטון קופץ מהטוסטר בכל פעם שהוא שומע שם של ממרח.","הוא פריך מבחוץ ורך מבפנים, בדיוק כמו הלב."],
+ ["ביצת העין מסתכלת על כולם מלמעלה, ממש בעין אחת.","היא אוהבת בוקר טוב ולא מוכנה להתבלבל עם חביתה."],
+ ["הסושי מתגלגל בכל מקום, ומעולם לא מאחר, כי הוא גולל.","הוא אומר תודה ביפנית ומשאיר את הוואסבי לאחרים."],
+ ["הקרמבו מכוסה בשוקולד ויש לו כובע מקצף, ממש מלך.","הוא יודע שבקיץ אסור לו להישאר בשמש."],
+ ["הצ׳יפס מתחבר ללא הפסקה ומאחד את כל הצלחת.","הוא לא מפחד משמן, רק משכל חסר מלח."],
+ ["העוגייה יודעת שהשוקולד הוא החבר הכי טוב שלה.","היא מכריזה שהקפה בבוקר הוא הזמן שלה."],
+ ["בוופל כל משבצת מחזיקה כמות קטנה של סירופ.","הוא מאמין שעם מספיק משבצות הוא יכול לנצח בשחמט."],
+ ["התירסון מסתתר בתוך עלים ומתפוצץ כשהוא נהיה חם.","הוא יודע לספור גרגירים. כבר הגיע ל-300."],
+ ["התפוזי יודע כמה פלחים יש לו, ואף פעם לא מסכים לחלוק.","כשהוא נסחט הוא אומר: אני מיץ של שמחה!"],
+ ["הארטיק נמס לאט, ומשאיר בכל מקום שביל של טעם.","הוא ממש אוהב לקפוץ מהמקפיא ביום חם."],
+ ["השמשון מתעורר ראשון ושולח לכולם אור ואת הבוקר.","כשהוא מחייך, אפילו הענן הכי כבד מתחיל לצחוק."],
+ ["פתית השלג יוצא לטיול ולא חוזר אותו דבר בפעם הבאה.","אין עוד אחד כמוהו, וכל השלגים מעריצים אותו."],
+ ["הברקי מהיר כל כך שהוא כבר חזר לפני שהספיק להתחיל.","הוא מפחיד רק מי שלא ידע שהוא סתם מצחיק."],
+ ["הלהבה רוקדת בלי הפסקה ומחממת את כל הסלון.","היא מבקשת שלא תנשפי עליה, כי היא מתביישת."],
+ ["העלה נופל לאט ובעיקר מצלם נוף כשהוא באוויר.","בסתיו הוא מחליף צבעים כמו אופנה."],
+ ["העצי עומד שם כל היום ושומע את כל הסודות של הציפורים.","הוא מבטיח שלא ידבר, אבל החיפושיות מדברות."],
+ ["החמנית מסתכלת תמיד אל השמש כאילו היא החברה הכי טובה שלה.","היא מאחלת בוקר טוב לכל מי שעובר."],
+ ["הורדה יפה ויש לה קוצים, אבל רק לאלה שלא אומרים בבקשה.","היא מוכנה לחבק, אבל בזהירות."],
+ ["הטוליפון רוקד בשדה ונראה כמו כוסית קטנה של ורוד.","הוא מקבל מכתבים מהולנד כל יום."],
+ ["ההרי הכי גבוה בשכונה, ואפילו הענן עוצר לשוחח איתו.","הוא עומד בשקט ושומר את הנוף."],
+ ["הפנינה מתחבאת בתוך צדף ולא מוכנה לצאת בלי תסרוקת.","היא גדלה לאט, בדיוק כמו מילים חדשות במחברת."],
+ ["ענן הגשם מתרגש ומתחיל לבכות על כל דבר, אבל זה גשם של שמחה.","הוא משקה את כל הפרחים ואומר: עשיתי מצווה."],
+ ["כדור הארץ מסתובב כל היום ולא מרגיש סחרחורת, מדהים.","הוא הבית של כולם, וגם של הסקווישים."],
+ ["כוכב הלכת מסתובב עם טבעת אחת, כמו נסיכה בחלל.","הוא אומר שהטבעת הכי יפה בגלקסיה."],
+ ["הבלונצ׳יק עף מהיד שלך ומבקש רק לראות את העולם מלמעלה.","הוא פוחד רק מקוצים, ולכן הוא תמיד מחייך."],
+ ["המתנה לא מגלה מה בפנים, גם אם תתחנני.","הסוד היחיד שהיא מגלה: את היקרה מכל."],
+ ["המטרייה מתרוממת כשיורד גשם, ושוכחת הכול כשיוצא שמש.","היא מכריזה על עצמה כמגינה של יום גשום."],
+ ["כדור פורח מרחף לאט ולוקח את כל הנוף על הדרך.","הוא מסתכל על כולם מלמעלה, ועדיין מתרגש מהם."],
+ ["המכונית נוסעת מהר מדי ובכל זאת מגיעה תמיד בזמן.","היא מצפצפת רק כשהיא שמחה."],
+ ["החללית טסה לירח ורק שם נזכרה שלא לקחה כריך.","בדרך חזרה היא למדה שבחלל אומרים hello בשקט."],
+ ["כדורגל מתגלגל ומחפש את השער בלי להסתכל.","הוא לא מפחד מבעיטות, רק ממחטים."],
+ ["הספרון יודע הרבה סיפורים, אבל לא מוכן לספר את הסוף.","הוא מרגיש הכי טוב כשפותחים אותו ומחייכים."],
+ ["העפרוני כותב בלי להפסיק, ולפעמים גם מוחק בלי להפסיק.","הוא טוען שהמחק הוא חברו הכי טוב."],
+ ["הפעמון מצלצל בכל פעם שמישהו אומר מילה נכונה.","דינג דונג! עכשיו תורך לענות."],
+ ["הנרי שמח ממש כשיש יום הולדת, ומבקש שלא ינשפו עליו חזק.","הוא נמס לאט, אבל רק בשביל שיהיה אור."],
+ ["הלבבי פועם בקצב של מילים טובות ושל חיבוקים.","הוא לא שבר אף פעם, רק התכווץ קצת מרוב אהבה."],
+ ["המלאכון עף עם כנפיים קטנות, ובמיוחד כשהוא נרדם.","הוא שומר עלייך ואומר לילה טוב לכולם."],
+ ["הגמדון חי ביער ויודע איפה כל פטרייה גרה.","הכובע האדום שלו ענק, והוא מתחבא מתחתיו כשהוא מתבייש."],
+ ["הבלרינה רוקדת על קצות האצבעות, ואפילו כשהיא ישנה.","היא מעריכה כל מחיאת כפיים, ובעיקר שקטה."],
+ ["השף מבשל מהר מדי, וטועם בלי שהוא בכלל רעב.","המתכון הסודי שלו: להגיד תודה אחרי הכול."],
+ ["הכבאי מגיע ראשון, אפילו אם רק נפל לך גרגיר סוכר.","הוא אומר שאין שריפה שהחיוך לא יכול לכבות."],
+ ["הליצן מתעטש וכולם צוחקים, והוא מבין: אני בדיחה מהלכת.","אבל הכי הוא אוהב לגרום לחיוך אחד אמיתי."],
+ ["האבירה לא מפחדת משום דרקון, אבל מתביישת ללכת בלי נעליים.","היא מגינה על כל מילה שקשה לזכור."],
+ ["הוויקינג חצה אוקיינוסים רק כדי להגיד hello לכל מי שפגש.","הזקן שלו מסתיר כיסים עם חטיפים."],
+ ["פיית היער מפזרת ניצוצות, ובכל פעם נולד פרח חדש.","היא אומרת שהקסם הכי חזק הוא לחזור על המילה עוד פעם."],
+ ["מלך הים שולט בכל הדגים, אבל הם עובדים רק כשהוא מבקש יפה.","הוא מחזיק קלשון ומשתמש בו כדי לגרד את הגב."],
+ ["רוח הקשת מופיעה רק אחרי גשם ושבע פעמים מבקשת סליחה.","היא מחייכת בכל הצבעים ולא בוחרת צבע אחד."],
+ ["הקוסמת שולפת ארנב מהכובע, וארנב בחזרה אומר: מה לעשות?","כל הקסמים שלה עובדים רק על מי שמתרגל כל יום."],
+ ["לשועל הקסם יש שלושה זנבות וכל אחד יודע סוד אחר.","כשהוא מחייך, נולד קשת קטנה ליד האף."],
+ ["מלאך הזהב זוהר כל כך שכל הכוכבים מתביישים.","הוא שומר שלא תשכחי מילה, וגם שלא תשכחי לחייך."],
+ ["חתול הכוכבים מתנדנד על הירח ולוכד נצנוצים ביד.","בלילה הוא ממלא את השמים בעיניים מנצנצות."],
+ ["הינשוף החכם יודע הכול, ובכל זאת שואל: מי? מי?","הוא קורא ספרים כל הלילה, וכל בוקר מבקש עוד אחד."],
+ ["פיל הזהב לא שוכח כלום, אפילו לא איפה שם את המשקפיים.","הזנב שלו מקשקש כשהוא מרוצה מהמילה שלמדה."],
+ ["כוכב נופל עובר בשמים ומבקש רק משאלה אחת: להישאר איתך.","הוא משאיר זנב של נצנוצים לכל מי שמסתכל."],
+ ["כדור השלג הקסום מכיל עולם שלם בגודל של כף יד.","כשמנערים אותו, יורד שלג ומתחילות מילים חדשות."],
+ ["אריה היהלום מלא נוצצים, וכשהוא שואג הם מתפזרים כמו קונפטי.","הוא מלך כל החיות ונהנה להיות קצת מגניב."],
+ ["תוכי הקשת חוזר על כל מילה באנגלית, בכל הצבעים.","הוא אומר Hello בבוקר, ובערב בעיקר Good night."],
+ ["דרקון הים שוחה עמוק ומבעבע בועות של שמחה.","הוא שומר על מטמון של מילים, ומשאיר לך אחת מכל קופסה."]
+);
+
+const RARE_N=ANIM.filter(a=>a.r).length;
+const loreHtml=i=>`<div class="lore">${(LORE[i]||[]).map(l=>`<div>${l}</div>`).join('')}</div>`;
+
+function squish(i,cls=''){
+ if(i>=N_BASE)return `<svg class="sq ${cls}" viewBox="0 0 100 100" aria-hidden="true">${ANIM[i-N_BASE].s}</svg>`;
+ const c=COL[(i*5+i%3)%12], shape=SHAPES[i%5].replace('C',c), face=i%3, extra=Math.floor(i/5)%4;
+ const ex=[ '',
+  `<polygon points="18,38 22,8 44,28" fill="${c}"/><polygon points="82,38 78,8 56,28" fill="${c}"/><polygon points="23,30 25,16 36,27" fill="#ffb3cf"/><polygon points="77,30 75,16 64,27" fill="#ffb3cf"/>`,
+  `<polygon points="50,28 30,14 30,38" fill="#ff5d8f"/><polygon points="50,28 70,14 70,38" fill="#ff5d8f"/><circle cx="50" cy="28" r="6" fill="#e0407a"/>`,
+  `<line x1="50" y1="28" x2="50" y2="10" stroke="#6b4b00" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="9" r="6" fill="#ffd35c"/>`][extra];
+ const mouth=['<path d="M41 66Q50 76 59 66" stroke="#4a3b5c" stroke-width="3.5" fill="none" stroke-linecap="round"/>',
+  '<path d="M43 65Q50 80 57 65Z" fill="#4a3b5c"/><path d="M46 72Q50 76 54 72Z" fill="#ff7a8a"/>',
+  '<path d="M40 65Q45 72 50 65Q55 72 60 65" stroke="#4a3b5c" stroke-width="3.5" fill="none" stroke-linecap="round"/>'][face];
+ const eyes=face===2?'<path d="M30 56Q36 49 42 56M58 56Q64 49 70 56" stroke="#4a3b5c" stroke-width="3.5" fill="none" stroke-linecap="round"/>'
+  :'<circle cx="35" cy="56" r="5.5" fill="#4a3b5c"/><circle cx="65" cy="56" r="5.5" fill="#4a3b5c"/><circle cx="37" cy="54" r="2" fill="#fff"/><circle cx="67" cy="54" r="2" fill="#fff"/>';
+ return `<svg class="sq ${cls}" viewBox="0 0 100 100" aria-hidden="true">${ex}${shape}<ellipse cx="34" cy="38" rx="12" ry="6" fill="#fff" opacity=".4" transform="rotate(-20 34 38)"/><circle cx="24" cy="66" r="6" fill="#ff7eb6" opacity=".35"/><circle cx="76" cy="66" r="6" fill="#ff7eb6" opacity=".35"/>${eyes}${mouth}</svg>`;
+}
+
+// ---------- עזרים ----------
+const LETTER_SAY={A:'ay',B:'bee',C:'see',D:'dee',E:'ee',F:'eff',G:'jee',H:'aitch',I:'eye',J:'jay',K:'kay',L:'el',M:'em',N:'en',O:'oh',P:'pee',Q:'cue',R:'ar',S:'ess',T:'tee',U:'you',V:'vee',W:'double you',X:'ex',Y:'why',Z:'zee'};
+const spRate=()=>Math.max(.4,Math.min(1.1,+(D.settings&&D.settings.rate)||.7));   // איטי, בקצב ללימוד
+function say(t){try{t=String(t);let r=spRate();
+ if(/^[A-Za-z]$/.test(t)){t=LETTER_SAY[t.toUpperCase()];r=Math.min(r,.6)}   // שם האות, לא "a" כמו מילה
+ else if(t.split(/\s+/).length>3)r=Math.max(.45,r-.05);
+ if(window.AndroidApp){AndroidApp.say(t,r);return}
+ const he=/[֐-׿]/.test(t);
+ speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang=he?'he-IL':'en-US';u.rate=r;u.pitch=1.05;
+ const v=speechSynthesis.getVoices().filter(x=>he?/^(he|iw)[-_]/i.test(x.lang):/^en[-_]US/i.test(x.lang));if(v.length)u.voice=v.find(x=>/google|samantha|aria|zira|carmit|female/i.test(x.name))||v[0];
+ speechSynthesis.speak(u)}catch(e){}}
+function confetti(){const e=['⭐','🎉','✨','💖','🌈','🎈'];for(let i=0;i<36;i++){const s=document.createElement('span');s.className='confetti';s.textContent=e[i%e.length];s.style.left=Math.random()*100+'vw';s.style.animationDelay=Math.random()*.6+'s';s.style.fontSize=(1+Math.random())+'rem';document.body.appendChild(s);setTimeout(()=>s.remove(),3400)}}
+function fireworks(){const c=document.createElement('canvas');c.style.cssText='position:fixed;inset:0;width:100%;height:100%;z-index:90;pointer-events:none';
+ const d=window.devicePixelRatio||1,W=innerWidth,H=innerHeight;c.width=W*d;c.height=H*d;document.body.appendChild(c);const x=c.getContext('2d');x.scale(d,d);
+ let P=[],next=0;const cols=['#ff7eb6','#ffd35c','#5fd68a','#5aaeff','#a77bff','#ff9f43'],t0=performance.now();
+ function burst(){const cx=W*(.15+Math.random()*.7),cy=H*(.12+Math.random()*.4),col=cols[Math.random()*cols.length|0];
+  for(let i=0;i<70;i++){const a=Math.PI*2*i/70,v=2+Math.random()*4;P.push({x:cx,y:cy,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:1,c:Math.random()<.3?'#fff':col})}}
+ (function loop(now){const t=now-t0;x.clearRect(0,0,W,H);
+  if(t>=next&&t<3800){burst();next=t+320+Math.random()*280}
+  P=P.filter(p=>p.l>0);for(const p of P){p.x+=p.vx;p.y+=p.vy;p.vy+=.06;p.vx*=.985;p.l-=.011;x.globalAlpha=Math.max(p.l,0);x.fillStyle=p.c;x.beginPath();x.arc(p.x,p.y,2.5,0,7);x.fill()}
+  x.globalAlpha=1;if(t<5400)requestAnimationFrame(loop);else c.remove()})(t0)}
+const PRAISE=['כל הכבוד!','וואו, מדהים!','את כוכבת!','בדיוק!','איזו מלכה!','יופי של זיכרון!','ממש מעולה!'];
+const RETRY=['לא נורא, עוד נתרגל!','ניסיון טוב! נחזור על זה.','כל טעות מלמדת!','עוד רגע זה יהיה שלך!'];
+const pick=a=>a[Math.random()*a.length|0];
+function streakOf(p){return(p.last===today()||p.last===yesterday())?p.streak:0}
+function tick(p){const t=today();if(p.day!==t){p.day=t;p.dayCount=0}p.dayCount++;if(p.last!==t){p.streak=p.last===yesterday()?p.streak+1:1;p.last=t}}
+function pickSq(free){const w=free.map(i=>isRare(i)?.6:1);let r=Math.random()*w.reduce((a,b)=>a+b,0);for(let k=0;k<free.length;k++){r-=w[k];if(r<=0)return free[k]}return free[free.length-1]}
+function addStar(p,run){p.stars=(p.stars||0)+1;p.total=(p.total||0)+1;if(run)run.stars++;if(p.stars>=spp()){p.stars=0;const free=[...Array(N_SQ).keys()].filter(i=>!p.coll.includes(i));if(free.length){const n=pickSq(free);p.coll.push(n);if(run)run.prizes.push(n)}}}
+
+// ---------- בחירת מילים (חזרה מרווחת) ----------
+function pool(){const p=P();return D.words.filter(w=>vis(w,p)&&(!S.lesson||w.lesson===S.lesson))}
+function pickWords(p,n){
+ const now=Date.now(),L=pool();
+ const due=L.filter(w=>p.prog[w.id]&&p.prog[w.id].due<=now).sort((a,b)=>p.prog[a.id].due-p.prog[b.id].due);
+ const fresh=shuffle(L.filter(w=>!p.prog[w.id]));
+ let out=[...due,...fresh].slice(0,n);
+ if(out.length<Math.min(n,L.length))out=out.concat(shuffle(L.filter(w=>!out.includes(w))).slice(0,n-out.length));
+ return out;
+}
+function mark(p,w,res){
+ const g=p.prog[w.id]||(p.prog[w.id]={box:0,due:0,seen:0});
+ g.seen++;
+ if(res==='know'){g.box=Math.min(4,g.box+1);g.due=Date.now()+DAYS[g.box]*864e5}
+ else if(res==='almost'){g.due=Date.now()+864e5}
+ else{g.box=0;g.due=Date.now()}
+}
+const mastered=p=>D.words.filter(w=>vis(w,p)&&p.prog[w.id]&&p.prog[w.id].box>=4).length;
+
+// ---------- מסכים ----------
+const prizeCard=i=>isRare(i)?`<div class="panel center rarebox pop"><div class="rays"></div><div class="rare-title">💎 סקוויש נדיר! 💎</div><div class="rare-sub">✨ רק ${RARE_N} כאלה בכל העולם! ✨</div><span data-squish style="cursor:pointer;display:inline-block">${squish(i,'lg')}</span><div class="big">${sqName(i)}</div>${loreHtml(i)}</div>`
+ :`<div class="panel center pop"><div class="big">סקוויש חדש! 🎁</div><span data-squish style="cursor:pointer;display:inline-block">${squish(i,'lg')}</span><div class="big">${sqName(i)}</div>${loreHtml(i)}</div>`;
+const V={};
+V.profiles=()=>`
+ <div class="top"><h1>מילים בכיף ✨</h1><div class="sp"></div><button class="btn small ghost" data-act="parent">📊</button><button class="btn small ghost" data-act="settings">⚙️</button></div>
+ <p class="center big">מי מתרגלת היום?</p>
+ <div class="grid">${D.profiles.map(p=>`<button class="profile" style="box-shadow:0 6px 0 ${th(p).d};border-top:8px solid ${th(p).a}" data-act="pick" data-id="${p.id}">${squish(p.avatar)}${esc(p.name)}<span class="hint">⭐ ${p.stars||0}/${spp()} · 🏆 ${p.coll.length}/${N_SQ}</span></button>`).join('')}</div>
+ <div class="credit">פותח על ידי אוהד שמואלי ©<br>באהבה לאגם ולשיר 💖</div>`;
+
+const pillsHtml=p=>`<div class="pill">🔥 ${streakOf(p)}</div><div class="pill">⭐ ${Math.min(p.stars||0,spp())}/${spp()}</div><div class="pill">🏆 ${p.coll.length}/${N_SQ}</div>`;
+V.home=()=>{const p=P(),goal=D.settings.goal,cnt=p.day===today()?p.dayCount:0,ls=lessons(),n=pool().length;
+ return`
+ <div class="top"><button class="btn small ghost" data-act="profiles">→</button><div class="sp"></div>
+  ${pillsHtml(p)}</div>
+ <div class="center"><div data-act="pet" style="display:inline-block;cursor:pointer" class="bounce">${squish(p.avatar,'lg')}</div>
+  <h2>היי ${esc(p.name)}!</h2></div>
+ ${examHtml()}
+ <div class="panel"><b>המטרה להיום: ${Math.min(cnt,goal)}/${goal}</b>
+  <div class="bar" style="margin-top:8px"><i style="width:${Math.min(100,cnt/goal*100)}%"></i></div>
+  <div class="hint" style="margin-top:8px">עוד ${spp()-(p.stars||0)} כוכבים לסקוויש הבא · שלטת ב-${mastered(p)} מילים<br>🎁 משחק או תרגיל בלי טעויות נותנים כוכבים (עד 5)</div></div>
+ <div class="panel">
+  <label>שיעור</label>
+  <select data-change="lesson"><option value="">כל המילים</option>${ls.map(l=>`<option ${S.lesson===l?'selected':''}>${esc(l)}</option>`).join('')}</select>
+  <label>כיוון</label>
+  <div class="seg"><button class="${S.mode==='en2he'?'on':''}" data-act="mode" data-v="en2he">אנגלית ← עברית</button><button class="${S.mode==='he2en'?'on':''}" data-act="mode" data-v="he2en">עברית ← אנגלית</button></div></div>
+ ${n<1?'<div class="panel center">אין עדיין מילים. בקשו מההורים להוסיף בהגדרות ⚙️</div>':''}
+ <button class="btn" data-act="practice" ${n<1?'disabled':''}>🃏 בואי נתרגל (תרגול בלבד, בלי פרסים)</button>
+ <button class="btn blue has-gift" data-act="game" ${n<2?'disabled':''}>🎮 משחק התאמה (פרסים!)</button>
+ <button class="btn yellow has-gift" data-act="hub">🧩 מרכז תרגילים (אותיות, צלילים, משפטים)</button>
+ <div class="row"><button class="btn yellow" data-act="prizes">🏆 הסקווישים שלי</button><button class="btn blue" data-act="look">🎨 האייקון והצבע</button></div>
+ <button class="btn ghost" data-act="parent">📊 מידע להורה</button>
+ <button class="btn ghost" data-act="settings">⚙️ הגדרות</button>`};
+
+V.practice=()=>{const r=S.run;if(!r)return'';
+ if(r.i>=r.q.length)return V.done();
+ const w=r.q[r.i],e2h=S.mode==='en2he';
+ const front=e2h?`<div class="word en" data-say="${esc(w.en)}">${esc(w.en)}</div><button class="speak" data-act="say" data-t="${esc(w.en)}">🔊</button>`:`<div class="word" data-say="${esc(w.he)}">${esc(w.he)}</div>`;
+ const back=e2h?`<div class="word" data-say="${esc(w.he)}">${esc(w.he)}</div><div class="hint" data-say="${esc(w.en)}">${esc(w.en)} 🔊</div>`:`<div class="word en" data-say="${esc(w.en)}">${esc(w.en)}</div><button class="speak" data-act="say" data-t="${esc(w.en)}">🔊</button>`;
+ return`
+ <div class="top"><button class="btn small ghost" data-act="home">✕</button><div class="bar sp"><i style="width:${r.i/r.q.length*100}%"></i></div><div class="pill">${Math.min(r.i+1,r.q.length)}/${r.q.length}</div></div>
+ <div class="center hint">${e2h?'מה זה בעברית? תגידי לעצמך בקול 🗣️':'איך אומרים באנגלית? תגידי לעצמך בקול 🗣️'}</div>
+ <div class="scene"><div class="card" id="card" data-act="flip">
+  <div class="face">${w.lesson?`<span class="lesson">${esc(w.lesson)}</span>`:''}${front}<div class="hint">לחצי כדי להפוך 👆</div></div>
+  <div class="face back">${back}</div></div></div>
+ <div id="ans" style="visibility:hidden"><div class="center big" style="margin-bottom:8px">אז איך היה?</div>
+  <div class="answers"><button class="btn green" data-act="ans" data-v="know">✅<span>ידעתי!</span></button><button class="btn yellow" data-act="ans" data-v="almost">🤔<span>כמעט</span></button><button class="btn red" data-act="ans" data-v="no">❌<span>לא ידעתי</span></button></div></div>`};
+
+V.done=()=>{const r=S.run,p=P();
+ return`<div class="center" style="margin-top:20px"><div class="bounce" style="display:inline-block">${squish(p.avatar,'lg')}</div>
+ <h1>סיימת! 🎉</h1><p class="big">${r.know} מתוך ${r.total} ידעת מיד</p></div>
+ <div class="panel center">רוצה כוכבים? 🎁<br>שחקי <b>משחק התאמה בלי אף טעות</b> וקבלי <b>5 ⭐</b>!</div>
+ <button class="btn blue" data-act="game">🎮 למשחק התאמה</button>
+ <button class="btn" data-act="practice">עוד סיבוב</button><button class="btn ghost" data-act="home">חזרה</button>`};
+
+V.game=()=>{const g=S.game;if(!g)return'';
+ if(g.left===0)return`<div class="center" style="margin-top:20px"><div class="bounce" style="display:inline-block">${squish(P().avatar,'lg')}</div>${g.mistakes?`<h1>כמעט! 💪</h1><p class="big">היו ${g.mistakes} טעויות</p><p>משחק בלי אף טעות נותן כוכבים לסקוויש. נסי שוב!</p>`:`<h1>בלי אף טעות! 🎉</h1><p class="big">קיבלת ⭐ ${g.stars}</p>`}</div>
+  ${g.prizes.map(i=>prizeCard(i)).join('')}
+  <button class="btn blue" data-act="game">${g.mistakes?'נסי שוב':'עוד משחק'}</button><button class="btn ghost" data-act="home">חזרה</button>`;
+ const btn=(w,side)=>`<button class="m ${side} ${g.done.includes(w.id)?'done':''} ${g.sel&&g.sel.id===w.id&&g.sel.side===side?'sel':''}" data-act="m" data-id="${w.id}" data-side="${side}">${esc(side==='en'?w.en:w.he)}</button>`;
+ return`<div class="top"><button class="btn small ghost" data-act="home">✕</button><h2 class="sp">משחק התאמה</h2><div class="pill">❌ ${g.mistakes}</div></div>
+ <div class="center hint">לחצי על מילה באנגלית ואז על התרגום שלה.<br><b>בלי אף טעות = כוכבים לסקוויש! ⭐</b></div>
+ <div class="row" style="flex:1"><div class="mcol">${g.en.map(w=>btn(w,'en')).join('')}</div><div class="mcol">${g.he.map(w=>btn(w,'he')).join('')}</div></div>`};
+
+V.look=()=>{const p=P(),cur=p.color||0;
+ return`<div class="top"><button class="btn small ghost" data-act="home">→</button><h2 class="sp">האייקון והצבע שלי 🎨</h2></div>
+ <div class="center"><div class="bounce" style="display:inline-block">${squish(p.avatar,'lg')}</div><h2>${esc(p.name)}</h2></div>
+ <div class="panel"><h3>הצבע שלי</h3><div class="swatches">${THEMES.map((t,i)=>`<button class="swatch ${i===cur?'on':''}" data-act="setcolor" data-i="${i}" style="background:${t.a};box-shadow:0 4px 0 ${t.d}" aria-label="${t.n}"></button>`).join('')}</div></div>
+ <div class="panel"><h3>האייקון שלי <span class="hint">(${p.coll.length}/${N_SQ} סקווישים)</span></h3><div class="hint">אפשר לבחור רק סקוויש שהרווחת! שחקי משחקים בלי טעויות כדי לקבל עוד.</div>
+  <div class="collgrid avg">${p.coll.map(i=>`<div class="slot ${isRare(i)?'rare':''} ${p.avatar===i?'cur':''}" data-act="setav" data-i="${i}">${isRare(i)?'<span class="rtag">✨</span>':''}${squish(i)}</div>`).join('')}</div></div>`};
+
+V.prizes=()=>{const p=P();
+ return`<div class="top"><button class="btn small ghost" data-act="home">→</button><h2 class="sp">הסקווישים שלי 🏆</h2><div class="pill">${p.coll.length}/${N_SQ}</div></div>
+ <div class="center hint">כל ${spp()} כוכבים = סקוויש חדש, ואז הספירה חוזרת ל-0. הכוכבים מגיעים ממשחק התאמה ותרגילים בלי אף טעות (עד 5), ומכתיבת השם (1). לחצי על סקוויש כדי לשמוע עליו ולבחור אותו כדמות שלך. הסקווישים עם ✨ נדירים במיוחד!</div>
+ <div class="collgrid">${[...Array(N_SQ).keys()].map(i=>p.coll.includes(i)?`<div class="slot ${isRare(i)?'rare':''} ${p.avatar===i?'cur':''}" data-act="avatar" data-i="${i}">${isRare(i)?'<span class="rtag">✨</span>':''}${squish(i)}<small>${sqName(i)}</small></div>`:`<div class="slot lock ${isRare(i)?'rare':''}">${isRare(i)?'✨❓':'❓'}</div>`).join('')}</div>`;
+};
+
+const WORDROW=w=>`<div class="wedit"><input dir="ltr" data-wid="${w.id}" data-f="en" value="${esc(w.en)}" autocapitalize="off" style="text-align:left"><input data-wid="${w.id}" data-f="he" value="${esc(w.he)}"><button class="x" data-act="delword" data-id="${w.id}" title="מחיקה">🗑️</button></div>`;
+
+const lessonPanels=()=>{
+ const secs=D.profiles.map(p=>({o:p.id,t:'👧 השיעורים של '+esc(p.name)}));
+ if(D.words.some(w=>!w.owner))secs.push({o:'',t:'👭 שיעורים משותפים (לכולן)'});
+ return`<div class="hint" style="margin:0 4px">כל שיעור שייך לילדה אחת, והיא רואה רק את השיעורים שלה. אפשר גם לשייך שיעור לכולן.</div>`+secs.map(sc=>{
+  const names=[...new Set(D.words.filter(w=>(w.owner||'')===sc.o).map(w=>w.lesson||''))];
+  return`<div class="panel"><h3>${sc.t}</h3>
+  ${names.map(l=>`<div class="lrow" data-act="openl" data-l="${esc(l)}" data-o="${sc.o}"><span class="big">📖 ${esc(l||'ללא שיעור')}</span><span class="hint">${D.words.filter(w=>(w.lesson||'')===l&&(w.owner||'')===sc.o).length} מילים</span><span class="sp"></span><button class="x" data-act="dellesson" data-l="${esc(l)}" data-o="${sc.o}" title="מחיקת שיעור">🗑️</button><span class="chev">‹</span></div>`).join('')||'<p class="hint">אין עדיין שיעורים</p>'}
+  <br><button class="btn green" data-act="newl" data-o="${sc.o}">➕ שיעור חדש</button></div>`}).join('')};
+
+V.settings=()=>{
+ if(!S.gate)return`<div class="top"><button class="btn small ghost" data-act="back">→</button><h2>אזור הורים 🔒</h2></div>
+  <div class="panel center"><p class="big">🔑 סיסמת מבוגרים</p><input id="gate" type="password" inputmode="numeric" autocomplete="off" style="text-align:center;font-size:1.6rem"><br><br><button class="btn" data-act="gate">כניסה</button></div>`;
+ if(S.sl!=null)return V.lessonEdit();
+ return`<div class="top"><button class="btn small ghost" data-act="back">→</button><h2>הגדרות</h2></div>
+ <button class="btn blue" data-act="s2p">📊 מידע להורה (יומן ומחוונים)</button>
+ ${lessonPanels()}
+ <div class="panel"><h3>👧 הילדות</h3>
+  ${D.profiles.map(p=>`<div class="wedit">${squish(p.avatar,'sm')}<input data-name="${p.id}" value="${esc(p.name)}"><input data-en="${p.id}" dir="ltr" placeholder="English" value="${esc(p.en||'')}" style="text-align:left"><button class="x" data-act="delprof" data-id="${p.id}" title="מחיקה">🗑️</button></div>`).join('')}
+  <br><button class="btn yellow" data-act="addprof">➕ הוספת ילדה</button></div>
+ <div class="panel"><h3>📅 הערכה קרובה</h3><div class="hint">מופיעה לילדות עם ספירה לאחור.</div>
+  <label>תאריך</label><input type="date" data-exam="date" value="${esc((D.settings.exam||{}).date||'')}">
+  <label>הערה (חומר לחזרה)</label><input data-exam="note" value="${esc((D.settings.exam||{}).note||'')}"></div>
+ <div class="panel"><h3>🔊 מהירות ההקראה</h3><div class="hint">לחיצה על מילה, אות או תמונה באנגלית מקריאה אותה.</div>
+  <select data-rate><option value="0.55" ${spRate()===.55?'selected':''}>איטית מאוד</option><option value="0.7" ${spRate()===.7?'selected':''}>איטית (מומלץ ללימוד)</option><option value="0.9" ${spRate()===.9?'selected':''}>רגילה</option></select>
+  <br><br><button class="btn small blue" style="width:auto" data-act="saytest">🔊 נסי</button></div>
+ <div class="panel"><h3>🔑 סיסמת מבוגרים</h3><div class="hint">לפחות 4 תווים. נדרשת לכניסה להגדרות ולמידע להורה.</div>
+  <input type="password" inputmode="numeric" autocomplete="off" value="${esc(D.settings.pw||'2101975')}" data-pw></div>
+ <div class="panel"><h3>⭐ כוכבים לסקוויש</h3><div class="hint">כמה כוכבים צריך כדי לקבל סקוויש חדש (ואז הספירה חוזרת ל-0).</div>
+  <input type="number" min="1" max="100" value="${spp()}" data-spp></div>
+ <div class="panel"><h3>🎯 יעד יומי</h3><div class="hint">כמה כרטיסיות ביום</div><input type="number" min="1" max="100" value="${D.settings.goal}" data-goal></div>
+ <div class="panel"><h3>💾 גיבוי</h3><div class="row"><button class="btn small blue" data-act="export">ייצוא</button><button class="btn small blue" data-act="import">ייבוא</button></div>
+  <div class="hint" style="margin-top:8px">גיבוי אחרון: <b>${D.settings.lastBackup?fmtTs(D.settings.lastBackup):'אף פעם'}</b><br>הכוכבים, הסקווישים, השיעורים והיומן נשמרים בטלפון הזה. אפשר לייצא גיבוי ולהעביר או לשחזר.</div></div>`;
+};
+
+V.lessonEdit=()=>{
+ const l=S.sl,o=S.so||'',ws=D.words.filter(w=>(w.lesson||'')===l&&(w.owner||'')===o);
+ return`<div class="top"><button class="btn small ghost" data-act="back">→ לשיעורים</button><h2 class="sp">עריכת שיעור</h2></div>
+ <div class="panel"><label style="margin-top:0">✏️ שם השיעור</label>
+  <input data-lname value="${esc(l)}" placeholder="למשל: 12.10.26"><div class="hint" style="margin-top:6px">שינוי השם מעביר איתו את כל המילים.</div></div>
+ <div class="panel"><label style="margin-top:0">👧 של מי השיעור?</label>
+  <select data-lowner>${D.profiles.map(p=>`<option value="${p.id}" ${o===p.id?'selected':''}>${esc(p.name)} בלבד</option>`).join('')}<option value="" ${o===''?'selected':''}>שתיהן (משותף)</option></select></div>
+ <div class="panel"><h3>➕ הוספת מילה</h3>
+  <label>אנגלית</label><input id="ne" dir="ltr" autocapitalize="off" style="text-align:left">
+  <label>עברית</label><input id="nh">
+  <br><button class="btn green" data-act="addword">הוספה</button></div>
+ <div class="panel"><h3>📝 המילים (${ws.length})</h3>
+  <div class="hint" style="margin-bottom:8px">אפשר לתקן ישירות בתוך השדות. השינוי נשמר מיד.</div>
+  ${ws.map(WORDROW).join('')||'<p class="hint">אין עדיין מילים בשיעור הזה</p>'}</div>
+ <details class="panel"><summary class="big" style="cursor:pointer">📋 הוספה מהירה של הרבה מילים</summary>
+  <div class="hint" style="margin-top:8px">שורה לכל מילה, למשל: <code>apple - תפוח</code></div>
+  <textarea id="bulk" placeholder="apple - תפוח&#10;dog - כלב"></textarea>
+  <br><button class="btn blue" data-act="bulk">הוספת הכל</button></details>
+ <button class="btn red" data-act="dellesson">🗑️ מחיקת השיעור כולו</button>`;
+};
+
+// ---------- ציור ----------
+const root=document.getElementById('app');
+function render(keep){applyTheme();const y=window.scrollY;root.innerHTML=(V[S.screen]||V.profiles)();window.scrollTo(0,keep?y:0);
+ if(S.screen==='trace')setTimeout(setupTrace,0);
+ if(!keep&&S.screen==='act'&&S.act&&!S.act.finished){const it=S.act.items[S.act.i];if(it&&it.say)setTimeout(()=>say(it.say),250)}
+ if(S.screen==='practice'&&S.run&&S.run.i<S.run.q.length&&S.mode==='en2he')setTimeout(()=>say(S.run.q[S.run.i].en),250);}
+function go(s){S.screen=s;render()}
+function modal(html){const m=document.createElement('div');m.className='modal';m.innerHTML=`<div class="panel center">${html}</div>`;m.addEventListener('click',e=>{if(e.target===m||e.target.dataset.close)m.remove()});document.body.appendChild(m);return m}
+
+// ---------- פעולות ----------
+function startPractice(){
+ const p=P(),q=shuffle(pickWords(p,PER_SESSION));
+ if(!q.length)return;
+ S.run={q,i:0,stars:0,know:0,total:q.length,prizes:[],retried:new Set()};go('practice');
+}
+function startGame(){
+ const p=P(),ws=pickWords(p,5);if(ws.length<2)return;
+ S.game={en:shuffle(ws),he:shuffle(ws),done:[],sel:null,left:ws.length,stars:0,prizes:[],mistakes:0,wrong:[]};go('game');
+}
+function saveFile(name,text){if(window.AndroidApp){AndroidApp.save(name,text);return}
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:'application/json'}));a.download=name;a.click()}
+function exportData(){D.settings.lastBackup=Date.now();save();saveFile('milim-backup-'+today()+'.json',JSON.stringify(D));toast('💾 הגיבוי נשמר בקובץ');if(S.screen==='settings'||S.screen==='parent')setTimeout(()=>render(true),50)}
+function importData(){const i=document.createElement('input');i.type='file';i.accept='.json';i.onchange=()=>{const f=i.files[0];if(!f)return;f.text().then(t=>{try{const d=JSON.parse(t);if(!d.profiles||!d.words)throw 0;
+  if(!confirm('השחזור יחליף את כל הנתונים במכשיר הזה (כוכבים, סקווישים, שיעורים ויומן) בנתונים מהקובץ. להמשיך?'))return;
+  localStorage.setItem(KEY,JSON.stringify(d));alert('הנתונים שוחזרו ✅');location.reload()}catch(e){alert('קובץ לא תקין')}})};i.click()}
+
+const A={
+ settings(){S.back=S.screen;S.gate=false;S.sl=null;S.so='';S.q=[(Math.random()*6+4|0),(Math.random()*6+4|0)];go('settings')},
+ back(){if(S.screen==='settings'&&S.gate&&S.sl!=null){S.sl=null;render();return}
+ go(S.back&&!['settings','parent'].includes(S.back)?S.back:(S.pid?'home':'profiles'))},
+ gate(){const i=document.getElementById('gate'),v=i.value.trim();if(v===String(D.settings.pw||'2101975')){S.gate=true;render()}else{alert('סיסמה שגויה');i.value='';i.focus()}},
+ profiles(){S.pid=null;go('profiles')},
+ pick(el){S.pid=el.dataset.id;S.lesson='';go('home')},
+ home(){S.run=null;S.game=null;go('home')},
+ pet(el){const s=el.querySelector('svg');s.classList.remove('squish');void s.getBoundingClientRect();s.classList.add('squish')},
+ mode(el){S.mode=el.dataset.v;render()},
+ practice:startPractice,game:startGame,prizes(){go('prizes')},
+ say(el,e){e.stopPropagation();say(el.dataset.t)},
+ flip(){const c=document.getElementById('card');if(c.classList.contains('on'))return;c.classList.add('on');document.getElementById('ans').style.visibility='visible';
+   if(S.mode==='he2en')say(S.run.q[S.run.i].en)},
+ ans(el){
+  const r=S.run,p=P(),w=r.q[r.i],v=el.dataset.v;
+  mark(p,w,v);logEv({type:'w',src:'cards',lab:w.en+' · '+w.he,res:v});
+  if(v==='know'){if(!r.retried.has(w.id))r.know++;tick(p)}
+  else if(v==='almost'){tick(p)}
+  else{tick(p);if(!r.retried.has(w.id)){r.retried.add(w.id);r.q.push(w);r.total=r.total}}
+  save();
+  const msg=v==='know'?pick(PRAISE):pick(RETRY);
+  r.i++;
+  if(r.i>=r.q.length){save();confetti();render();return}
+  if(v==='know')toast(msg);
+  render();
+ },
+ m(el){
+  const g=S.game,id=el.dataset.id,side=el.dataset.side;
+  if(g.done.includes(id))return;
+  {const w=g.en.find(w=>w.id===id);say(side==='en'?w.en:w.he)}
+  if(!g.sel||g.sel.side===side){g.sel={id,side};render();return}
+  if(g.sel.id===id){g.done.push(id);g.left--;g.sel=null;
+   if(g.left===0){const p=P();const cnt={};g.wrong.forEach(id=>cnt[id]=(cnt[id]||0)+1);g.en.forEach(w=>logEv({type:'w',src:'match',lab:w.en+' · '+w.he,m:cnt[w.id]||0}));logEv({type:'s',src:'match',title:'משחק התאמה',m:g.mistakes,n:g.en.length});g.wrong.forEach(wid=>{const w=D.words.find(x=>x.id===wid);if(w)mark(p,w,'no')});if(!g.mistakes){for(let i=0;i<STARS_PERFECT;i++)addStar(p,g);g.stars=STARS_PERFECT;confetti();if(g.prizes.some(isRare))setTimeout(fireworks,300)}tick(p);save()}
+   render();
+  }else{g.mistakes++;g.wrong.push(g.sel.id,id);const first=document.querySelector(`.m.sel`);el.classList.add('bad');if(first)first.classList.add('bad');g.sel=null;setTimeout(render,450)}
+ },
+ look(){go('look')},
+ setav(el){const p=P(),i=+el.dataset.i;if(!p.coll.includes(i))return;p.avatar=i;save();render(true)},
+ setcolor(el){P().color=+el.dataset.i;save();render(true)},
+ avatar(el){const i=+el.dataset.i;
+  modal(`${isRare(i)?'<div class="rare-title">💎 נדיר 💎</div>':''}<span data-squish style="cursor:pointer;display:inline-block">${squish(i,'lg')}</span><div class="big">${sqName(i)}</div>${loreHtml(i)}<br><button class="btn" data-act="pickav" data-i="${i}">💖 בחרי אותו כדמות שלי</button><br><button class="btn ghost" data-close="1">סגירה</button>`)},
+ pickav(el){const p=P(),i=+el.dataset.i;if(p.coll.includes(i))p.avatar=i;save();const m=document.querySelector('.modal');if(m)m.remove();render(true)},
+ addword(){const en=document.getElementById('ne').value.trim(),he=document.getElementById('nh').value.trim();
+  if(!en||!he)return alert('צריך גם אנגלית וגם עברית');
+  D.words.push({id:uid(),en,he,lesson:S.sl,owner:S.so||''});save();render(true);setTimeout(()=>document.getElementById('ne').focus(),50)},
+ bulk(){let n=0;
+  document.getElementById('bulk').value.split('\n').forEach(line=>{const m=line.split(/\s[-–—:=]\s|\t|,/);if(m.length>=2){const en=m[0].trim(),he=m.slice(1).join(' ').trim();if(en&&he){D.words.push({id:uid(),en,he,lesson:S.sl,owner:S.so||''});n++}}});
+  save();render(true);alert(n+' מילים נוספו')},
+ delword(el){D.words=D.words.filter(w=>w.id!==el.dataset.id);save();render(true)},
+ openl(el){S.sl=el.dataset.l;S.so=el.dataset.o||'';render()},
+ newl(el){const n=(prompt('איך קוראים לשיעור החדש?')||'').trim();if(n){S.sl=n;S.so=el.dataset.o||'';render()}},
+ dellesson(el){const l=el.dataset.l!==undefined?el.dataset.l:S.sl,o=el.dataset.o!==undefined?el.dataset.o:(S.so||''),hit=w=>(w.lesson||'')===l&&(w.owner||'')===o,n=D.words.filter(hit).length;
+  if(confirm('למחוק את השיעור "'+(l||'ללא שיעור')+'"'+(n?' ואת '+n+' המילים שבו':'')+'?')){D.words=D.words.filter(w=>!hit(w));if(S.lesson===l)S.lesson='';S.sl=null;save();render()}},
+ addprof(){D.profiles.push(newProfile('ילדה חדשה'));save();render()},
+ delprof(el){if(D.profiles.length>1&&confirm('למחוק את הפרופיל והסקווישים שלו? השיעורים שלו יהפכו למשותפים.')){D.words.forEach(w=>{if(w.owner===el.dataset.id)w.owner=''});D.profiles=D.profiles.filter(p=>p.id!==el.dataset.id);save();render()}},
+ export:exportData,import:importData
+};
+// ---------- מרכז תרגילים (אותיות, צלילים, מילים, משפטים) ----------
+// ---------- אותיות בכתב יד (a חד-קומתית וכו', כמו שמלמדים לכתוב) ----------
+const HW={};
+(function(){
+ const oo=(cx,cy,r)=>`M${cx} ${cy-r}A${r} ${r} 0 1 0 ${cx} ${cy+r}A${r} ${r} 0 1 0 ${cx} ${cy-r}`;
+ const bowlL=(cx,cy,r)=>`M${cx-r} ${cy}A${r} ${r} 0 1 1 ${cx+r} ${cy}A${r} ${r} 0 1 1 ${cx-r} ${cy}`;
+ const d=(w,...p)=>({w,p});
+ Object.assign(HW,{
+  a:d(70,'M50 46A20 20 0 1 0 50 74','M56 40V80'),
+  b:d(70,'M16 8V80',bowlL(36,60,20)),
+  c:d(60,'M48 46A20 20 0 1 0 48 74'),
+  d:d(70,'M50 46A20 20 0 1 0 50 74','M56 8V80'),
+  e:d(62,'M14 60H54A20 20 0 1 0 48 74'),
+  f:d(56,'M52 16Q48 8 40 8Q30 8 30 20V80','M14 40H48'),
+  g:d(70,'M50 46A20 20 0 1 0 50 74','M56 40V94Q56 112 36 112Q22 112 16 104'),
+  h:d(66,'M16 8V80','M16 58Q18 40 34 40Q50 40 50 58V80'),
+  i:d(48,'M24 40V80','M24 22V22.1'),
+  j:d(48,'M24 40V100Q24 112 10 112','M24 22V22.1'),
+  k:d(62,'M16 8V80','M50 40L16 64','M28 55L52 80'),
+  l:d(44,'M22 8V80'),
+  m:d(96,'M16 40V80','M16 58Q18 40 34 40Q50 40 50 58V80','M50 58Q52 40 68 40Q84 40 84 58V80'),
+  n:d(68,'M16 40V80','M16 58Q18 40 34 40Q50 40 50 58V80'),
+  o:d(70,oo(36,60,20)),
+  p:d(70,'M16 40V112',bowlL(36,60,20)),
+  q:d(70,'M50 46A20 20 0 1 0 50 74','M56 40V112'),
+  r:d(52,'M16 40V80','M16 58Q18 40 34 40Q42 40 46 45'),
+  s:d(58,'M46 46Q40 40 30 40Q16 40 16 50Q16 58 30 60Q46 62 46 71Q46 80 30 80Q18 80 12 74'),
+  t:d(52,'M26 16V72Q26 80 36 80Q42 80 46 76','M12 40H42'),
+  u:d(66,'M16 40V64Q16 80 33 80Q50 80 50 64','M50 40V80'),
+  v:d(66,'M12 40L33 80L54 40'),
+  w:d(84,'M10 40L26 80L42 52L58 80L74 40'),
+  x:d(66,'M14 40L52 80','M52 40L14 80'),
+  y:d(66,'M14 40L32 80','M52 40L30 92Q24 112 10 110'),
+  z:d(66,'M14 40H52L14 80H54'),
+  A:d(78,'M12 80L38 8L64 80','M22 56H54'),
+  B:d(70,'M16 8V80','M16 8H36Q54 8 54 25Q54 42 36 42H16','M36 42Q58 42 58 61Q58 80 36 80H16'),
+  C:d(70,'M60 22Q50 8 36 8Q14 8 14 44Q14 80 36 80Q50 80 60 66'),
+  D:d(72,'M16 8V80','M16 8H32Q60 8 60 44Q60 80 32 80H16'),
+  E:d(64,'M16 8V80','M54 8H16','M16 44H46','M16 80H54'),
+  F:d(60,'M16 8V80','M54 8H16','M16 44H46'),
+  G:d(72,'M60 22Q50 8 36 8Q14 8 14 44Q14 80 36 80Q58 80 58 54H38'),
+  H:d(70,'M16 8V80','M54 8V80','M16 44H54'),
+  I:d(52,'M26 8V80','M14 8H38','M14 80H38'),
+  J:d(56,'M44 8V62Q44 80 28 80Q16 80 12 70'),
+  K:d(64,'M16 8V80','M54 8L16 48','M28 38L56 80'),
+  L:d(58,'M16 8V80H52'),
+  M:d(80,'M14 80V8L40 56L66 8V80'),
+  N:d(68,'M14 80V8L54 80V8'),
+  O:d(76,'M38 8A24 36 0 1 0 38 80A24 36 0 1 0 38 8'),
+  P:d(66,'M16 8V80','M16 8H36Q58 8 58 28Q58 48 36 48H16'),
+  Q:d(80,'M38 8A24 36 0 1 0 38 80A24 36 0 1 0 38 8','M42 60L64 86'),
+  R:d(68,'M16 8V80','M16 8H36Q58 8 58 28Q58 48 36 48H16','M34 48L58 80'),
+  S:d(64,'M52 20Q44 8 32 8Q14 8 14 24Q14 38 34 44Q54 50 54 62Q54 80 32 80Q18 80 10 68'),
+  T:d(68,'M8 8H60','M34 8V80'),
+  U:d(76,'M14 8V54Q14 80 38 80Q62 80 62 54V8'),
+  V:d(72,'M10 8L36 80L62 8'),
+  W:d(80,'M8 8L24 80L40 30L56 80L72 8'),
+  X:d(68,'M12 8L56 80','M56 8L12 80'),
+  Y:d(68,'M10 8L34 44L58 8','M34 44V80'),
+  Z:d(70,'M12 8H56L12 80H58')
+ });
+})();
+const letterHtml=ch=>{const g=HW[ch];if(!g)return esc(ch);const W=g.w+6;
+ return`<svg class="hw" viewBox="0 0 ${W} 120" style="height:1.2em;width:${(W/120*1.2).toFixed(3)}em" role="img" aria-label="${esc(ch)}"><g fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">${g.p.map(p=>`<path d="${p}"/>`).join('')}</g></svg>`};
+const hw=s=>[...String(s)].map(c=>c===' '?'<span style="display:inline-block;width:.4em"></span>':letterHtml(c)).join('');
+
+const sample=(a,n)=>shuffle(a).slice(0,n);
+const pic=(x,sy)=>{const d=sy?` data-say="${esc(sy)}"`:'';return String(x)[0]==='#'?`<span class="dot"${d} style="background:${x}"></span>`:`<span class="emo ${/[֐-׿]/.test(x)?'txt':''}"${d}>${esc(x)}</span>`};
+const CATS={
+ body:[['eye','עין','👁️'],['ear','אוזן','👂'],['nose','אף','👃'],['mouth','פה','👄'],['hand','יד','✋'],['foot','כף רגל','🦶'],['leg','רגל','🦵'],['arm','זרוע','💪'],['tooth','שן','🦷'],['face','פנים','🙂']],
+ animals:[['cat','חתול','🐱'],['dog','כלב','🐶'],['cow','פרה','🐮'],['pig','חזיר','🐷'],['horse','סוס','🐴'],['sheep','כבשה','🐑'],['duck','ברווז','🦆'],['fish','דג','🐟'],['bird','ציפור','🐦'],['frog','צפרדע','🐸'],['lion','אריה','🦁'],['monkey','קוף','🐵'],['elephant','פיל','🐘'],['rabbit','ארנב','🐰'],['panda','פנדה','🐼'],['tiger','נמר','🐯'],['bear','דוב','🐻'],['snake','נחש','🐍'],['zebra','זברה','🦓'],['giraffe','ג׳ירפה','🦒']],
+ clothes:[['shirt','חולצה','👕'],['pants','מכנסיים','👖'],['dress','שמלה','👗'],['shoes','נעליים','👟'],['socks','גרביים','🧦'],['hat','כובע','🧢'],['coat','מעיל','🧥'],['scarf','צעיף','🧣'],['gloves','כפפות','🧤'],['glasses','משקפיים','👓']],
+ food:[['apple','תפוח','🍎'],['banana','בננה','🍌'],['bread','לחם','🍞'],['milk','חלב','🥛'],['egg','ביצה','🥚'],['cheese','גבינה','🧀'],['pizza','פיצה','🍕'],['cake','עוגה','🎂'],['juice','מיץ','🧃'],['water','מים','💧'],['ice cream','גלידה','🍦'],['orange','תפוז','🍊'],['grapes','ענבים','🍇'],['carrot','גזר','🥕'],['tomato','עגבנייה','🍅'],['cookie','עוגייה','🍪']],
+ days:[['Sunday','יום ראשון','יום ראשון'],['Monday','יום שני','יום שני'],['Tuesday','יום שלישי','יום שלישי'],['Wednesday','יום רביעי','יום רביעי'],['Thursday','יום חמישי','יום חמישי'],['Friday','יום שישי','יום שישי'],['Saturday','שבת','שבת']],
+ numbers:[['zero','אפס','0'],['one','אחד','1'],['two','שניים','2'],['three','שלוש','3'],['four','ארבע','4'],['five','חמש','5'],['six','שש','6'],['seven','שבע','7'],['eight','שמונה','8'],['nine','תשע','9'],['ten','עשר','10']]
+};
+const CAT_NAME={days:'ימות השבוע',body:'איברי גוף',animals:'חיות',clothes:'ביגוד',food:'מאכלים',numbers:'מספרים'};
+const CAT_ICON={days:'📅',body:'🖐️',animals:'🐶',clothes:'👕',food:'🍎',numbers:'🔢'};
+const LW=[['A','apple','🍎'],['B','ball','⚽'],['C','cat','🐱'],['D','dog','🐶'],['E','egg','🥚'],['F','fish','🐟'],['G','goat','🐐'],['H','hat','🧢'],['I','ice cream','🍦'],['J','juice','🧃'],['K','kite','🪁'],['L','lion','🦁'],['M','moon','🌙'],['N','nut','🥜'],['O','orange','🍊'],['P','pig','🐷'],['Q','queen','👑'],['R','rabbit','🐰'],['S','sun','☀️'],['T','tree','🌳'],['U','umbrella','☂️'],['V','van','🚐'],['W','watch','⌚'],['Y','yellow','#fdd835'],['Z','zebra','🦓']];
+const CVC={
+ a:[['cat','חתול','🐱'],['hat','כובע','🧢'],['bag','תיק','👜'],['map','מפה','🗺️'],['van','טנדר','🚐'],['pan','מחבת','🍳'],['bat','עטלף','🦇']],
+ e:[['bed','מיטה','🛏️'],['pen','עט','🖊️'],['hen','תרנגולת','🐔'],['leg','רגל','🦵'],['net','רשת','🥅'],['web','קורי עכביש','🕸️']],
+ i:[['pig','חזיר','🐷'],['pin','סיכה','📌'],['six','שש','6'],['lip','שפה','👄'],['kid','ילד','🧒']],
+ o:[['dog','כלב','🐶'],['box','קופסה','📦'],['fox','שועל','🦊'],['pot','סיר','🍲'],['log','בול עץ','🪵']],
+ u:[['sun','שמש','☀️'],['bus','אוטובוס','🚌'],['cup','כוס','🥤'],['bug','חרק','🐛'],['nut','אגוז','🥜'],['mug','ספל','☕']]
+};
+const VOW=['a','e','i','o','u'];
+const COLORS=[['red','אדום','#e53935'],['blue','כחול','#1e88e5'],['yellow','צהוב','#fdd835'],['green','ירוק','#43a047'],['orange','כתום','#fb8c00'],['purple','סגול','#8e24aa'],['pink','ורוד','#ff69b4'],['brown','חום','#795548'],['black','שחור','#212121'],['white','לבן','#ffffff']];
+const SENTS=[['I see a dog.','אני רואה כלב.','dog'],['A cat is on a bed.','חתול על מיטה.','cat'],['The sun is hot.','השמש חמה.','sun'],['I have a red hat.','יש לי כובע אדום.','hat'],['A pig is in a box.','חזיר בתוך קופסה.','pig'],['The bus is big.','האוטובוס גדול.','bus'],['I see a panda.','אני רואה פנדה.','panda'],['I eat a banana.','אני אוכל בננה.','banana'],['My dad has a van.','לאבא שלי יש טנדר.','van'],['The hen is on a log.','התרנגולת על בול עץ.','hen'],['I am a kid.','אני ילד.','kid'],['I see a fox.','אני רואה שועל.','fox'],['The cup is red.','הכוס אדומה.','cup']];
+
+const sayBtn=t=>`<button class="speak" data-act="say" data-t="${esc(t)}">🔊</button>`;
+const shuf2=a=>{let b=shuffle(a),k=0;while(a.length>1&&b.join('|')===a.join('|')&&k++<9)b=shuffle(a);return b};
+const G={
+ first(n=8){const seen=new Set(),pool=[...Object.entries(CATS).filter(([k])=>k!=='days').flatMap(([,v])=>v).filter(w=>!/^\d/.test(w[2])),...LW.map(([l,e,p])=>[e,'',p]),...Object.values(CVC).flat()].filter(w=>w[0][0]!=='x'&&!seen.has(w[0])&&seen.add(w[0]));
+  return sample(pool,n).map(w=>{const L=w[0][0].toUpperCase(),opts=shuffle([L,...sample('ABCDEFGHIJKLMNOPQRSTUVWYZ'.split('').filter(c=>c!==L),3)]);
+   return{t:'q',prompt:`<div class="pbig">${pic(w[2],w[0])}</div><div class="en word" data-say="${esc(w[0])}">${hw(w[0])}</div>${sayBtn(w[0])}<div class="hint">באיזו אות מתחילה המילה?</div>`,say:w[0],opts,ans:opts.indexOf(L),oc:'lt',lab:'אות ראשונה: '+w[0]}})},
+ vowel(n=8){return sample(Object.values(CVC).flat(),n).map(w=>{const v=w[0][1];
+   return{t:'q',prompt:`<div class="pbig">${pic(w[2],w[0])}</div><div class="en word" data-say="${esc(w[0])}">${letterHtml(w[0][0])}<span class="blank">_</span>${letterHtml(w[0][2])}</div>${sayBtn(w[0])}<div class="hint">איזו אות חסרה באמצע?</div>`,say:w[0],opts:VOW,ans:VOW.indexOf(v),oc:'lt',lab:'אות חסרה: '+w[0]}})},
+ spell(n=6){return sample(Object.values(CVC).flat(),n).map(w=>({t:'b',prompt:`<div class="pbig">${pic(w[2],w[0])}</div>${sayBtn(w[0])}<div class="hint">סדרי את האותיות ובני את המילה</div>`,say:w[0],target:w[0].split(''),tiles:shuf2(w[0].split('')),lab:'איות: '+w[0]}))},
+ name(p){const nm=(p.en||'').trim();if(!nm)return[];return[{t:'b',prompt:`<div class="pbig">🙂</div>${sayBtn(nm)}<div class="hint">בני את השם שלי</div>`,say:nm,target:nm.split(''),tiles:shuf2(nm.split('')),lab:'השם שלי: '+nm}]},
+ vocab(cat,n=8){const L=CATS[cat];return sample(L,Math.min(n,L.length)).map(w=>{const opts=shuffle([w[0],...sample(L.filter(x=>x[0]!==w[0]).map(x=>x[0]),3)]);
+   return{t:'q',prompt:`<div class="pbig">${pic(w[2],w[0])}</div><div class="hint">איך אומרים באנגלית?</div>`,fin:w[0],opts,ans:opts.indexOf(w[0]),oc:'en',lab:w[0]+' · '+w[1]}})},
+ vocabMatch(cat){const L=sample(CATS[cat],5);return[{t:'m',pairs:L.map((w,i)=>[`<span class="mp">${pic(w[2])}</span>`,esc(w[0]),i,w[0]+' · '+w[1],[w[0],w[0]]]),lc:'',rc:'en'}]},
+ colors(){const c=shuffle(COLORS),m=a=>({t:'m',pairs:a.map((w,i)=>[esc(w[0]),esc(w[1]),i,w[0]+' · '+w[1],[w[0],w[1]]]),lc:'en',rc:''});
+  const qs=sample(COLORS,5).map(w=>{const opts=shuffle([w[0],...sample(COLORS.filter(x=>x[0]!==w[0]).map(x=>x[0]),3)]);
+   return{t:'q',prompt:`<div class="pbig">${pic(w[2],w[0])}</div><div class="hint">איזה צבע זה באנגלית?</div>`,fin:w[0],opts,ans:opts.indexOf(w[0]),oc:'en',lab:'צבע: '+w[0]}});
+  return[m(c.slice(0,5)),m(c.slice(5)),...qs]},
+ letters(n=5){const ab='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');return[{t:'m',pairs:sample(ab,n).map((l,i)=>[letterHtml(l),letterHtml(l.toLowerCase()),i,l+' '+l.toLowerCase(),[l,l]]),lc:'lt',rc:'lt'}]},
+ cloze(n=6){return sample(SENTS,n).map(s=>{const k=s[2],opts=shuffle([k,...sample(SENTS.map(x=>x[2]).filter(x=>x!==k),2)]);
+   return{t:'q',prompt:`<div class="en word sent">${esc(s[0].replace(new RegExp('\\b'+k+'\\b','i'),'____'))}</div><div class="hint">${esc(s[1])}</div>`,fin:s[0],opts,ans:opts.indexOf(k),oc:'en',lab:'משפט: '+s[0]}})},
+ order(n=4){return sample(SENTS,n).map(s=>{const w=s[0].split(' ');return{t:'b',w:1,prompt:`<div class="word" style="font-size:1.6rem">${esc(s[1])}</div>${sayBtn(s[0])}<div class="hint">סדרי את המילים למשפט באנגלית</div>`,say:s[0],target:w,tiles:shuf2(w),lab:'סידור משפט: '+s[0]}})},
+ mock(p){const cats=Object.keys(CATS);return shuffle([...G.first(3),...G.vowel(3),...G.spell(2),...G.name(p),...G.vocab(pick(cats),2),...G.letters(5),...G.colors().slice(0,1),...G.colors().slice(2,4),...G.cloze(2),...G.order(1)])}
+};
+const RUN={
+ letters:()=>['🔤 אותיות גדולות וקטנות',()=>[...G.letters(5),...G.letters(5)]],
+ first:()=>['🍎 באיזו אות מתחיל?',()=>G.first(8)],
+ vowel:()=>['🐱 האות החסרה',()=>G.vowel(8)],
+ spell:()=>['🧱 בונים מילה',()=>G.spell(6)],
+ name:()=>['✏️ בונים את השם',()=>G.name(P())],
+ colors:()=>['🎨 צבעים',()=>G.colors()],
+ cloze:()=>['💬 מילה חסרה במשפט',()=>G.cloze(6)],
+ order:()=>['🧩 מסדרים משפט',()=>G.order(4)],
+ vocab:c=>[CAT_ICON[c]+' '+CAT_NAME[c],()=>[...G.vocab(c,6),...G.vocabMatch(c)]],
+ mock:()=>['🎓 מבחן דמה',()=>G.mock(P())]
+};
+function startAct(title,gen,key){const items=gen();if(!items.length)return alert('אין מה לתרגל כאן');S.act={title,gen,key:key||'act',im:0,iw:[],items,i:0,mist:0,stars:0,prizes:[],pos:0,used:[],sel:null,done:[],ord:null,lock:false,finished:false};go('act')}
+function nextItem(){const a=S.act;logItem();a.im=0;a.iw=[];a.i++;a.pos=0;a.used=[];a.sel=null;a.done=[];a.ord=null;a.lock=false;if(a.i>=a.items.length)finishAct();else render()}
+function finishAct(){const a=S.act,p=P();
+ if(!a.mist){const n=Math.min(STARS_PERFECT,a.items.length);for(let i=0;i<n;i++)addStar(p,a);a.stars=n;confetti();if(a.prizes.some(isRare))setTimeout(fireworks,300)}
+ logEv({type:'s',src:a.key,title:a.title,m:a.mist,n:a.items.length,st:a.stars});tick(p);save();a.finished=true;render()}
+const examHtml=()=>{const e=D.settings.exam;if(!e||!e.date)return'';
+ const d=Math.round((new Date(e.date+'T00:00:00')-new Date(today()+'T00:00:00'))/864e5);if(isNaN(d)||d<0)return'';
+ return`<div class="panel exam"><b>📅 ${d===0?'ההערכה היום! בהצלחה 💪':d===1?'ההערכה מחר!':'ההערכה בעוד '+d+' ימים'}</b>${e.note?`<div class="hint">${esc(e.note)}</div>`:''}</div>`};
+
+V.acts=()=>{const p=P();
+ const b=(k,ic,t,x='')=>`<button class="profile has-gift" style="font-size:1rem;padding:14px 6px" data-act="run" data-k="${k}" ${x}><span style="font-size:2.2rem">${ic}</span>${t}<span class="hint">${({trace:'✋ כוכב אחד',name:'⭐ כוכב אחד',letters:'🎁 עד 2 ⭐',order:'🎁 עד 4 ⭐'})[k]||'🎁 עד 5 ⭐'}</span></button>`;
+ return`<div class="top"><button class="btn small ghost" data-act="home">→</button><h2 class="sp">מרכז תרגילים 🧩</h2></div>
+ <div class="top" style="justify-content:center">${pillsHtml(p)}</div>
+ ${examHtml()}
+ <div class="hint center">🎁 סיבוב בלי אף טעות = עד 5 כוכבים. כתיבת השם = כוכב אחד.<br>אחרי ${spp()} כוכבים מקבלים סקוויש חדש.</div>
+ <div class="hubgrid">
+  ${b('letters','🔤','אותיות גדולות וקטנות')}${b('first','🍎','באיזו אות זה מתחיל?')}
+  ${b('vowel','🐱','האות החסרה')}${b('spell','🧱','בונים מילה')}
+  ${b('name','✏️','בונים את השם שלי')}${b('trace','🖍️','כותבים את השם שלי')}
+  ${b('colors','🎨','צבעים')}${b('cloze','💬','מילה חסרה במשפט')}
+  ${b('order','🧩','מסדרים משפט')}${b('mock','🎓','מבחן דמה')}
+ </div>
+ <div class="panel"><h3>📚 אוצר מילים</h3><div class="chips">${Object.keys(CATS).map(c=>`<button class="btn small has-gift" style="width:auto" data-act="run" data-k="vocab" data-c="${c}">${CAT_ICON[c]} ${CAT_NAME[c]}</button>`).join('')}</div></div>`};
+
+V.act=()=>{const a=S.act;if(!a)return'';if(a.finished)return V.actDone();
+ const it=a.items[a.i],top=`<div class="top"><button class="btn small ghost" data-act="hub">✕</button><div class="bar sp"><i style="width:${a.i/a.items.length*100}%"></i></div><div class="pill" id="mc">❌ ${a.mist}</div></div>`;
+ if(it.t==='q')return top+`<div class="panel center">${it.prompt}</div><div class="optgrid">${it.opts.map((o,i)=>`<button class="opt ${it.oc||''}" data-act="opt" data-i="${i}">${it.oc==='lt'?letterHtml(o):esc(o)}</button>`).join('')}</div>`;
+ if(it.t==='b')return top+`<div class="panel center">${it.prompt}<div class="slots ${it.w?'wide':''}" dir="ltr">${it.target.map((t,k)=>`<span class="tslot ${k<a.pos?'full':''}">${k<a.pos?(it.w?esc(t):letterHtml(t)):''}</span>`).join('')}</div></div>
+  <div class="tiles ${it.w?'wide':''}" dir="ltr">${it.tiles.map((t,k)=>`<button class="tile ${a.used.includes(k)?'gone':''}" data-act="tile" data-k="${k}">${it.w?esc(t):letterHtml(t)}</button>`).join('')}</div>`;
+ if(!a.ord)a.ord={L:shuffle(it.pairs.map(p=>p[2])),R:shuffle(it.pairs.map(p=>p[2]))};
+ const pr=id=>it.pairs.find(p=>p[2]===id),btn=(id,side)=>`<button class="m ${side==='L'?it.lc:it.rc} ${a.done.includes(id)?'done':''} ${a.sel&&a.sel.id===id&&a.sel.side===side?'sel':''}" data-act="mt" data-id="${id}" data-side="${side}">${side==='L'?pr(id)[0]:pr(id)[1]}</button>`;
+ return top+`<div class="center hint">לחצי על שני דברים שמתאימים זה לזה</div><div class="row" style="flex:1"><div class="mcol">${a.ord.L.map(id=>btn(id,'L')).join('')}</div><div class="mcol">${a.ord.R.map(id=>btn(id,'R')).join('')}</div></div>`};
+
+V.actDone=()=>{const a=S.act,p=P();
+ return`<div class="center" style="margin-top:20px"><div class="bounce" style="display:inline-block">${squish(p.avatar,'lg')}</div>
+ ${a.mist?`<h1>כמעט! 💪</h1><p class="big">היו ${a.mist} טעויות</p><p>סיבוב בלי אף טעות נותן עד 5 כוכבים. נסי שוב!</p>`:`<h1>בלי אף טעות! 🎉</h1><p class="big">קיבלת ⭐ ${a.stars}</p>`}</div>
+ ${a.prizes.map(i=>prizeCard(i)).join('')}
+ <button class="btn blue" data-act="again">${a.mist?'נסי שוב':'עוד סיבוב'}</button><button class="btn ghost" data-act="hub">חזרה לתרגילים</button>`};
+
+V.trace=()=>`<div class="top"><button class="btn small ghost" data-act="hub">→</button><h2 class="sp">כותבים את השם 🖍️</h2></div>
+ <div class="center hint">עברי עם האצבע על האותיות לפי המספרים, כמו שכותבים ביד ✍️</div>
+ <div class="panel"><canvas id="tc" style="width:100%;height:240px;touch-action:none;border-radius:20px;background:#fffdf5;display:block"></canvas></div>
+ <div class="row"><button class="btn ghost" data-act="tclear">🧽 נקי</button><button class="btn green" data-act="tdone">סיימתי ✓ (⭐ כוכב)</button></div>`;
+function setupTrace(){const c=document.getElementById('tc');if(!c)return;const d=window.devicePixelRatio||1,W=c.clientWidth,H=c.clientHeight;c.width=W*d;c.height=H*d;
+ const x=c.getContext('2d');x.scale(d,d);const nm=((P().en||'').trim()||'Name').split('');
+ const adv=ch=>HW[ch]?HW[ch].w+16:34,total=nm.reduce((t,ch)=>t+adv(ch),0)-16,sc=Math.min((W-40)/total,(H-50)/120),ox=(W-total*sc)/2,oy=(H-120*sc)/2;
+ const lay=[];let cx=0;nm.forEach(ch=>{if(HW[ch])lay.push([ch,cx]);cx+=adv(ch)});
+ const guide=()=>{x.clearRect(0,0,W,H);x.fillStyle='#fffdf5';x.fillRect(0,0,W,H);x.lineWidth=2;
+  [[8,'#f5b5c8',[]],[40,'#c9d8f0',[8,8]],[80,'#8fb0e8',[]]].forEach(([y,col,dash])=>{x.strokeStyle=col;x.setLineDash(dash);x.beginPath();x.moveTo(10,oy+y*sc);x.lineTo(W-10,oy+y*sc);x.stroke()});x.setLineDash([]);
+  lay.forEach(([ch,gx])=>HW[ch].p.forEach(pd=>{x.save();x.translate(ox+gx*sc,oy);x.scale(sc,sc);x.lineWidth=15;x.lineCap='round';x.lineJoin='round';x.strokeStyle='#e4daf2';x.stroke(new Path2D(pd));x.restore()}));
+  lay.forEach(([ch,gx])=>HW[ch].p.forEach((pd,k)=>{const m=pd.match(/^M(-?[\d.]+) (-?[\d.]+)/);if(!m)return;const px=ox+(gx+ +m[1])*sc,py=oy+ +m[2]*sc;
+   x.fillStyle='#4fcf7f';x.beginPath();x.arc(px,py,8,0,7);x.fill();x.fillStyle='#fff';x.font='bold 11px Arial,sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText(String(k+1),px,py+.5)}))};
+ guide();window._tink=0;window._tneed=.35*nm.length*130*sc;window._tg=()=>{guide();window._tink=0};
+ let on=false,lx=0,ly=0;const pos=e=>{const r=c.getBoundingClientRect();return[e.clientX-r.left,e.clientY-r.top]};
+ c.onpointerdown=e=>{on=true;c.setPointerCapture(e.pointerId);[lx,ly]=pos(e);x.strokeStyle=getComputedStyle(document.documentElement).getPropertyValue('--pink-d')||'#e0558f';x.lineWidth=9;x.lineCap='round';x.lineJoin='round';x.beginPath();x.moveTo(lx,ly);x.lineTo(lx+.1,ly+.1);x.stroke()};
+ c.onpointermove=e=>{if(!on)return;const[a,b]=pos(e);window._tink+=Math.hypot(a-lx,b-ly);lx=a;ly=b;x.lineTo(a,b);x.stroke();x.beginPath();x.moveTo(a,b)};
+ c.onpointerup=c.onpointercancel=()=>{on=false}}
+
+Object.assign(A,{
+ hub(){S.act=null;go('acts')},
+ run(el){const k=el.dataset.k,p=P();
+  if(k==='trace'){if(!(p.en||'').trim())return alert('ההורה צריך להגדיר שם באנגלית בהגדרות ← הילדות');return go('trace')}
+  if(k==='name'&&!(p.en||'').trim())return alert('ההורה צריך להגדיר שם באנגלית בהגדרות ← הילדות');
+  const[t,g]=RUN[k](el.dataset.c);startAct(t,g,k+(el.dataset.c?':'+el.dataset.c:''))},
+ again(){startAct(S.act.title,S.act.gen,S.act.key)},
+ saytest(){say('Hello! This is how I read.')},
+ tclear(){if(window._tg)window._tg()},
+ tdone(){if((window._tink||0)<(window._tneed||0))return toast('כתבי את כל השם עם האצבע ✏️');
+  const p=P(),r={stars:0,prizes:[]};addStar(p,r);logEv({type:'s',src:'trace',title:'כתיבת השם',m:0,n:1,st:1});tick(p);save();A.hub();toast('⭐ קיבלת כוכב!');r.prizes.forEach(showPrize)},
+ opt(el){const a=S.act,it=a.items[a.i];if(a.lock)return;const i=+el.dataset.i;
+  if(i===it.ans){a.lock=true;el.classList.add('good');say(it.fin||it.say||it.opts[i]);setTimeout(nextItem,800)}
+  else{say(it.opts[i]);a.mist++;a.im++;el.classList.add('bad');const m=document.getElementById('mc');if(m)m.textContent='❌ '+a.mist}},
+ tile(el){const a=S.act,it=a.items[a.i];if(a.lock)return;const k=+el.dataset.k;if(a.used.includes(k))return;say(it.tiles[k]);
+  if(it.tiles[k]===it.target[a.pos]){a.used.push(k);a.pos++;
+   if(a.pos>=it.target.length){a.lock=true;say(it.say||it.target.join(' '));render(true);setTimeout(nextItem,1000);return}
+   render(true)}
+  else{a.mist++;a.im++;el.classList.add('bad');const m=document.getElementById('mc');if(m)m.textContent='❌ '+a.mist;setTimeout(()=>el.classList.remove('bad'),450)}},
+ mt(el){const a=S.act,it=a.items[a.i],id=+el.dataset.id,side=el.dataset.side;if(a.done.includes(id)||a.lock)return;
+  {const pr=it.pairs.find(q=>q[2]===id),sy=pr&&pr[4]&&pr[4][side==='L'?0:1];if(sy)say(sy)}
+  if(!a.sel||a.sel.side===side){a.sel={id,side};render(true);return}
+  if(a.sel.id===id){a.done.push(id);a.sel=null;if(a.done.length===it.pairs.length){a.lock=true;render(true);setTimeout(nextItem,700);return}render(true)}
+  else{a.mist++;a.im++;a.iw.push(a.sel.id,id);const f=document.querySelector('.m.sel');el.classList.add('bad');if(f)f.classList.add('bad');a.sel=null;setTimeout(()=>render(true),450)}}
+});
+
+// ---------- מידע להורה: יומן תרגול ומחוונים ----------
+const LOG_MAX=4000;
+function logEv(e){D.log=D.log||[];D.log.push(Object.assign({ts:Date.now(),p:S.pid},e));if(D.log.length>LOG_MAX)D.log.splice(0,D.log.length-LOG_MAX)}
+function logItem(){const a=S.act,it=a.items[a.i];if(!it)return;
+ if(it.t==='m'){const c={};(a.iw||[]).forEach(i=>c[i]=(c[i]||0)+1);it.pairs.forEach(pr=>logEv({type:'i',src:a.key,lab:pr[3]||it.lab||a.title,m:c[pr[2]]||0}))}
+ else logEv({type:'i',src:a.key,lab:it.lab||a.title,m:a.im||0});
+ save()}
+const bakWarn=()=>{const t=(D.settings||{}).lastBackup,d=t?Math.floor((Date.now()-t)/864e5):null;
+ return d===null||d>=7?`<div class="panel exam"><b>💾 ${d===null?'עוד לא יצרת גיבוי':'הגיבוי האחרון לפני '+d+' ימים'}</b><div class="hint">מומלץ לייצא גיבוי לפני כל עדכון של האפליקציה.</div><button class="btn small blue" style="width:auto;margin-top:8px" data-act="export">⬇️ ייצוא גיבוי עכשיו</button></div>`:''};
+const ACT_NAME={cards:'כרטיסיות',match:'משחק התאמה',trace:'כתיבת השם',letters:'אותיות גדולות וקטנות',first:'באיזו אות מתחיל',vowel:'האות החסרה',spell:'בונים מילה',name:'בונים את השם',colors:'צבעים',cloze:'מילה חסרה במשפט',order:'מסדרים משפט',mock:'מבחן דמה'};
+const srcName=k=>{const[b,c]=String(k).split(':');return b==='vocab'?'אוצר מילים: '+(CAT_NAME[c]||c):(ACT_NAME[b]||b)};
+const fmtTs=ts=>new Date(ts).toLocaleString('he-IL',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'});
+const failedEv=e=>e.src==='cards'&&e.type==='w'?e.res!=='know':(e.m||0)>0;
+const rateCol=r=>r>=.85?['🟢','#5fd68a']:r>=.6?['🟡','#ffd35c']:['🔴','#ff6b6b'];
+const RES={know:'ידעה ✅',almost:'כמעט 🤔',no:'לא ידעה ❌'};
+
+V.parent=()=>{
+ if(!S.gate)return`<div class="top"><button class="btn small ghost" data-act="back">→</button><h2>אזור הורים 🔒</h2></div>
+  <div class="panel center"><p class="big">🔑 סיסמת מבוגרים</p><input id="gate" type="password" inputmode="numeric" autocomplete="off" style="text-align:center;font-size:1.6rem"><br><br><button class="btn" data-act="gate">כניסה</button></div>`;
+ const pid=S.pp&&D.profiles.some(p=>p.id===S.pp)?S.pp:D.profiles[0].id,range=S.pr===undefined?7:S.pr,since=range?Date.now()-range*864e5:0;
+ const L=(D.log||[]).filter(e=>e.p===pid&&e.ts>=since),items=L.filter(e=>e.type!=='s'),ses=L.filter(e=>e.type==='s');
+ const grp={},sk={};
+ items.forEach(e=>{const f=failedEv(e)?1:0,g=grp[e.lab]||(grp[e.lab]={lab:e.lab,n:0,f:0,ts:0});g.n++;g.f+=f;g.ts=Math.max(g.ts,e.ts);
+  const s=sk[srcName(e.src)]||(sk[srcName(e.src)]={n:0,f:0});s.n++;s.f+=f});
+ const all=Object.values(grp),hard=all.filter(g=>g.f>=2).sort((a,b)=>b.f-a.f||b.f/b.n-a.f/a.n),once=all.filter(g=>g.f===1).sort((a,b)=>b.ts-a.ts);
+ const tot=items.length,fail=items.filter(failedEv).length,rate=tot?1-fail/tot:null,perfect=ses.filter(e=>!e.m).length;
+ const last=L.length?fmtTs(L[L.length-1].ts):'—';
+ const skills=Object.entries(sk).map(([n,v])=>({n,rate:1-v.f/v.n,cnt:v.n,f:v.f})).sort((a,b)=>a.rate-b.rate);
+ const lim=S.pl||40,rows=[...L].reverse().slice(0,lim);
+ const resTxt=e=>e.type==='s'?`סיבוב: ${e.m?e.m+' טעויות':'בלי טעויות 🎉'} (${e.n} פריטים)${e.st?' · ⭐'+e.st:''}`:(e.src==='cards'&&e.type==='w'?RES[e.res]||e.res:(e.m?`❌ ${e.m} טעויות`:'✅ נכון'));
+ const chip=(on,act,attr,t)=>`<button class="btn small ${on?'':'ghost'}" style="width:auto" data-act="${act}" ${attr}>${t}</button>`;
+ return`<div class="top"><button class="btn small ghost" data-act="back">→</button><h2 class="sp">מידע להורה 📊</h2><button class="btn small ghost" data-act="p2s">⚙️ הגדרות</button></div>
+ <div class="chips">${D.profiles.map(p=>chip(p.id===pid,'ppick',`data-id="${p.id}"`,esc(p.name))).join('')}</div>
+ <div class="chips">${[[7,'7 ימים'],[30,'30 ימים'],[0,'הכול']].map(([d,t])=>chip(range===d,'prange',`data-d="${d}"`,t)).join('')}</div>
+ <div class="panel"><h3>📈 סיכום</h3>
+  <div class="statgrid"><div><b>${tot}</b><span>תשובות</span></div><div><b>${rate===null?'—':Math.round(rate*100)+'%'}</b><span>הצלחה</span></div><div><b>${ses.length}</b><span>סיבובים</span></div><div><b>${perfect}</b><span>בלי טעויות</span></div></div>
+  <div class="hint" style="margin-top:8px">פעילות אחרונה: ${last}</div></div>
+ ${bakWarn()}
+ ${tot?'':'<div class="panel center hint">עדיין אין נתונים לתקופה הזאת. התרגילים נרשמים כאן אוטומטית.</div>'}
+ <div class="panel"><h3>🎯 באילו נושאים מתקשה</h3>
+  ${skills.map(s=>{const[ic,col]=rateCol(s.rate);return`<div class="skrow"><div class="sktop"><span>${ic} ${esc(s.n)}</span><span class="hint">${Math.round(s.rate*100)}% · ${s.f} טעויות מתוך ${s.cnt}</span></div><div class="meter"><i style="width:${Math.max(4,s.rate*100)}%;background:${col}"></i></div></div>`}).join('')||'<p class="hint">—</p>'}</div>
+ <div class="panel"><h3>🔴 מילים וטעויות חוזרות (יותר מפעם אחת)</h3>
+  ${hard.map(g=>`<div class="wrow"><span class="wl2" dir="auto">${esc(g.lab)}</span><span class="hint">טעתה ב-${g.f} מתוך ${g.n}</span></div>`).join('')||'<p class="hint">אין כרגע. מצוין! 🎉</p>'}</div>
+ <div class="panel"><h3>🟡 טעתה פעם אחת</h3>
+  ${once.slice(0,30).map(g=>`<div class="wrow"><span class="wl2" dir="auto">${esc(g.lab)}</span><span class="hint">${fmtTs(g.ts)}</span></div>`).join('')||'<p class="hint">—</p>'}</div>
+ <div class="panel"><h3>🕒 יומן (תאריך ושעה)</h3>
+  ${rows.map(e=>`<div class="logrow"><div class="hint">${fmtTs(e.ts)} · ${esc(srcName(e.src))}</div><div><b dir="auto">${esc(e.lab||e.title||'')}</b> <span>${resTxt(e)}</span></div></div>`).join('')||'<p class="hint">היומן ריק.</p>'}
+  ${L.length>lim?'<br><button class="btn small ghost" style="width:auto" data-act="pmore">הצג עוד</button>':''}</div>
+ <div class="row"><button class="btn small blue" data-act="exportlog">⬇️ ייצוא יומן</button><button class="btn small red" data-act="clearlog">🗑️ מחיקת היומן של ${esc((D.profiles.find(p=>p.id===pid)||{}).name||'')}</button></div>`};
+
+Object.assign(A,{
+ parent(){S.back=S.screen;S.gate=false;S.q=[(Math.random()*6+4|0),(Math.random()*6+4|0)];S.pl=40;go('parent')},
+ s2p(){S.pl=40;go('parent')},
+ p2s(){S.sl=null;S.so='';go('settings')},
+ ppick(el){S.pp=el.dataset.id;S.pl=40;render(true)},
+ prange(el){S.pr=+el.dataset.d;S.pl=40;render(true)},
+ pmore(){S.pl=(S.pl||40)+60;render(true)},
+ exportlog(){const nm=id=>(D.profiles.find(p=>p.id===id)||{name:'?'}).name;
+  saveFile('milim-log.json',JSON.stringify((D.log||[]).map(e=>Object.assign({time:new Date(e.ts).toISOString(),child:nm(e.p)},e)),null,1))},
+ clearlog(){const pid=S.pp&&D.profiles.some(p=>p.id===S.pp)?S.pp:D.profiles[0].id;
+  if(confirm('למחוק את כל היומן של '+(D.profiles.find(p=>p.id===pid)||{}).name+'?')){D.log=(D.log||[]).filter(e=>e.p!==pid);save();render(true)}}
+});
+
+
+function showPrize(i){confetti();if(isRare(i))setTimeout(fireworks,300);
+ const m=document.createElement('div');m.className='modal';m.style.flexDirection='column';
+ m.innerHTML=`<div style="max-width:360px;width:100%">${prizeCard(i)}</div><button class="btn" style="max-width:360px;margin-top:14px" data-close="1">יפה! 💖</button>`;
+ m.addEventListener('click',e=>{if(e.target===m||e.target.dataset.close)m.remove()});document.body.appendChild(m)}
+function toast(t){const d=document.createElement('div');d.textContent=t;d.style.cssText='position:fixed;top:18px;left:50%;transform:translateX(-50%);background:#5fd68a;color:#fff;font-weight:900;padding:10px 20px;border-radius:99px;box-shadow:0 5px 0 #33a862;z-index:60';document.body.appendChild(d);setTimeout(()=>d.remove(),1200)}
+
+document.addEventListener('click',e=>{
+ const sy=e.target.closest('[data-say]');if(sy&&!e.target.closest('[data-act="say"]')){say(sy.dataset.say);return}
+ const sq=e.target.closest('[data-squish]');if(sq){const s=sq.querySelector('svg');s.classList.remove('squish');void s.getBoundingClientRect();s.classList.add('squish');return}
+ const el=e.target.closest('[data-act]');if(!el)return;const f=A[el.dataset.act];if(f)f(el,e);
+});
+document.addEventListener('change',e=>{
+ if(e.target.dataset.change==='lesson'){S.lesson=e.target.value}
+ if(e.target.dataset.name){const p=D.profiles.find(p=>p.id===e.target.dataset.name);if(p){p.name=e.target.value.trim()||p.name;save()}}
+ if(e.target.dataset.wid){const w=D.words.find(w=>w.id===e.target.dataset.wid),f=e.target.dataset.f,v=e.target.value.trim();
+  if(w){if(v){w[f]=v;save()}else e.target.value=w[f]}}
+ if(e.target.dataset.lowner!==undefined){D.words.forEach(w=>{if((w.lesson||'')===S.sl&&(w.owner||'')===(S.so||''))w.owner=e.target.value});S.so=e.target.value;save()}
+ if(e.target.dataset.lname!==undefined){const nl=e.target.value.trim();
+  if(!nl){e.target.value=S.sl;return}
+  D.words.forEach(w=>{if((w.lesson||'')===S.sl&&(w.owner||'')===(S.so||''))w.lesson=nl});if(S.lesson===S.sl)S.lesson=nl;S.sl=nl;save()}
+ if(e.target.dataset.en){const p=D.profiles.find(p=>p.id===e.target.dataset.en);if(p){p.en=e.target.value.trim();save()}}
+ if(e.target.dataset.exam){D.settings.exam=D.settings.exam||{};D.settings.exam[e.target.dataset.exam]=e.target.value.trim();save()}
+ if(e.target.dataset.rate!==undefined){D.settings.rate=+e.target.value;save();say('Apple')}
+ if(e.target.dataset.pw!==undefined){const v=e.target.value.trim();if(v.length>=4){D.settings.pw=v;save();toast('הסיסמה עודכנה 🔑')}else{e.target.value=D.settings.pw||'2101975';alert('הסיסמה צריכה להיות לפחות 4 תווים')}}
+ if(e.target.dataset.spp!==undefined){D.settings.spp=Math.max(1,Math.min(100,+e.target.value||10));save()}
+ if(e.target.dataset.goal!==undefined){D.settings.goal=Math.max(1,+e.target.value||10);save()}
+});
+
+document.addEventListener('keydown',e=>{if(e.key!=='Enter')return;
+ if(e.target.id==='gate')return A.gate();
+ if(e.target.id==='ne')document.getElementById('nh').focus();
+ else if(e.target.id==='nh')A.addword()});
+
+render();
+try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
