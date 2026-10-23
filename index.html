@@ -143,6 +143,15 @@ label{font-weight:700;font-size:.9rem;display:block;margin:8px 0 4px}
 .wedit{display:flex;gap:6px;align-items:center;margin-bottom:8px}.wedit input{padding:8px 10px;min-width:0;flex:1}
 .x{border:0;background:#ffe0e0;border-radius:12px;padding:8px 10px;cursor:pointer;font-size:1rem}
 details>summary{list-style:none}details>summary::-webkit-details-marker{display:none}
+.sq.md{width:104px;height:104px}
+.hero{display:flex;align-items:center;gap:14px;padding:14px 16px}.hero-t{flex:1;min-width:0}.hero-t .hint{font-size:.85rem;margin-top:6px}
+.goal{display:flex;align-items:center;gap:10px;margin-top:6px;font-weight:700;font-size:.95rem;white-space:nowrap}.goal .bar{flex:1}
+.opts{display:flex;flex-direction:column;gap:10px;padding:12px}
+.btn.two{flex-direction:column;gap:0;line-height:1.25}.btn .sub{font-size:.8rem;font-weight:600;opacity:.85}
+.row>.btn.two{font-size:1.05rem;padding:12px 8px}
+.btn.tile2{flex-direction:column;gap:2px;font-size:.95rem;padding:12px 6px}.tile2 span{font-size:1.6rem}
+.foot{display:flex;justify-content:center;gap:22px;margin-top:2px}
+.foot button{font:inherit;font-weight:700;font-size:.9rem;color:var(--ink);opacity:.65;background:none;border:0;padding:10px 6px;cursor:pointer}
 .credit{margin-top:18px;padding:12px 0 24px;text-align:center;font-size:1.2rem;font-weight:900;color:var(--pink-d);line-height:1.5}
 
 </style>
@@ -869,24 +878,22 @@ V.home=()=>{const p=P(),goal=D.settings.goal,cnt=p.day===today()?p.dayCount:0,ls
  return`
  <div class="top"><button class="btn small ghost" data-act="profiles">→</button><div class="sp"></div>
   ${pillsHtml(p)}</div>
- <div class="center"><div data-act="pet" style="display:inline-block;cursor:pointer" class="bounce">${squish(p.avatar,'lg')}</div>
-  <h2>היי ${esc(p.name)}!</h2></div>
+ <div class="panel hero">
+  <div data-act="pet" class="bounce" style="cursor:pointer">${squish(p.avatar,'md')}</div>
+  <div class="hero-t"><h2>היי ${esc(p.name)}!</h2>
+   <div class="goal"><span>היום ${Math.min(cnt,goal)}/${goal}</span><div class="bar"><i style="width:${Math.min(100,cnt/goal*100)}%"></i></div></div>
+   <div class="hint">עוד ${spp()-(p.stars||0)} ⭐ לסקוויש הבא · שלטת ב-${mastered(p)} מילים</div></div></div>
  ${examHtml()}
- <div class="panel"><b>המטרה להיום: ${Math.min(cnt,goal)}/${goal}</b>
-  <div class="bar" style="margin-top:8px"><i style="width:${Math.min(100,cnt/goal*100)}%"></i></div>
-  <div class="hint" style="margin-top:8px">עוד ${spp()-(p.stars||0)} כוכבים לסקוויש הבא · שלטת ב-${mastered(p)} מילים<br>🎁 משחק או תרגיל בלי טעויות נותנים כוכבים (עד 5)</div></div>
- <div class="panel">
-  <label>שיעור</label>
-  <select data-change="lesson"><option value="">כל המילים</option>${ls.map(l=>`<option ${S.lesson===l?'selected':''}>${esc(l)}</option>`).join('')}</select>
-  <label>כיוון</label>
-  <div class="seg"><button class="${S.mode==='en2he'?'on':''}" data-act="mode" data-v="en2he">אנגלית ← עברית</button><button class="${S.mode==='he2en'?'on':''}" data-act="mode" data-v="he2en">עברית ← אנגלית</button></div></div>
  ${n<1?'<div class="panel center">אין עדיין מילים. בקשו מההורים להוסיף בהגדרות ⚙️</div>':''}
- <button class="btn" data-act="practice" ${n<1?'disabled':''}>🃏 בואי נתרגל (תרגול בלבד, בלי פרסים)</button>
- <button class="btn blue has-gift" data-act="game" ${n<2?'disabled':''}>🎮 משחק התאמה (פרסים!)</button>
- <button class="btn yellow has-gift" data-act="hub">🧩 מרכז תרגילים (אותיות, צלילים, משפטים)</button>
- <div class="row"><button class="btn yellow" data-act="prizes">🏆 הסקווישים שלי</button><button class="btn blue" data-act="look">🎨 האייקון והצבע</button></div>
- <button class="btn ghost" data-act="parent">📊 מידע להורה</button>
- <button class="btn ghost" data-act="settings">⚙️ הגדרות</button>`};
+ <div class="panel opts">
+  <select data-change="lesson" aria-label="שיעור"><option value="">📖 כל המילים</option>${ls.map(l=>`<option ${S.lesson===l?'selected':''}>${esc(l)}</option>`).join('')}</select>
+  <div class="seg"><button class="${S.mode==='en2he'?'on':''}" data-act="mode" data-v="en2he">אנגלית ← עברית</button><button class="${S.mode==='he2en'?'on':''}" data-act="mode" data-v="he2en">עברית ← אנגלית</button></div></div>
+ <button class="btn blue two has-gift" data-act="game" ${n<2?'disabled':''}>🎮 משחק התאמה<span class="sub">עם פרסים!</span></button>
+ <div class="row"><button class="btn two" data-act="practice" ${n<1?'disabled':''}>🃏 תרגול<span class="sub">בלי פרסים</span></button>
+  <button class="btn yellow two has-gift" data-act="hub">🧩 תרגילים<span class="sub">אותיות, משפטים</span></button></div>
+ <div class="row"><button class="btn ghost tile2" data-act="prizes"><span>🏆</span>הסקווישים שלי</button>
+  <button class="btn ghost tile2" data-act="look"><span>🎨</span>האייקון והצבע</button></div>
+ <div class="foot"><button data-act="parent">📊 מידע להורה</button><button data-act="settings">⚙️ הגדרות</button></div>`};
 
 V.practice=()=>{const r=S.run;if(!r)return'';
  if(r.i>=r.q.length)return V.done();

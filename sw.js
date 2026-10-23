@@ -1,4 +1,4 @@
-const CACHE = 'milim-v26';
+const CACHE = 'milim-v27';
 const FILES = ['./', './index.html', './manifest.json', './icon.svg'];
 
 self.addEventListener('install', e => {
