@@ -1,28 +1,39 @@
-const CACHE = 'milim-v27';
+// להעלות את הגרסה בכל שינוי בנכסים, אחרת משתמשים יראו גרסה ישנה
+const CACHE = 'milim-v28';
 const FILES = ['./', './index.html', './manifest.json', './icon.svg'];
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)));
-  self.skipWaiting();
+  // cache:'reload' – לא להשתמש בעותק ישן מהמטמון של הדפדפן (GitHub Pages שולח max-age=600)
+  e.waitUntil(
+    caches.open(CACHE)
+      .then(c => c.addAll(FILES.map(u => new Request(u, { cache: 'reload' }))))
+      .then(() => self.skipWaiting())
+  );
 });
 
 self.addEventListener('activate', e => {
   e.waitUntil(
-    caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+    caches.keys()
+      .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+      .then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
-// network-first so updates arrive, cache fallback so it works offline
+// קודם הרשת (עדכונים מופיעים מיד), ואם אין רשת או שהיא איטית – מהמטמון
 self.addEventListener('fetch', e => {
-  if (e.request.method !== 'GET') return;
+  const { request } = e;
+  if (request.method !== 'GET' || new URL(request.url).origin !== location.origin) return;
+  const fromCache = () => caches.match(request, { ignoreSearch: true });
+  // no-cache = לבדוק מול השרת בכל פעם (304 זול), במקום להסתפק בעותק בן עד 10 דקות
+  const fromNetwork = fetch(request, { cache: 'no-cache' }).then(res => {
+    if (res.ok) {
+      const copy = res.clone();
+      caches.open(CACHE).then(c => c.put(request, copy));
+    }
+    return res;
+  });
+  const timeout = new Promise((_, reject) => setTimeout(reject, 3000));
   e.respondWith(
-    fetch(e.request)
-      .then(res => {
-        const copy = res.clone();
-        caches.open(CACHE).then(c => c.put(e.request, copy));
-        return res;
-      })
-      .catch(() => caches.match(e.request).then(r => r || caches.match('./index.html')))
+    Promise.race([fromNetwork, timeout]).catch(() => fromCache().then(hit => hit || fromNetwork))
   );
 });

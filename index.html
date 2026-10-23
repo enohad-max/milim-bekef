@@ -888,9 +888,9 @@ V.home=()=>{const p=P(),goal=D.settings.goal,cnt=p.day===today()?p.dayCount:0,ls
  <div class="panel opts">
   <select data-change="lesson" aria-label="שיעור"><option value="">📖 כל המילים</option>${ls.map(l=>`<option ${S.lesson===l?'selected':''}>${esc(l)}</option>`).join('')}</select>
   <div class="seg"><button class="${S.mode==='en2he'?'on':''}" data-act="mode" data-v="en2he">אנגלית ← עברית</button><button class="${S.mode==='he2en'?'on':''}" data-act="mode" data-v="he2en">עברית ← אנגלית</button></div></div>
- <button class="btn blue two has-gift" data-act="game" ${n<2?'disabled':''}>🎮 משחק התאמה<span class="sub">עם פרסים!</span></button>
- <div class="row"><button class="btn two" data-act="practice" ${n<1?'disabled':''}>🃏 תרגול<span class="sub">בלי פרסים</span></button>
-  <button class="btn yellow two has-gift" data-act="hub">🧩 תרגילים<span class="sub">אותיות, משפטים</span></button></div>
+ <button class="btn blue has-gift" data-act="game" ${n<2?'disabled':''}>🎮 משחק התאמה</button>
+ <div class="row"><button class="btn" data-act="practice" ${n<1?'disabled':''}>🃏 תרגול</button>
+  <button class="btn yellow has-gift" data-act="hub">🧩 תרגילים</button></div>
  <div class="row"><button class="btn ghost tile2" data-act="prizes"><span>🏆</span>הסקווישים שלי</button>
   <button class="btn ghost tile2" data-act="look"><span>🎨</span>האייקון והצבע</button></div>
  <div class="foot"><button data-act="parent">📊 מידע להורה</button><button data-act="settings">⚙️ הגדרות</button></div>`};
@@ -1214,19 +1214,19 @@ const examHtml=()=>{const e=D.settings.exam;if(!e||!e.date)return'';
  return`<div class="panel exam"><b>📅 ${d===0?'ההערכה היום! בהצלחה 💪':d===1?'ההערכה מחר!':'ההערכה בעוד '+d+' ימים'}</b>${e.note?`<div class="hint">${esc(e.note)}</div>`:''}</div>`};
 
 V.acts=()=>{const p=P();
- const b=(k,ic,t,x='')=>`<button class="profile has-gift" style="font-size:1rem;padding:14px 6px" data-act="run" data-k="${k}" ${x}><span style="font-size:2.2rem">${ic}</span>${t}<span class="hint">${({trace:'✋ כוכב אחד',name:'⭐ כוכב אחד',letters:'🎁 עד 2 ⭐',order:'🎁 עד 4 ⭐'})[k]||'🎁 עד 5 ⭐'}</span></button>`;
- return`<div class="top"><button class="btn small ghost" data-act="home">→</button><h2 class="sp">מרכז תרגילים 🧩</h2></div>
+ const b=(k,ic,t,x='')=>`<button class="profile" style="font-size:1rem;padding:10px 6px;gap:2px" data-act="run" data-k="${k}" ${x}><span style="font-size:1.9rem;line-height:1.2">${ic}</span>${t}<span class="hint">${({trace:'⭐ 1',name:'⭐ 1',letters:'⭐ עד 2',order:'⭐ עד 4'})[k]||'⭐ עד 5'}</span></button>`;
+ return`<div class="top"><button class="btn small ghost" data-act="home">→</button><h2 class="sp">תרגילים 🧩</h2></div>
  <div class="top" style="justify-content:center">${pillsHtml(p)}</div>
  ${examHtml()}
- <div class="hint center">🎁 סיבוב בלי אף טעות = עד 5 כוכבים. כתיבת השם = כוכב אחד.<br>אחרי ${spp()} כוכבים מקבלים סקוויש חדש.</div>
+ <div class="hint center">סיבוב בלי טעויות = כוכבים 🎁</div>
  <div class="hubgrid">
-  ${b('letters','🔤','אותיות גדולות וקטנות')}${b('first','🍎','באיזו אות זה מתחיל?')}
-  ${b('vowel','🐱','האות החסרה')}${b('spell','🧱','בונים מילה')}
-  ${b('name','✏️','בונים את השם שלי')}${b('trace','🖍️','כותבים את השם שלי')}
-  ${b('colors','🎨','צבעים')}${b('cloze','💬','מילה חסרה במשפט')}
+  ${b('letters','🔤','אותיות')}${b('first','🍎','אות ראשונה')}
+  ${b('vowel','🐱','אות חסרה')}${b('spell','🧱','בונים מילה')}
+  ${b('name','✏️','בונים שם')}${b('trace','🖍️','כותבים שם')}
+  ${b('colors','🎨','צבעים')}${b('cloze','💬','משפט חסר')}
   ${b('order','🧩','מסדרים משפט')}${b('mock','🎓','מבחן דמה')}
  </div>
- <div class="panel"><h3>📚 אוצר מילים</h3><div class="chips">${Object.keys(CATS).map(c=>`<button class="btn small has-gift" style="width:auto" data-act="run" data-k="vocab" data-c="${c}">${CAT_ICON[c]} ${CAT_NAME[c]}</button>`).join('')}</div></div>`};
+ <div class="panel"><h3>📚 אוצר מילים</h3><div class="chips">${Object.keys(CATS).map(c=>`<button class="btn small" style="width:auto" data-act="run" data-k="vocab" data-c="${c}">${CAT_ICON[c]} ${CAT_NAME[c]}</button>`).join('')}</div></div>`};
 
 V.act=()=>{const a=S.act;if(!a)return'';if(a.finished)return V.actDone();
  const it=a.items[a.i],top=`<div class="top"><button class="btn small ghost" data-act="hub">✕</button><div class="bar sp"><i style="width:${a.i/a.items.length*100}%"></i></div><div class="pill" id="mc">❌ ${a.mist}</div></div>`;
@@ -1297,7 +1297,7 @@ function logItem(){const a=S.act,it=a.items[a.i];if(!it)return;
  save()}
 const bakWarn=()=>{const t=(D.settings||{}).lastBackup,d=t?Math.floor((Date.now()-t)/864e5):null;
  return d===null||d>=7?`<div class="panel exam"><b>💾 ${d===null?'עוד לא יצרת גיבוי':'הגיבוי האחרון לפני '+d+' ימים'}</b><div class="hint">מומלץ לייצא גיבוי לפני כל עדכון של האפליקציה.</div><button class="btn small blue" style="width:auto;margin-top:8px" data-act="export">⬇️ ייצוא גיבוי עכשיו</button></div>`:''};
-const ACT_NAME={cards:'כרטיסיות',match:'משחק התאמה',trace:'כתיבת השם',letters:'אותיות גדולות וקטנות',first:'באיזו אות מתחיל',vowel:'האות החסרה',spell:'בונים מילה',name:'בונים את השם',colors:'צבעים',cloze:'מילה חסרה במשפט',order:'מסדרים משפט',mock:'מבחן דמה'};
+const ACT_NAME={cards:'כרטיסיות',match:'משחק התאמה',trace:'כותבים שם',letters:'אותיות',first:'אות ראשונה',vowel:'אות חסרה',spell:'בונים מילה',name:'בונים שם',colors:'צבעים',cloze:'משפט חסר',order:'מסדרים משפט',mock:'מבחן דמה'};
 const srcName=k=>{const[b,c]=String(k).split(':');return b==='vocab'?'אוצר מילים: '+(CAT_NAME[c]||c):(ACT_NAME[b]||b)};
 const fmtTs=ts=>new Date(ts).toLocaleString('he-IL',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'});
 const failedEv=e=>e.src==='cards'&&e.type==='w'?e.res!=='know':(e.m||0)>0;
@@ -1387,7 +1387,9 @@ document.addEventListener('keydown',e=>{if(e.key!=='Enter')return;
 
 render();
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
-if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
+if('serviceWorker' in navigator&&location.protocol.startsWith('http')){const had=!!navigator.serviceWorker.controller;
+ navigator.serviceWorker.register('sw.js').then(reg=>{document.addEventListener('visibilitychange',()=>{if(!document.hidden)reg.update().catch(()=>{})})}).catch(()=>{});
+ navigator.serviceWorker.addEventListener('controllerchange',()=>{if(had&&['profiles','home'].includes(S.screen))location.reload()})}
 </script>
 </body>
 </html>
