@@ -68,6 +68,7 @@ label{font-weight:700;font-size:.9rem;display:block;margin:8px 0 4px}
 .wl b{direction:ltr}.wl span{flex:1}.wl .x{border:0;background:#ffe0e0;border-radius:12px;padding:6px 10px;cursor:pointer;font-size:1rem}
 .collgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .slot{background:#fff;border-radius:22px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 0 #0000001a;cursor:pointer;position:relative}
+.slot.rpick.on{outline:4px solid #5fd68a;background:#e6fff0}.slot.rpick small{position:absolute;bottom:2px;font-size:.6rem}.rwd{margin-top:8px}.rwd summary{cursor:pointer;font-weight:800;padding:6px 0}
 .slot.lock{opacity:.5;font-size:2rem;cursor:default;filter:grayscale(1)}
 .slot.cur{outline:4px solid var(--yellow)}
 .slot small{position:absolute;bottom:3px;left:0;right:0;text-align:center;font-size:.66rem;font-weight:700;opacity:.75}
@@ -1429,8 +1430,20 @@ V.settings=()=>{
   <div class="setrow"><span>⭐ כוכבים לסקוויש</span><input type="number" min="1" max="100" value="${spp()}" data-spp></div>
   <div class="setrow"><span>🎯 כרטיסיות ביום</span><input type="number" min="1" max="100" value="${D.settings.goal}" data-goal></div></div>
  <div class="panel"><h3>💾 גיבוי</h3><div class="row"><button class="btn small blue" data-act="export">ייצוא</button><button class="btn small blue" data-act="import">ייבוא</button></div>${(()=>{try{return localStorage.getItem(KEY+':undo')?'<button class="btn small ghost" style="margin-top:8px" data-act="undoimport">↩️ ביטול הייבוא האחרון</button>':''}catch(e){return''}})()}
-  <div class="hint" style="margin-top:8px">גיבוי אחרון: <b>${D.settings.lastBackup?fmtTs(D.settings.lastBackup):'אף פעם'}</b><br>הנתונים נשמרים בטלפון הזה בלבד</div></div>`;
+  <div class="hint" style="margin-top:8px">גיבוי אחרון: <b>${D.settings.lastBackup?fmtTs(D.settings.lastBackup):'אף פעם'}</b><br>הנתונים נשמרים בטלפון הזה בלבד</div></div>
+ ${restorePanel()}`;
 };
+
+// ---------- שחזור סקווישים (הורים): 200 הראשונים בלחיצה אחת (חד-פעמי לכל ילדה), או פתיחה ידנית של סקווישים נבחרים ----------
+const restorePid=()=>S.rp&&D.profiles.some(p=>p.id===S.rp)?S.rp:D.profiles[0].id;
+const restorePanel=()=>{const p=D.profiles.find(x=>x.id===restorePid()),sel=S.rsel||(S.rsel=new Set());
+ const worlds=wlist().map(w=>({w,miss:w.idx.filter(i=>!p.coll.includes(i))})).filter(x=>x.miss.length);
+ return`<div class="panel"><h3>🧩 שחזור סקווישים</h3>
+  <select data-rprof>${D.profiles.map(x=>`<option value="${x.id}" ${x.id===p.id?'selected':''}>${esc(x.name)}</option>`).join('')}</select>
+  ${p.restored200?'':`<button class="btn small yellow" style="margin-top:10px" data-act="restore200">♻️ שחזור 200 הראשונים</button><div class="hint">פעם אחת בלבד לכל ילדה. אחרי ההפעלה האפשרות נעלמת.</div>`}
+  <div class="hint" style="margin-top:12px"><b>או בחירה ידנית:</b> סמני סקווישים לפתיחה (${worlds.reduce((n,x)=>n+x.miss.length,0)} חסרים)</div>
+  ${worlds.map(({w,miss})=>`<details class="rwd"><summary>${w.ic} ${w.n} <span class="hint">(${miss.length} חסרים)</span></summary><div class="collgrid">${miss.map(i=>`<div class="slot rpick ${sel.has(i)?'on':''}" data-act="rtoggle" data-i="${i}">${squish(i)}<small>${sqName(i)}</small></div>`).join('')}</div></details>`).join('')||'<p class="hint">יש לה כבר את כל הסקווישים 🎉</p>'}
+  <button class="btn small green" style="margin-top:10px" data-act="rapply">✅ פתיחת הנבחרים (<span id="rcnt">${sel.size}</span>)</button></div>`};
 
 V.lessonEdit=()=>{
  const l=S.sl,o=S.so||'',ws=D.words.filter(w=>(w.lesson||'')===l&&(w.owner||'')===o);
@@ -1552,6 +1565,13 @@ const A={
  addprof(){D.profiles.push(newProfile('ילדה חדשה'));save();render()},
  delprof(el){if(D.profiles.length>1&&confirm('למחוק את הפרופיל והסקווישים שלו? השיעורים שלו יהפכו למשותפים.')){D.words.forEach(w=>{if(w.owner===el.dataset.id)w.owner=''});D.profiles=D.profiles.filter(p=>p.id!==el.dataset.id);save();render()}},
  export:exportData,import:importData,
+ restore200(){const p=D.profiles.find(x=>x.id===restorePid());if(!p||p.restored200)return;
+  if(!confirm('לשחזר את 200 הסקווישים הראשונים ל'+p.name+'? אפשר רק פעם אחת.'))return;
+  for(let i=0;i<LEGACY_N;i++)if(!p.coll.includes(i))p.coll.push(i);
+  p.restored200=1;S.rsel=new Set();save();toast('♻️ 200 סקווישים שוחזרו');render(true)},
+ rtoggle(el){const s=S.rsel||(S.rsel=new Set()),i=+el.dataset.i;s.has(i)?s.delete(i):s.add(i);el.classList.toggle('on',s.has(i));const c=document.getElementById('rcnt');if(c)c.textContent=s.size},
+ rapply(){const p=D.profiles.find(x=>x.id===restorePid()),s=S.rsel;if(!p||!s||!s.size)return;
+  s.forEach(i=>{if(!p.coll.includes(i))p.coll.push(i)});const n=s.size;S.rsel=new Set();save();toast('🧩 נפתחו '+n+' סקווישים');render(true)},
  undoimport(){const u=localStorage.getItem(KEY+':undo');if(!u)return;if(!confirm('לבטל את הייבוא האחרון ולחזור לנתונים שהיו לפניו?'))return;localStorage.setItem(KEY+':undo',localStorage.getItem(KEY)||'');localStorage.setItem(KEY,u);location.reload()}
 };
 // ---------- מרכז תרגילים (אותיות, צלילים, מילים, משפטים) ----------
@@ -1878,6 +1898,7 @@ document.addEventListener('change',e=>{
   D.words.forEach(w=>{if((w.lesson||'')===S.sl&&(w.owner||'')===(S.so||''))w.lesson=nl});if(S.lesson===S.sl)S.lesson=nl;S.sl=nl;save()}
  if(e.target.dataset.en){const p=D.profiles.find(p=>p.id===e.target.dataset.en);if(p){p.en=e.target.value.trim();save()}}
  if(e.target.dataset.exam){D.settings.exam=D.settings.exam||{};D.settings.exam[e.target.dataset.exam]=e.target.value.trim();save()}
+ if(e.target.dataset.rprof!==undefined){S.rp=e.target.value;S.rsel=new Set();render(true);return}
  if(e.target.dataset.rate!==undefined){D.settings.rate=+e.target.value;save();say('Apple')}
  if(e.target.dataset.pw!==undefined){const v=e.target.value.trim();if(v.length>=4){D.settings.pw=v;save();toast('הסיסמה עודכנה 🔑')}else{e.target.value=D.settings.pw||'2101975';alert('הסיסמה צריכה להיות לפחות 4 תווים')}}
  if(e.target.dataset.spp!==undefined){D.settings.spp=Math.max(1,Math.min(100,+e.target.value||10));save()}
