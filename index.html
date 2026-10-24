@@ -1384,6 +1384,8 @@ const sqSlot=(i,p,name)=>{const nw=(p.nw||[]).includes(i);return`<div class="slo
 V.prizes=()=>{const p=P(),ws=wlist(),w=S.world&&ws.find(x=>x.id===S.world);
  if(w)return V.world(w,p);
  const recent=p.coll.slice(-8).reverse(),fav=(p.fav||[]).filter(i=>p.coll.includes(i)),nl=newList(p);
+ if(D.settings.flatColl){const own=p.coll.slice().sort((a,b)=>a-b);return`<div class="top"><button class="btn small ghost" data-act="pback">→</button><h2 class="sp">הסקווישים שלי 🏆</h2><div class="pill">${p.coll.length}/${N_SQ}</div></div>
+  ${nl.length?'<div class="newline">🎁 הסקווישים החדשים זוהרים כאן!</div>':''}<div class="collgrid">${own.map(i=>sqSlot(i,p,1)).join('')}</div>`}
  const row=(t,a)=>a.length?`<div class="panel srow-p"><h3>${t}</h3><div class="srow">${a.map(i=>sqSlot(i,p)).join('')}</div></div>`:'';
  return`<div class="top"><button class="btn small ghost" data-act="pback">→</button><h2 class="sp">הסקווישים שלי 🏆</h2><div class="pill">${p.coll.length}/${N_SQ}</div></div>
  ${nl.length?`<button class="newban" data-act="shownew"><span class="nbv">${nl.slice(-3).map(i=>squish(i)).join('')}</span><span class="nbt"><b>🎁 ${nl.length>1?nl.length+' סקווישים חדשים!':'סקוויש חדש!'}</b><span>${esc(sqName(nl[nl.length-1]))}</span></span><span class="nbgo">הראי לי ▶</span></button>`:`<div class="hint center">כל ${spp()} ⭐ = סקוויש חדש. בחרי עולם לגלות 👇</div>`}
@@ -1427,6 +1429,8 @@ V.settings=()=>{
   <button class="btn small blue" style="margin-top:10px" data-act="saytest">🔊 נסי</button></div>
  <div class="panel"><h3>⚙️ כללי</h3>
   <div class="setrow"><span>🔑 סיסמת מבוגרים</span><input type="password" inputmode="numeric" autocomplete="off" value="${esc(D.settings.pw||'2101975')}" data-pw></div>
+  <div class="setrow"><span>🏆 תצוגת הסקווישים</span><select data-coll><option value="0" ${D.settings.flatColl?'':'selected'}>לפי עולמות</option><option value="1" ${D.settings.flatColl?'selected':''}>ברצף</option></select></div>
+  <div class="setrow"><span>🔊 הקראה בהתאמת מילים</span><select data-msay><option value="1" ${D.settings.noMatchSay?'':'selected'}>עם הקראה</option><option value="0" ${D.settings.noMatchSay?'selected':''}>בלי הקראה (מהיר)</option></select></div>
   <div class="setrow"><span>⭐ כוכבים לסקוויש</span><input type="number" min="1" max="100" value="${spp()}" data-spp></div>
   <div class="setrow"><span>🎯 כרטיסיות ביום</span><input type="number" min="1" max="100" value="${D.settings.goal}" data-goal></div></div>
  <div class="panel"><h3>💾 גיבוי</h3><div class="row"><button class="btn small blue" data-act="export">ייצוא</button><button class="btn small blue" data-act="import">ייבוא</button></div>${(()=>{try{return localStorage.getItem(KEY+':undo')?'<button class="btn small ghost" style="margin-top:8px" data-act="undoimport">↩️ ביטול הייבוא האחרון</button>':''}catch(e){return''}})()}
@@ -1534,12 +1538,12 @@ const A={
  m(el){
   const g=S.game,id=el.dataset.id,side=el.dataset.side;
   if(g.done.includes(id))return;
-  {const w=g.en.find(w=>w.id===id);say(side==='en'?w.en:w.he)}
+  if(!D.settings.noMatchSay){const w=g.en.find(w=>w.id===id);say(side==='en'?w.en:w.he)}
   if(!g.sel||g.sel.side===side){g.sel={id,side};render();return}
   if(g.sel.id===id){g.done.push(id);g.left--;g.sel=null;
    if(g.left===0){const p=P();const cnt={};g.wrong.forEach(id=>cnt[id]=(cnt[id]||0)+1);g.en.forEach(w=>logEv({type:'w',src:'match',lab:w.en+' · '+w.he,m:cnt[w.id]||0}));logEv({type:'s',src:'match',title:'משחק התאמה',m:g.mistakes,n:g.en.length});g.wrong.forEach(wid=>{const w=D.words.find(x=>x.id===wid);if(w)mark(p,w,'no')});if(!g.mistakes){for(let i=0;i<STARS_PERFECT;i++)addStar(p,g);g.stars=STARS_PERFECT;confetti();if(g.prizes.some(isRare))setTimeout(fireworks,300)}tick(p);save()}
-   document.querySelectorAll(`[data-act="m"][data-id="${id}"]`).forEach(e=>e.classList.add('good'));setTimeout(render,380);
-  }else{g.mistakes++;g.wrong.push(g.sel.id,id);const first=document.querySelector(`.m.sel`);el.classList.add('bad');if(first)first.classList.add('bad');g.sel=null;setTimeout(render,450)}
+   render();
+  }else{g.mistakes++;g.wrong.push(g.sel.id,id);const first=document.querySelector(`.m.sel`);el.classList.add('bad');if(first)first.classList.add('bad');g.sel=null;setTimeout(render,250)}
  },
  world(el){S.world=el.dataset.w;render()},
  shownew(){const p=P(),nl=newList(p),i=nl[nl.length-1],w=wlist().find(x=>x.idx.includes(i));if(w){S.world=w.id;render()}},
@@ -1778,10 +1782,10 @@ Object.assign(A,{
    render(true)}
   else{a.mist++;a.im++;el.classList.add('bad');const m=document.getElementById('mc');if(m)m.textContent='❌ '+a.mist;setTimeout(()=>el.classList.remove('bad'),450)}},
  mt(el){const a=S.act,it=a.items[a.i],id=+el.dataset.id,side=el.dataset.side;if(a.done.includes(id)||a.lock)return;
-  {const pr=it.pairs.find(q=>q[2]===id),sy=pr&&pr[4]&&pr[4][side==='L'?0:1];if(sy)say(sy)}
+  if(!D.settings.noMatchSay){const pr=it.pairs.find(q=>q[2]===id),sy=pr&&pr[4]&&pr[4][side==='L'?0:1];if(sy)say(sy)}
   if(!a.sel||a.sel.side===side){a.sel={id,side};render(true);return}
-  if(a.sel.id===id){a.done.push(id);a.sel=null;if(a.done.length===it.pairs.length){a.lock=true;render(true);setTimeout(nextItem,700);return}render(true)}
-  else{a.mist++;a.im++;a.iw.push(a.sel.id,id);const f=document.querySelector('.m.sel');el.classList.add('bad');if(f)f.classList.add('bad');a.sel=null;setTimeout(()=>render(true),450)}}
+  if(a.sel.id===id){a.done.push(id);a.sel=null;if(a.done.length===it.pairs.length){a.lock=true;render(true);setTimeout(nextItem,350);return}render(true)}
+  else{a.mist++;a.im++;a.iw.push(a.sel.id,id);const f=document.querySelector('.m.sel');el.classList.add('bad');if(f)f.classList.add('bad');a.sel=null;setTimeout(()=>render(true),250)}}
 });
 
 // ---------- מידע להורה: יומן תרגול ומחוונים ----------
@@ -1898,6 +1902,8 @@ document.addEventListener('change',e=>{
   D.words.forEach(w=>{if((w.lesson||'')===S.sl&&(w.owner||'')===(S.so||''))w.lesson=nl});if(S.lesson===S.sl)S.lesson=nl;S.sl=nl;save()}
  if(e.target.dataset.en){const p=D.profiles.find(p=>p.id===e.target.dataset.en);if(p){p.en=e.target.value.trim();save()}}
  if(e.target.dataset.exam){D.settings.exam=D.settings.exam||{};D.settings.exam[e.target.dataset.exam]=e.target.value.trim();save()}
+ if(e.target.dataset.coll!==undefined){D.settings.flatColl=e.target.value==='1';save()}
+ if(e.target.dataset.msay!==undefined){D.settings.noMatchSay=e.target.value==='0';save()}
  if(e.target.dataset.rprof!==undefined){S.rp=e.target.value;S.rsel=new Set();render(true);return}
  if(e.target.dataset.rate!==undefined){D.settings.rate=+e.target.value;save();say('Apple')}
  if(e.target.dataset.pw!==undefined){const v=e.target.value.trim();if(v.length>=4){D.settings.pw=v;save();toast('הסיסמה עודכנה 🔑')}else{e.target.value=D.settings.pw||'2101975';alert('הסיסמה צריכה להיות לפחות 4 תווים')}}
