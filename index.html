@@ -102,6 +102,8 @@ label{font-weight:700;font-size:.9rem;display:block;margin:8px 0 4px}
 .bk{display:inline-block;margin:2px;background:#5aa7ff;border:2px solid #2f7be0;border-radius:3px;vertical-align:top}.bk.k{width:26px;height:26px;background:#8ec5ff}.bk.h{width:18px;height:18px;background:#a6e3a1;border-color:#3fa84a}.bk.t{width:6px;height:24px;background:#ffd35c;border-color:#e0a800}.bk.u{width:7px;height:7px;border-radius:50%;background:#ff8fb8;border-color:#e0558f}
 .optgrid:has(.opt.cmpo){direction:ltr}.optgrid:has(.opt.sm){grid-template-columns:1fr}.opt.sm{font-size:1.25rem!important}
 .bignum{font-size:2.4rem;font-weight:900;letter-spacing:1px}.opt.sm{font-size:1.05rem;padding:12px 6px}.opt.cmpo{font-size:2.6rem}
+.subjs{display:flex;flex-direction:column;gap:16px;margin-top:14px}.subj{font:inherit;border:0;border-radius:30px;color:#fff;display:flex;flex-direction:column;align-items:center;gap:2px;padding:22px 10px;cursor:pointer;font-size:1rem;font-weight:700;transition:transform .08s,box-shadow .08s}.subj b{font-size:1.8rem;font-weight:900}.subj .sic{font-size:3.4rem;line-height:1.2;filter:drop-shadow(0 3px 0 #0003)}.subj:active{transform:translateY(5px)}
+.subj.a-blue{box-shadow:0 7px 0 var(--blue-d)}.subj.a-orange{box-shadow:0 7px 0 #d96f00}.subj.a-blue:active{box-shadow:0 2px 0 var(--blue-d)}.subj.a-orange:active{box-shadow:0 2px 0 #d96f00}
 .atile.wide{grid-column:1/-1}.a-orange{background:linear-gradient(#ffb347,#ff8c1a);box-shadow:0 6px 0 #d96f00}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 .optgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
@@ -1298,7 +1300,7 @@ V.home=()=>{const p=P(),goal=D.settings.goal,cnt=p.day===today()?p.dayCount:0,ls
  const tile=(i,cls,ic,t,act,x='')=>`<button class="atile ${cls}" style="--i:${i}" data-act="${act}" ${x}><span class="ic">${ic}</span>${t}</button>`;
  return`
  <div class="bgfx" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
- <div class="top"><button class="btn small ghost" data-act="profiles">→</button><div class="sp"></div>
+ <div class="top"><button class="btn small ghost" data-act="subjects">→</button><div class="sp"></div>
   ${pillsHtml(p)}</div>
  <div class="stage">
   <div class="halo"></div>
@@ -1317,8 +1319,14 @@ V.home=()=>{const p=P(),goal=D.settings.goal,cnt=p.day===today()?p.dayCount:0,ls
  <button class="btn blue cta has-gift" data-act="game" ${n<2?'disabled':''}>🎮 משחק התאמה</button>
  <div class="tgrid">
   ${tile(1,'a-green','🃏','תרגול','practice',n<1?'disabled':'')}${tile(2,'a-yellow','🧩','תרגילים','hub')}
-  ${tile(3,'a-pink','🏆','הסקווישים שלי','prizes')}${tile(4,'a-blue','🎨','האייקון והצבע','look')}${tile(5,'a-orange wide','🔢','חשבון','math')}</div>
+  ${tile(3,'a-pink','🏆','הסקווישים שלי','prizes')}${tile(4,'a-blue','🎨','האייקון והצבע','look')}</div>
  <div class="foot"><button data-act="parent">📊 מידע להורה</button><button data-act="settings">⚙️ הגדרות</button></div>`};
+
+V.subjects=()=>{const p=P(),card=(s,ic,t,sub,cls)=>`<button class="subj ${cls}" data-act="subject" data-s="${s}"><span class="sic">${ic}</span><b>${t}</b><span>${sub}</span></button>`;
+ return`<div class="bgfx" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+ <div class="top"><button class="btn small ghost" data-act="profiles">→</button><div class="sp"></div>${pillsHtml(p)}</div>
+ <div class="center"><div class="bounce" style="display:inline-block">${squish(p.avatar,'lg')}</div><h1 style="margin:6px 0">${GREET()[0]}, ${esc(p.name)}! ${GREET()[1]}</h1><div class="ptag">מה לומדים היום?</div></div>
+ <div class="subjs">${card('en','🔤','אנגלית','מילים, משחקים ותרגילים','a-blue')}${card('math','🔢','חשבון','מספרים וערך הספרה','a-orange')}</div>`};
 
 V.practice=()=>{const r=S.run;if(!r)return'';
  if(r.i>=r.q.length)return V.done();
@@ -1519,7 +1527,9 @@ const A={
  gate(){const i=document.getElementById('gate'),v=i.value.trim();if(v===String(D.settings.pw||'2101975')){S.gate=true;render()}else{alert('סיסמה שגויה');i.value='';i.focus()}},
  profiles(){S.pid=null;go('profiles')},
  pick(el){if(el.classList.contains('side')){el.scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'});return}
-  S.pid=el.dataset.id;S.lastPid=S.pid;S.lesson='';go('home')},
+  S.pid=el.dataset.id;S.lastPid=S.pid;S.lesson='';go('subjects')},
+ subjects(){S.run=null;S.game=null;go('subjects')},
+ subject(el){go(el.dataset.s==='math'?'math':'home')},
  dock(el){const c=document.querySelectorAll('.pc')[+el.dataset.i];if(c)c.scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'})},
  home(){S.run=null;S.game=null;go('home')},
  pet(el){const s=el.querySelector('svg');s.classList.remove('squish');void s.getBoundingClientRect();s.classList.add('squish')},
@@ -1789,7 +1799,7 @@ V.acts=()=>{const p=P();
 
 V.math=()=>{const p=P(),ks=['place','table','words','build','expand','units','blocks','compare','change','diff'];
  const b=k=>`<button class="profile" style="font-size:1rem;padding:10px 6px;gap:2px" data-act="run" data-k="math" data-c="${k}"><span style="font-size:1.9rem;line-height:1.2">${MATH_ICON[k]}</span>${MATH_NAME[k]}<span class="hint">⭐ עד 5</span></button>`;
- return`<div class="top"><button class="btn small ghost" data-act="home">→</button><h2 class="sp">חשבון 🔢</h2></div>
+ return`<div class="top"><button class="btn small ghost" data-act="subjects">→</button><h2 class="sp">חשבון 🔢</h2></div>
  <div class="top" style="justify-content:center">${pillsHtml(p)}</div>
  <div class="hint center">מספרים עד 9,999 · סיבוב בלי טעויות = כוכבים 🎁</div>
  <div class="hubgrid">${ks.map(b).join('')}<button class="profile" style="font-size:1rem;padding:10px 6px;gap:2px;grid-column:1/-1" data-act="run" data-k="math" data-c="mock"><span style="font-size:1.9rem;line-height:1.2">🎓</span>מבחן חשבון<span class="hint">⭐ עד 5</span></button></div>`};
