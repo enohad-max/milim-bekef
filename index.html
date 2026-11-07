@@ -97,6 +97,12 @@ label{font-weight:700;font-size:.9rem;display:block;margin:8px 0 4px}
 @keyframes fall{to{transform:translateY(110vh) rotate(540deg);opacity:.9}}
 .big{font-size:1.5rem;font-weight:900}
 .hubgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pvt{width:100%;border-collapse:collapse;direction:rtl;margin:4px 0 8px;table-layout:fixed}.pvt th{background:#e4f0ff;font-size:.85rem;padding:6px 2px;border:2px solid #b9d3f5}.pvt td{font-size:2rem;font-weight:900;text-align:center;padding:6px 2px;border:2px solid #b9d3f5;background:#fff;direction:ltr;vertical-align:middle;font-family:Verdana,sans-serif}
+.pvt.blk td{min-height:80px;height:84px;font-size:0;line-height:0;padding:4px;vertical-align:top}
+.bk{display:inline-block;margin:2px;background:#5aa7ff;border:2px solid #2f7be0;border-radius:3px;vertical-align:top}.bk.k{width:26px;height:26px;background:#8ec5ff}.bk.h{width:18px;height:18px;background:#a6e3a1;border-color:#3fa84a}.bk.t{width:6px;height:24px;background:#ffd35c;border-color:#e0a800}.bk.u{width:7px;height:7px;border-radius:50%;background:#ff8fb8;border-color:#e0558f}
+.optgrid:has(.opt.cmpo){direction:ltr}.optgrid:has(.opt.sm){grid-template-columns:1fr}.opt.sm{font-size:1.25rem!important}
+.bignum{font-size:2.4rem;font-weight:900;letter-spacing:1px}.opt.sm{font-size:1.05rem;padding:12px 6px}.opt.cmpo{font-size:2.6rem}
+.atile.wide{grid-column:1/-1}.a-orange{background:linear-gradient(#ffb347,#ff8c1a);box-shadow:0 6px 0 #d96f00}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 .optgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
 .opt{font:inherit;font-weight:800;font-size:1.5rem;color:var(--ink);background:#fff;border:3px solid transparent;border-radius:22px;padding:16px 8px;box-shadow:0 5px 0 #0000001a;cursor:pointer;min-height:68px}
@@ -1311,7 +1317,7 @@ V.home=()=>{const p=P(),goal=D.settings.goal,cnt=p.day===today()?p.dayCount:0,ls
  <button class="btn blue cta has-gift" data-act="game" ${n<2?'disabled':''}>🎮 משחק התאמה</button>
  <div class="tgrid">
   ${tile(1,'a-green','🃏','תרגול','practice',n<1?'disabled':'')}${tile(2,'a-yellow','🧩','תרגילים','hub')}
-  ${tile(3,'a-pink','🏆','הסקווישים שלי','prizes')}${tile(4,'a-blue','🎨','האייקון והצבע','look')}</div>
+  ${tile(3,'a-pink','🏆','הסקווישים שלי','prizes')}${tile(4,'a-blue','🎨','האייקון והצבע','look')}${tile(5,'a-orange wide','🔢','חשבון','math')}</div>
  <div class="foot"><button data-act="parent">📊 מידע להורה</button><button data-act="settings">⚙️ הגדרות</button></div>`};
 
 V.practice=()=>{const r=S.run;if(!r)return'';
@@ -1691,6 +1697,59 @@ const G={
  order(n=4){return sample(SENTS,n).map(s=>{const w=s[0].split(' ');return{t:'b',w:1,prompt:`<div class="word" style="font-size:1.6rem">${esc(s[1])}</div>${sayBtn(s[0])}<div class="hint">סדרי את המילים למשפט באנגלית</div>`,say:s[0],target:w,tiles:shuf2(w),lab:'סידור משפט: '+s[0]}})},
  mock(p){const cats=Object.keys(CATS);return shuffle([...G.first(3),...G.vowel(3),...G.spell(2),...G.name(p),...G.vocab(pick(cats),2),...G.letters(5),...G.colors().slice(0,1),...G.colors().slice(2,4),...G.cloze(2),...G.order(1)])}
 };
+// ---------- חשבון: מבנה עשרוני (מספרים עד 9,999) ----------
+const PL=['יחידות','עשרות','מאות','אלפים'],PLV=[1,10,100,1000];
+const HU=['','אחת','שתיים','שלוש','ארבע','חמש','שש','שבע','שמונה','תשע'],HT=['','עשר','עשרים','שלושים','ארבעים','חמישים','שישים','שבעים','שמונים','תשעים'],
+ HTEEN=['עשר','אחת-עשרה','שתים-עשרה','שלוש-עשרה','ארבע-עשרה','חמש-עשרה','שש-עשרה','שבע-עשרה','שמונה-עשרה','תשע-עשרה'],
+ HH=['','מאה','מאתיים','שלוש מאות','ארבע מאות','חמש מאות','שש מאות','שבע מאות','שמונה מאות','תשע מאות'],
+ HK=['','אלף','אלפיים','שלושת אלפים','ארבעת אלפים','חמשת אלפים','ששת אלפים','שבעת אלפים','שמונת אלפים','תשעת אלפים'];
+function numWords(n){const p=[],h=(n%1000)/100|0,r=n%100;
+ if(n>=1000)p.push(HK[n/1000|0]);if(h)p.push(HH[h]);
+ if(r){if(r<10)p.push(HU[r]);else if(r<20)p.push(HTEEN[r-10]);else{p.push(HT[r/10|0]);if(r%10)p.push(HU[r%10])}}
+ if(p.length>1)p[p.length-1]='ו'+p[p.length-1];return p.join(' ')}
+const fmtN=n=>n.toLocaleString('en-US');
+const dig=n=>[n%10,(n/10|0)%10,(n/100|0)%10,n/1000|0];   // [יחידות,עשרות,מאות,אלפים]
+const undig=d=>d[3]*1000+d[2]*100+d[1]*10+d[0];
+const rnd=(a,b)=>a+Math.random()*(b-a+1)|0;
+const num4=()=>{let n;do n=rnd(1000,9999);while(new Set(dig(n)).size<3);return n};   // לפחות 3 ספרות שונות
+const opts4=(right,pool)=>{const s=new Set([right]);let k=0;while(s.size<4&&k++<300){const v=pool();if(v>=0)s.add(v)}return shuffle([...s])};
+const numQ=(prompt,right,pool,lab,o={})=>{const op=opts4(right,pool).map(fmtN);return Object.assign({t:'q',prompt,opts:op,ans:op.indexOf(fmtN(right)),oc:'en',lab,nosay:1},o)};
+const swapPool=n=>()=>{let d;do{d=dig(n);const i=rnd(0,3);d[i]=(d[i]+rnd(1,9))%10}while(!d[3]);return undig(d)};
+const pvt=(rows,cls='')=>`<table class="pvt ${cls}" dir="rtl"><tr>${[3,2,1,0].map(i=>`<th>${PL[i]}</th>`).join('')}</tr><tr>${[3,2,1,0].map(i=>`<td>${rows[i]}</td>`).join('')}</tr></table>`;
+const tbl=n=>pvt(dig(n));
+const blocksHtml=n=>{const d=dig(n),one=(c,k)=>Array.from({length:d[k]},()=>`<i class="bk ${c}"></i>`).join('');return pvt([one('u',0),one('t',1),one('h',2),one('k',3)],'blk')};
+const bigN=x=>`<div class="en word bignum">${fmtN(x)}</div>`;
+const MG={
+ place(n=8){return Array.from({length:n},()=>{const x=num4(),d=dig(x),ks=[0,1,2,3].filter(i=>d[i]),k=pick(ks),dg=d[k];
+   if(Math.random()<.5)return{t:'q',prompt:`${bigN(x)}<div class="hint">הספרה <b>${dg}</b> נמצאת בעמודת ה…?</div>`,opts:[...PL].reverse(),ans:3-k,oc:'',lab:`מקום הספרה ${dg} ב-${fmtN(x)}`,nosay:1};
+   return numQ(`${bigN(x)}<div class="hint">מה הערך של הספרה <b>${dg}</b> במספר?</div>`,dg*PLV[k],()=>dg*PLV[rnd(0,3)],`ערך הספרה ${dg} ב-${fmtN(x)}`)})},
+ table(n=6){return Array.from({length:n},()=>{const x=num4();return numQ(`${tbl(x)}<div class="hint">איזה מספר כתוב בטבלה?</div>`,x,swapPool(x),'מספר מטבלה: '+fmtN(x))})},
+ words(n=6){return Array.from({length:n},(_,i)=>{const x=num4(),w=numWords(x);
+   if(i%2===0)return numQ(`<div class="word" style="font-size:1.5rem">${w}</div>${sayBtn(w)}<div class="hint">איזה מספר זה?</div>`,x,swapPool(x),'מספר במילים: '+fmtN(x));
+   const s=new Set([w]);let k=0;while(s.size<4&&k++<300)s.add(numWords(swapPool(x)()));const op=shuffle([...s]);
+   return{t:'q',prompt:`${bigN(x)}<div class="hint">איך קוראים למספר?</div>`,opts:op,ans:op.indexOf(w),oc:'',cls:'sm',lab:'מספר במילים: '+fmtN(x),nosay:1}})},
+ build(n=5){return Array.from({length:n},()=>{const x=num4(),d=String(x).split(''),w=numWords(x);
+   return{t:'b',prompt:`<div class="word" style="font-size:1.4rem">${w}</div>${sayBtn(w)}<div class="hint">הקישי את הספרות לפי הסדר</div>`,say:w,target:d,tiles:shuf2([...d,...sample('0123456789'.split(''),2)]),lab:'כתיבת מספר: '+fmtN(x)}})},
+ expand(n=6){return Array.from({length:n},()=>{const x=num4(),d=dig(x),parts=[3,2,1,0].filter(i=>d[i]).map(i=>d[i]*PLV[i]),k=rnd(0,parts.length-1);
+   return numQ(`<div class="en word sent" style="font-size:1.5rem">${fmtN(x)} = ${parts.map((v,i)=>i===k?'<span class="blank">___</span>':fmtN(v)).join(' + ')}</div><div class="hint">מה חסר בסכום?</div>`,parts[k],()=>{const i=rnd(0,3);return(d[i]||rnd(1,9))*PLV[i]},'פיתוח מספר: '+fmtN(x))})},
+ units(n=6){return Array.from({length:n},()=>{const x=rnd(100,999),d=dig(x);
+   if(Math.random()<.5)return numQ(`<div class="en word sent" style="font-size:1.4rem">${x} = ${d[2]*100} + <span class="blank">___</span> + ${d[0]}</div><div class="hint">מה חסר?</div>`,d[1]*10,()=>rnd(0,9)*10,'השלמה: '+x);
+   const r=x/10|0;
+   return numQ(`<div class="word" style="font-size:1.4rem"><span class="blank">___</span> עשרות ועוד ${d[0]} יחידות = <span class="en">${x}</span></div><div class="hint">כמה עשרות?</div>`,r,()=>r+rnd(-12,12),'עשרות במספר '+x)})},
+ blocks(n=5){return Array.from({length:n},()=>{const x=num4();return numQ(`${blocksHtml(x)}<div class="hint">כמה זה?</div>`,x,swapPool(x),'בלוקים: '+fmtN(x))})},
+ compare(n=8){return Array.from({length:n},()=>{let a,b;const m=rnd(0,2);do{const d=dig(num4()),e=[...d],i=rnd(0,m+1);e[i]=(e[i]+rnd(1,9))%10;a=undig(d);b=undig(e)}while(a===b||b<1000);
+   return{t:'q',prompt:`<div class="en word bignum" dir="ltr">${fmtN(a)} <span class="blank">▢</span> ${fmtN(b)}</div><div class="hint">מה הסימן הנכון?</div>`,opts:['<','>'],ans:a<b?0:1,oc:'en',cls:'cmpo',lab:`השוואה: ${fmtN(a)} ? ${fmtN(b)}`,nosay:1}})},
+ change(n=4){return Array.from({length:n},(_,i)=>{const x=num4(),d=dig(x),k=rnd(0,3);let nd;do nd=rnd(0,9);while(nd===d[k]||(k===3&&!nd));const e=[...d];e[k]=nd;const y=undig(e);
+   const head=`<div class="word" style="font-size:1.25rem">במספר <span class="en">${fmtN(x)}</span> החליפי את ספרת ה${PL[k]} ל-<span class="en">${nd}</span></div>`;
+   if(i%2===0)return numQ(`${head}<div class="hint">מהו המספר החדש?</div>`,y,swapPool(y),`החלפת ספרה: ${fmtN(x)} ← ${fmtN(y)}`);
+   return{t:'q',prompt:`${head}<div class="hint">המספר החדש גדול או קטן מ-${fmtN(x)}?</div>`,opts:['גדול','קטן'],ans:y>x?0:1,oc:'',lab:`גדול/קטן: ${fmtN(x)} ← ${fmtN(y)}`,nosay:1}})},
+ diff(n=4){return Array.from({length:n},()=>{const x=num4(),d=dig(x),k=rnd(0,3),can=[];for(let g=1;g<=9;g++){if(d[k]+g<=9)can.push([g,1]);if(d[k]-g>=0)can.push([g,0])}
+   const[g,up]=pick(can);
+   return numQ(`<div class="word" style="font-size:1.25rem">במספר <span class="en">${fmtN(x)}</span> ${up?'הגדילי':'הקטיני'} את ספרת ה${PL[k]} ב-<span class="en">${g}</span></div><div class="hint">בכמה המספר ${up?'גדל':'קטן'}?</div>`,g*PLV[k],()=>g*PLV[rnd(0,3)],`${up?'הגדלת':'הקטנת'} ספרת ה${PL[k]} ב-${g}: ${fmtN(x)}`)})},
+ mock(){return shuffle([...MG.place(2),...MG.table(1),...MG.words(2),...MG.build(1),...MG.expand(2),...MG.units(1),...MG.blocks(1),...MG.compare(3),...MG.change(2),...MG.diff(1)])}
+};
+const MATH_NAME={place:'ערך הספרה',table:'קוראים טבלה',words:'מספר במילים',build:'כותבים מספר',expand:'פיתוח מספר',units:'עשרות ויחידות',blocks:'בלוקים',compare:'משווים',change:'מחליפים ספרה',diff:'בכמה שינינו',mock:'מבחן חשבון'};
+const MATH_ICON={place:'🔟',table:'📊',words:'🗣️',build:'✍️',expand:'➕',units:'🧮',blocks:'🧱',compare:'⚖️',change:'🔄',diff:'📏',mock:'🎓'};
 const RUN={
  letters:()=>['🔤 אותיות גדולות וקטנות',()=>[...G.letters(5),...G.letters(5)]],
  first:()=>['🍎 באיזו אות מתחיל?',()=>G.first(8)],
@@ -1701,7 +1760,8 @@ const RUN={
  cloze:()=>['💬 מילה חסרה במשפט',()=>G.cloze(6)],
  order:()=>['🧩 מסדרים משפט',()=>G.order(4)],
  vocab:c=>[CAT_ICON[c]+' '+CAT_NAME[c],()=>[...G.vocab(c,6),...G.vocabMatch(c)]],
- mock:()=>['🎓 מבחן דמה',()=>G.mock(P())]
+ mock:()=>['🎓 מבחן דמה',()=>G.mock(P())],
+ math:c=>[MATH_ICON[c]+' '+MATH_NAME[c],()=>MG[c]()]
 };
 function startAct(title,gen,key){const items=gen();if(!items.length)return alert('אין מה לתרגל כאן');S.act={title,gen,key:key||'act',im:0,iw:[],items,i:0,mist:0,stars:0,prizes:[],pos:0,used:[],sel:null,done:[],ord:null,lock:false,finished:false};go('act')}
 function nextItem(){const a=S.act;logItem();a.im=0;a.iw=[];a.i++;a.pos=0;a.used=[];a.sel=null;a.done=[];a.ord=null;a.lock=false;if(a.i>=a.items.length)finishAct();else render()}
@@ -1727,9 +1787,16 @@ V.acts=()=>{const p=P();
  </div>
  <div class="panel"><h3>📚 אוצר מילים</h3><div class="chips">${Object.keys(CATS).map(c=>`<button class="btn small" style="width:auto" data-act="run" data-k="vocab" data-c="${c}">${CAT_ICON[c]} ${CAT_NAME[c]}</button>`).join('')}</div></div>`};
 
+V.math=()=>{const p=P(),ks=['place','table','words','build','expand','units','blocks','compare','change','diff'];
+ const b=k=>`<button class="profile" style="font-size:1rem;padding:10px 6px;gap:2px" data-act="run" data-k="math" data-c="${k}"><span style="font-size:1.9rem;line-height:1.2">${MATH_ICON[k]}</span>${MATH_NAME[k]}<span class="hint">⭐ עד 5</span></button>`;
+ return`<div class="top"><button class="btn small ghost" data-act="home">→</button><h2 class="sp">חשבון 🔢</h2></div>
+ <div class="top" style="justify-content:center">${pillsHtml(p)}</div>
+ <div class="hint center">מספרים עד 9,999 · סיבוב בלי טעויות = כוכבים 🎁</div>
+ <div class="hubgrid">${ks.map(b).join('')}<button class="profile" style="font-size:1rem;padding:10px 6px;gap:2px;grid-column:1/-1" data-act="run" data-k="math" data-c="mock"><span style="font-size:1.9rem;line-height:1.2">🎓</span>מבחן חשבון<span class="hint">⭐ עד 5</span></button></div>`};
+
 V.act=()=>{const a=S.act;if(!a)return'';if(a.finished)return V.actDone();
  const it=a.items[a.i],top=`<div class="top"><button class="btn small ghost" data-act="hub">✕</button><div class="bar sp"><i style="width:${a.i/a.items.length*100}%"></i></div><div class="pill" id="mc">❌ ${a.mist}</div></div>`;
- if(it.t==='q')return top+`<div class="panel center">${it.prompt}</div><div class="optgrid">${it.opts.map((o,i)=>`<button class="opt ${it.oc||''}" data-act="opt" data-i="${i}">${it.oc==='lt'?letterHtml(o):esc(o)}</button>`).join('')}</div>`;
+ if(it.t==='q')return top+`<div class="panel center">${it.prompt}</div><div class="optgrid">${it.opts.map((o,i)=>`<button class="opt ${it.oc||''} ${it.cls||''}" data-act="opt" data-i="${i}">${it.oc==='lt'?letterHtml(o):esc(o)}</button>`).join('')}</div>`;
  if(it.t==='b')return top+`<div class="panel center">${it.prompt}<div class="slots ${it.w?'wide':''}" dir="ltr">${it.target.map((t,k)=>`<span class="tslot ${k<a.pos?'full':''}">${k<a.pos?(it.w?esc(t):letterHtml(t)):''}</span>`).join('')}</div></div>
   <div class="tiles ${it.w?'wide':''}" dir="ltr">${it.tiles.map((t,k)=>`<button class="tile ${a.used.includes(k)?'gone':''}" data-act="tile" data-k="${k}">${it.w?esc(t):letterHtml(t)}</button>`).join('')}</div>`;
  if(!a.ord)a.ord={L:shuffle(it.pairs.map(p=>p[2])),R:shuffle(it.pairs.map(p=>p[2]))};
@@ -1763,7 +1830,8 @@ function setupTrace(){const c=document.getElementById('tc');if(!c)return;const d
  c.onpointerup=c.onpointercancel=()=>{on=false}}
 
 Object.assign(A,{
- hub(){S.act=null;go('acts')},
+ hub(){const m=S.act&&/^math/.test(S.act.key);S.act=null;go(m?'math':'acts')},
+ math(){go('math')},
  run(el){const k=el.dataset.k,p=P();
   if(k==='trace'){if(!(p.en||'').trim())return alert('ההורה צריך להגדיר שם באנגלית בהגדרות ← הילדות');return go('trace')}
   if(k==='name'&&!(p.en||'').trim())return alert('ההורה צריך להגדיר שם באנגלית בהגדרות ← הילדות');
@@ -1774,8 +1842,8 @@ Object.assign(A,{
  tdone(){if((window._tink||0)<(window._tneed||0))return toast('כתבי את כל השם עם האצבע ✏️');
   const p=P(),r={stars:0,prizes:[]};addStar(p,r);logEv({type:'s',src:'trace',title:'כתיבת השם',m:0,n:1,st:1});tick(p);save();A.hub();toast('⭐ קיבלת כוכב!');r.prizes.forEach(showPrize)},
  opt(el){const a=S.act,it=a.items[a.i];if(a.lock)return;const i=+el.dataset.i;
-  if(i===it.ans){a.lock=true;el.classList.add('good');say(it.fin||it.say||it.opts[i]);setTimeout(nextItem,800)}
-  else{say(it.opts[i]);a.mist++;a.im++;el.classList.add('bad');const m=document.getElementById('mc');if(m)m.textContent='❌ '+a.mist}},
+  if(i===it.ans){a.lock=true;el.classList.add('good');if(!it.nosay||it.say)say(it.fin||it.say||it.opts[i]);setTimeout(nextItem,800)}
+  else{if(!it.nosay)say(it.opts[i]);a.mist++;a.im++;el.classList.add('bad');const m=document.getElementById('mc');if(m)m.textContent='❌ '+a.mist}},
  tile(el){const a=S.act,it=a.items[a.i];if(a.lock)return;const k=+el.dataset.k;if(a.used.includes(k))return;say(it.tiles[k]);
   if(it.tiles[k]===it.target[a.pos]){a.used.push(k);a.pos++;
    if(a.pos>=it.target.length){a.lock=true;say(it.say||it.target.join(' '));render(true);setTimeout(nextItem,1000);return}
@@ -1798,7 +1866,7 @@ function logItem(){const a=S.act,it=a.items[a.i];if(!it)return;
 const bakWarn=()=>{const t=(D.settings||{}).lastBackup,d=t?Math.floor((Date.now()-t)/864e5):null;
  return d===null||d>=7?`<div class="pcard exam"><b>💾 ${d===null?'עוד לא יצרת גיבוי':'הגיבוי האחרון לפני '+d+' ימים'}</b><div class="hint">מומלץ לייצא גיבוי לפני כל עדכון.</div><button class="btn small blue" style="width:auto;margin-top:8px" data-act="export">⬇️ ייצוא גיבוי עכשיו</button></div>`:''};
 const ACT_NAME={cards:'כרטיסיות',match:'משחק התאמה',trace:'כותבים שם',letters:'אותיות',first:'אות ראשונה',vowel:'אות חסרה',spell:'בונים מילה',name:'בונים שם',colors:'צבעים',cloze:'משפט חסר',order:'מסדרים משפט',mock:'מבחן דמה'};
-const srcName=k=>{const[b,c]=String(k).split(':');return b==='vocab'?'אוצר מילים: '+(CAT_NAME[c]||c):(ACT_NAME[b]||b)};
+const srcName=k=>{const[b,c]=String(k).split(':');return b==='math'?'חשבון: '+(MATH_NAME[c]||c):b==='vocab'?'אוצר מילים: '+(CAT_NAME[c]||c):(ACT_NAME[b]||b)};
 const fmtTs=ts=>new Date(ts).toLocaleString('he-IL',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'});
 const failedEv=e=>e.src==='cards'&&e.type==='w'?e.res!=='know':(e.m||0)>0;
 const rateCol=r=>r>=.85?['🟢','#5fd68a']:r>=.6?['🟡','#ffd35c']:['🔴','#ff6b6b'];
